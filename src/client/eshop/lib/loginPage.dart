@@ -120,20 +120,23 @@ class _LoginPageState extends State<LoginPage> {
                 },
               ),
             ),
-            Row(
-              children: [
-                Checkbox(
-                  value: _showPassword,
-                  onChanged: (bool? value) {
-                    if (value != null) {
-                      setState(() {
-                        _showPassword = value;
-                      });
-                    }
-                  },
-                ),
-                const Text('Show Password'),
-              ],
+            Padding(
+              padding: const EdgeInsets.only(top: 5, left: 10, bottom: 10),
+              child: Row(
+                children: [
+                  Checkbox(
+                    value: _showPassword,
+                    onChanged: (bool? value) {
+                      if (value != null) {
+                        setState(() {
+                          _showPassword = value;
+                        });
+                      }
+                    },
+                  ),
+                  const Text('Show Password'),
+                ],
+              ),
             ),
           ],
         ),
