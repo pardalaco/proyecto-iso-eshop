@@ -14,3 +14,12 @@
 #  *              along with the "eshop - proyecto iso" project. 
 #  *              If not, see <http://www.gnu.org/licenses/>.
 #***************************************************************************************************
+import sqlite3
+import asyncio
+
+
+#***************************************************************************************************
+class Database:
+	def __init__(self, *args, **kwargs) -> None:
+		self.connection = sqlite3.connect("../../../database/isoDB.db")
+		self.cursor = self.connection.cursor()
