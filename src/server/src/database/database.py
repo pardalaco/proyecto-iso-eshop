@@ -17,9 +17,33 @@
 import sqlite3
 import asyncio
 
+from src.models.user import User
+from src.models.product import Product
+
 
 #***************************************************************************************************
 class Database:
 	def __init__(self, *args, **kwargs) -> None:
 		self.connection = sqlite3.connect("../../../database/isoDB.db")
 		self.cursor = self.connection.cursor()
+		self.cursor.execute("PRAGMA foreign_keys = ON;")
+
+
+#***************************************************************************************************
+	async def query_user() -> User:
+		pass
+
+
+#***************************************************************************************************
+	async def store_user(user: User) -> None:
+		pass
+
+
+#***************************************************************************************************
+	async def query_products() -> list[Product]:
+		pass
+
+
+#***************************************************************************************************
+	async def store_product(product: Product) -> None:
+		pass
