@@ -1,13 +1,13 @@
-import 'package:eshop/signUpPage.dart';
+import 'package:eshop/loginPage.dart';
 import 'package:flutter/material.dart';
 //import 'first_page/container.dart';
 //import 'package:drovmar_pfinal/future/alert.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SignUpPage> createState() => _SignUpPageState();
 }
 
 final TextEditingController _usernameController = TextEditingController();
@@ -16,7 +16,7 @@ final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 bool _showPassword =
     false; // Variable to track whether the password should be shown or hidden.
 
-class _LoginPageState extends State<LoginPage> {
+class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,9 +45,9 @@ class _LoginPageState extends State<LoginPage> {
                         //width: 30,
                       ),
                     ])),
-            _LoginBox(),
+            _singUpBox(),
             const SizedBox(height: 20),
-            _singUpTag(),
+            _loginTag(),
             Padding(
               padding: const EdgeInsets.only(top: 20),
               child:
@@ -58,7 +58,7 @@ class _LoginPageState extends State<LoginPage> {
                       // Logic for the register sesion
                     }
                   },
-                  child: _loginButton(),
+                  child: _singUpButton(),
                 ),
               ]),
             ),
@@ -78,7 +78,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   // ignore: non_constant_identifier_names
-  _LoginBox() {
+  _singUpBox() {
     return Container(
       margin: const EdgeInsets.only(left: 15, right: 15, top: 70),
       decoration: BoxDecoration(
@@ -90,6 +90,7 @@ class _LoginPageState extends State<LoginPage> {
         key: _formKey,
         child: Column(
           children: [
+            // Username input
             Padding(
               padding: const EdgeInsets.all(15),
               child: TextFormField(
@@ -106,6 +107,7 @@ class _LoginPageState extends State<LoginPage> {
                 },
               ),
             ),
+            // Pasword input
             Padding(
               padding: const EdgeInsets.all(15),
               child: TextFormField(
@@ -123,6 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                 },
               ),
             ),
+            // Repit pasword input
             Padding(
               padding: const EdgeInsets.only(top: 5, left: 10, bottom: 10),
               child: Row(
@@ -147,7 +150,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  _loginButton() {
+  _singUpButton() {
     return Container(
       width: 180,
       height: 45,
@@ -157,7 +160,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
       child: const Center(
         child: Text(
-          "LOGIN",
+          "SING UP",
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 25,
@@ -169,16 +172,16 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  _singUpTag() {
+  _loginTag() {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const SignUpPage()),
+          MaterialPageRoute(builder: (context) => const LoginPage()),
         );
       },
       child: const Text(
-        "Don't have an account? Sign up",
+        "Already have an account? Log in.",
         style: TextStyle(
           color: Colors.blue,
           decoration: TextDecoration.underline,
