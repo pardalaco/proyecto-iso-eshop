@@ -1,7 +1,7 @@
 import 'package:eshop/signUpPage.dart';
 import 'package:flutter/material.dart';
+import 'package:eshop/products_list_view.dart';
 //import 'first_page/container.dart';
-//import 'package:drovmar_pfinal/future/alert.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -55,7 +55,11 @@ class _LoginPageState extends State<LoginPage> {
                 GestureDetector(
                   onTap: () {
                     if (_formKey.currentState!.validate()) {
-                      // Logic for the register sesion
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ProductsPage()),
+                      );
                     }
                   },
                   child: _loginButton(),

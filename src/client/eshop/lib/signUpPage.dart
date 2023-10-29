@@ -1,5 +1,6 @@
 import 'package:eshop/loginPage.dart';
 import 'package:flutter/material.dart';
+import 'package:eshop/products_list_view.dart';
 //import 'first_page/container.dart';
 //import 'package:drovmar_pfinal/future/alert.dart';
 
@@ -56,7 +57,11 @@ class _SignUpPageState extends State<SignUpPage> {
                 GestureDetector(
                   onTap: () {
                     if (_formKey.currentState!.validate()) {
-                      // Logic for the register sesion
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ProductsPage()),
+                      );
                     }
                   },
                   child: _singUpButton(),

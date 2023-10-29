@@ -12,7 +12,7 @@ class DrawerWidget extends StatelessWidget {
         children: [
           UserAccountsDrawerHeader(
             accountName: Text(user.name),
-            accountEmail: Text(user.phone),
+            accountEmail: Text(user.email),
             currentAccountPicture: const CircleAvatar(
               backgroundImage: AssetImage('assets/img/profile.png'),
             ),
