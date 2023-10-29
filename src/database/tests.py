@@ -1,7 +1,10 @@
 import sqlite3
 
+#Set connection
 connection = sqlite3.connect('isoDB.db')
 cursor = connection.cursor()
+cursor.execute('''PRAGMA foreign_keys = ON;''')
+
 
 
 #Testing
@@ -45,3 +48,5 @@ Clientes del sistema:
 ('psegmar1@gmail.com', 'Pablo', 'Segovia', 'psegmar1', 'direccionPablo', 'tarjetaPablo', 1)
 ('test@gmail.com', 'test', 'testApellido', 'test', 'direccionTest', 'tarjetaTest', 0)
 '''
+
+connection.close()

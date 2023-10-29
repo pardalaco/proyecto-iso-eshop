@@ -1,7 +1,9 @@
 import sqlite3
 
+#Set connection
 connection = sqlite3.connect('isoDB.db')
 cursor = connection.cursor()
+cursor.execute('''PRAGMA foreign_keys = ON;''')
 
 #Reset state of tables
 cursor.execute(
@@ -50,7 +52,7 @@ cursor.execute(
             imagen VARCHAR(80) NULL,
             precio DECIMAL(7,2) NULL,
             PRIMARY KEY (id)
-	    );
+	    ) WITHOUT ROWID;
     '''
 )
 cursor.execute(
@@ -59,7 +61,7 @@ cursor.execute(
             id INT NOT NULL,
             nombre VARCHAR(45) NOT NULL UNIQUE,
             PRIMARY KEY (id)
-        );
+        ) WITHOUT ROWID;
     '''
 )
 cursor.execute(
@@ -128,4 +130,5 @@ cursor.execute(
 	'''
 )
 connection.commit()
+connection.close()
 print("Ejecución con éxito.")
