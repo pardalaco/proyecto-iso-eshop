@@ -96,11 +96,11 @@ class _LoginPageState extends State<LoginPage> {
                 controller: _usernameController,
                 decoration: const InputDecoration(
                   labelText: 'Username',
-                  prefixIcon: Icon(Icons.person),
+                  prefixIcon: Icon(Icons.person_outline),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Ingrese su nombre de usuario';
+                    return 'Input your nametag';
                   }
                   return null;
                 },
@@ -117,7 +117,7 @@ class _LoginPageState extends State<LoginPage> {
                 obscureText: !_showPassword,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Ingrese su contraseña';
+                    return 'Input your password';
                   }
                   return null;
                 },

@@ -12,6 +12,7 @@ class SignUpPage extends StatefulWidget {
 
 final TextEditingController _usernameController = TextEditingController();
 final TextEditingController _passwordController = TextEditingController();
+final TextEditingController _emailController = TextEditingController();
 final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 bool _showPassword =
     false; // Variable to track whether the password should be shown or hidden.
@@ -97,11 +98,28 @@ class _SignUpPageState extends State<SignUpPage> {
                 controller: _usernameController,
                 decoration: const InputDecoration(
                   labelText: 'Username',
-                  prefixIcon: Icon(Icons.person),
+                  prefixIcon: Icon(Icons.person_outline),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Ingrese su nombre de usuario';
+                    return 'Imput your nametag';
+                  }
+                  return null;
+                },
+              ),
+            ),
+            // Email input
+            Padding(
+              padding: const EdgeInsets.all(15),
+              child: TextFormField(
+                controller: _emailController,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  prefixIcon: Icon(Icons.mail_outline),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Input your email';
                   }
                   return null;
                 },
@@ -119,13 +137,12 @@ class _SignUpPageState extends State<SignUpPage> {
                 obscureText: !_showPassword,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Ingrese su contraseña';
+                    return 'Input your password';
                   }
                   return null;
                 },
               ),
             ),
-            // Repit pasword input
             Padding(
               padding: const EdgeInsets.only(top: 5, left: 10, bottom: 10),
               child: Row(
