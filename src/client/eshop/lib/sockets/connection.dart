@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_typing_uninitialized_variables
-
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
@@ -9,10 +7,9 @@ class Connection {
   late StreamSubscription<List<int>> subscription;
   late var datos;
   var debeEsperar = true;
+  var first = true;
 
-  Connection();
-
-  Future<void> logIn(Map<String, dynamic> js) async {
+  Future<void> _firstTime(Map<String, dynamic> js) async {
     client = await Socket.connect('localhost', 12345);
     final send = jsonEncode(js);
     client.write(send);
@@ -30,7 +27,7 @@ class Connection {
     subscription.pause();
   }
 
-  Future<void> query(Map<String, dynamic> js) async {
+  Future<void> _otherTime(Map<String, dynamic> js) async {
     final send = jsonEncode(js);
     client.write(send);
     subscription.resume();
@@ -47,5 +44,14 @@ class Connection {
 
   Future<void> closeConnection() async {
     client.close();
+  }
+
+  Future<void> query(Map<String, dynamic> js) async {
+    if (first) {
+      await _firstTime(js);
+      first = false;
+    } else {
+      await _otherTime(js);
+    }
   }
 }
