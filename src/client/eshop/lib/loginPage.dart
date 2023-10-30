@@ -1,6 +1,8 @@
 import 'package:eshop/signUpPage.dart';
 import 'package:flutter/material.dart';
 import 'package:eshop/products_list_view.dart';
+import 'package:eshop/models/user_model.dart';
+
 //import 'first_page/container.dart';
 
 class LoginPage extends StatefulWidget {
@@ -13,6 +15,7 @@ class LoginPage extends StatefulWidget {
 final TextEditingController _usernameController = TextEditingController();
 final TextEditingController _passwordController = TextEditingController();
 final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+final bool login = false;
 bool _showPassword =
     false; // Variable to track whether the password should be shown or hidden.
 
@@ -55,11 +58,19 @@ class _LoginPageState extends State<LoginPage> {
                 GestureDetector(
                   onTap: () {
                     if (_formKey.currentState!.validate()) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const ProductsPage()),
-                      );
+                      if (login) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ProductsPage()),
+                        );
+                      } else {
+                        showDialog(
+                            context: context,
+                            builder: (context) => createAlert(
+                                  context,
+                                ));
+                      }
                     }
                   },
                   child: _loginButton(),
@@ -190,4 +201,31 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
+  AlertDialog createAlert(BuildContext context) => AlertDialog(
+        title: const Text("Authentication error"),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Incorrect username or password",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.blue,
+              ),
+              onPressed: () {
+                debugPrint("Press Accept");
+                Navigator.of(context).pop();
+              },
+              child: const Text("Accept")),
+        ],
+      );
 }
