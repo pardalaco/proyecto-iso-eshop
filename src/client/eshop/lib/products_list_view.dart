@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:eshop/future/drawer.dart';
 import 'package:eshop/models/user_model.dart';
 
+import 'package:eshop/future/futureProducts.dart';
+
 class ProductsPage extends StatefulWidget {
   //final List productsJson;
   const ProductsPage({
@@ -36,6 +38,7 @@ class _ProductsPageState extends State<ProductsPage> {
       drawer: DrawerWidget(
         user: User(name: "name", email: "phone"),
       ),
+      body: FutureJson(),
       // body: ListView.builder(
       //   itemCount: widget.productsJson.length,
       //   itemBuilder: (context, i) => widget.productsJson[i],

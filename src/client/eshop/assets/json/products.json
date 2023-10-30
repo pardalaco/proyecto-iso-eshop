@@ -1,0 +1,69 @@
+{
+    "products": [
+    {
+        "name" : "Paris Palace",
+        "location" : "Paris",
+        "price" : 99.99,
+        "image" : "assets/img/paris.jpg",
+        "description" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sit amet magna ante. Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
+        "stars" : 4
+    },
+    {
+        "name" : "The Grand Budapest Hotel",
+        "location" : "Budapest",
+        "price" : 120.50,
+        "image" : "assets/img/Budapest.jpg",
+        "description" : "Welcome to The Grand Budapest Hotel, where luxury meets tradition. Our hotel is located in the heart of Budapest, just minutes away from all the major attractions. Our spacious rooms and suites are elegantly decorated and offer stunning views of the city. Our restaurants serve the finest cuisine, and our spa and fitness center provide a serene retreat for our guests. Come and experience the grandeur of Budapest at The Grand Budapest Hotel.",
+        "stars" : 5
+    },
+    {
+        "name" : "The Atlantis Hotel",
+        "location" : "Dubai",
+        "price" : 350.00,
+        "image" : "assets/img/Dubai.jpg",
+        "description" : "Welcome to The Atlantis Hotel, a world-class resort located on the iconic Palm Jumeirah in Dubai. Our luxurious accommodations feature stunning views of the Arabian Gulf and the Dubai skyline. Our restaurants offer a variety of dining options, from casual to fine dining. Our spa and fitness center provide a relaxing escape from the hustle and bustle of the city. And our waterpark and aquarium provide endless entertainment for families. Come and experience the magic of The Atlantis Hotel.",
+        "stars" : 4
+    },
+    {
+        "name" : "The Bellagio",
+        "location" : "Las Vegas",
+        "price" : 199.99,
+        "image" : "assets/img/Lasvegas.jpg",
+        "description" : "Welcome to The Bellagio, where luxury and entertainment meet. Our hotel is located on the famous Las Vegas Strip, and our rooms and suites offer stunning views of the city and the surrounding desert. Our restaurants feature world-class cuisine, and our casino provides endless entertainment for our guests. Our spa and fitness center offer a serene retreat from the excitement of the city. Come and experience the magic of Las Vegas at The Bellagio.",
+        "stars" : 5
+    },
+    {
+        "name" : "The Four Seasons",
+        "location" : "New York City",
+        "price" : 399.99,
+        "image" : "assets/img/Newyork.jpg",
+        "description" : "Welcome to The Four Seasons, where elegance and sophistication meet in the heart of New York City. Our hotel features luxurious accommodations, world-class dining, and unparalleled service. Our spa and fitness center offer a tranquil retreat from the hustle and bustle of the city. And our rooftop bar provides stunning views of the Manhattan skyline. Come and experience the magic of New York at The Four Seasons.",
+        "stars" : 4
+    },
+    {
+        "name" : "The Ritz-Carlton",
+        "location" : "Tokyo",
+        "price" : 299.99,
+        "image" : "assets/img/Tokyo.jpg",
+        "description" : "Welcome to The Ritz-Carlton, where luxury meets tradition in the heart of Tokyo. Our hotel features elegant accommodations, world-class dining, and breathtaking views of the city. Our spa and fitness center provide a serene retreat from the bustling city streets. And our rooftop bar offers a spectacular view of Tokyo Tower. Come and experience the magic of Tokyo at The Ritz-Carlton.",
+        "stars" : 5
+    },
+    {
+        "name": "Tropical Resort",
+        "location": "Hawaii",
+        "price": 149.99,
+        "image": "assets/img/Hawaii.jpg",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sit amet magna ante. Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
+        "stars": 4
+      },    
+      {
+        "name": "Mountain Lodge",
+        "location": "Switzerland",
+        "price": 249.99,
+        "image": "assets/img/Switzerland.jpg",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sit amet magna ante. Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
+        "stars": 5
+      }
+    
+    ]
+}
