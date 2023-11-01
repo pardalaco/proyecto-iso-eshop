@@ -20,12 +20,14 @@ class TypeJson {
     required this.content,
   });
 
+// This function converts the Json into a TypeJson class
   factory TypeJson.fromJson(Map<String, dynamic> json) => TypeJson(
         type: json["type"],
         code: json["code"],
         content: Content.fromJson(json["content"]),
       );
 
+// This function converts the content of the class into a Json
   Map<String, dynamic> toJson() => {
         "type": type,
         "code": code,

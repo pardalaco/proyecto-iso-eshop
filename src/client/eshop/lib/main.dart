@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import "package:eshop/loginPage.dart";
 
+import 'package:eshop/sockets/connection.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -18,7 +20,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const LoginPage(),
+      home: LoginPage(connection: Connection()),
     );
   }
 }

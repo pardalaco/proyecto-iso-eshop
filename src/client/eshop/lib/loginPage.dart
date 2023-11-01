@@ -1,6 +1,10 @@
+// Jsons
 import 'package:eshop/jsons/typeJson.dart';
 import 'package:eshop/jsons/contentJson.dart';
 import 'package:eshop/jsons/loginJson.dart';
+
+// Conexion
+import 'package:eshop/sockets/connection.dart';
 
 import 'package:eshop/signUpPage.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +14,9 @@ import 'package:eshop/models/user_model.dart';
 //import 'first_page/container.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final Connection connection;
+
+  const LoginPage({super.key, required this.connection});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -19,13 +25,14 @@ class LoginPage extends StatefulWidget {
 final TextEditingController _usernameController = TextEditingController();
 final TextEditingController _passwordController = TextEditingController();
 final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-final bool login = true;
 
-final Content c = jsonLogin(
+const bool login = true;
+
+final Content content = jsonLogin(
     email: _usernameController.toString(),
     password: _passwordController.toString());
 
-final TypeJson datal = TypeJson(type: 1, code: 1, content: c);
+final TypeJson datal = TypeJson(type: 1, code: 1, content: content);
 
 bool _showPassword =
     false; // Variable to track whether the password should be shown or hidden.
@@ -66,8 +73,11 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.only(top: 20),
               child:
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                // Login button
                 GestureDetector(
                   onTap: () {
+                    // Sending data to the server
+
                     if (_formKey.currentState!.validate()) {
                       if (login) {
                         Navigator.push(
