@@ -14,9 +14,9 @@ import 'package:eshop/models/user_model.dart';
 //import 'first_page/container.dart';
 
 class LoginPage extends StatefulWidget {
-  final Connection connection;
+  Connection connection;
 
-  const LoginPage({super.key, required this.connection});
+  LoginPage({Key? key, required this.connection}) : super(key: key);
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -32,7 +32,7 @@ final Content content = jsonLogin(
     email: _usernameController.toString(),
     password: _passwordController.toString());
 
-final TypeJson datal = TypeJson(type: 1, code: 1, content: content);
+final TypeJson data = TypeJson(type: 1, code: 1, content: content);
 
 bool _showPassword =
     false; // Variable to track whether the password should be shown or hidden.
@@ -77,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                 GestureDetector(
                   onTap: () {
                     // Sending data to the server
-
+                    widget.connection.query(data.toJson());
                     if (_formKey.currentState!.validate()) {
                       if (login) {
                         Navigator.push(
