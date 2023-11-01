@@ -1,3 +1,7 @@
+import 'package:eshop/jsons/typeJson.dart';
+import 'package:eshop/jsons/contentJson.dart';
+import 'package:eshop/jsons/loginJson.dart';
+
 import 'package:eshop/signUpPage.dart';
 import 'package:flutter/material.dart';
 import 'package:eshop/products_list_view.dart';
@@ -15,7 +19,14 @@ class LoginPage extends StatefulWidget {
 final TextEditingController _usernameController = TextEditingController();
 final TextEditingController _passwordController = TextEditingController();
 final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-final bool login = false;
+final bool login = true;
+
+final Content c = jsonLogin(
+    email: _usernameController.toString(),
+    password: _passwordController.toString());
+
+final TypeJson datal = TypeJson(type: 1, code: 1, content: c);
+
 bool _showPassword =
     false; // Variable to track whether the password should be shown or hidden.
 
