@@ -4,8 +4,13 @@ import 'package:eshop/products_list_view.dart';
 //import 'first_page/container.dart';
 //import 'package:drovmar_pfinal/future/alert.dart';
 
+// Conexion
+import 'package:eshop/sockets/connection.dart';
+
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});
+  Connection connection;
+
+  SignUpPage({Key? key, required this.connection}) : super(key: key);
 
   @override
   State<SignUpPage> createState() => _SignUpPageState();
@@ -199,7 +204,8 @@ class _SignUpPageState extends State<SignUpPage> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const LoginPage()),
+          MaterialPageRoute(
+              builder: (context) => LoginPage(connection: widget.connection)),
         );
       },
       child: const Text(

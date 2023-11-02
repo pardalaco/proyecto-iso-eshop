@@ -1,15 +1,15 @@
 import 'package:eshop/jsons/contentJson.dart';
 
-class jsonLogin extends Content {
+class jsonLoginSend extends Content {
   String email;
   String password;
 
-  jsonLogin({
+  jsonLoginSend({
     required this.email,
     required this.password,
   });
 
-  factory jsonLogin.fromJson(Map<String, dynamic> json) => jsonLogin(
+  factory jsonLoginSend.fromJson(Map<String, dynamic> json) => jsonLoginSend(
         email: json["email"],
         password: json["password"],
       );
@@ -18,5 +18,27 @@ class jsonLogin extends Content {
   Map<String, dynamic> toJson() => {
         "email": email,
         "password": password,
+      };
+}
+
+class jsonLoginReceive extends Content {
+  int success;
+  int admin;
+
+  jsonLoginReceive({
+    required this.success,
+    required this.admin,
+  });
+
+  factory jsonLoginReceive.fromJson(Map<String, dynamic> json) =>
+      jsonLoginReceive(
+        success: json["success"],
+        admin: json["admin"],
+      );
+
+  @override
+  Map<String, dynamic> toJson() => {
+        "email": success,
+        "password": admin,
       };
 }

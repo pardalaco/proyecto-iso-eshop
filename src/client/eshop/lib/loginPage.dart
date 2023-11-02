@@ -9,10 +9,10 @@ import 'package:eshop/sockets/connection.dart';
 import 'package:eshop/signUpPage.dart';
 import 'package:flutter/material.dart';
 import 'package:eshop/products_list_view.dart';
-import 'package:eshop/models/user_model.dart';
 
 //import 'first_page/container.dart';
 
+// ignore: must_be_immutable
 class LoginPage extends StatefulWidget {
   Connection connection;
 
@@ -27,12 +27,6 @@ final TextEditingController _passwordController = TextEditingController();
 final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
 const bool login = true;
-
-final Content content = jsonLogin(
-    email: _usernameController.toString(),
-    password: _passwordController.toString());
-
-final TypeJson data = TypeJson(type: 1, code: 1, content: content);
 
 bool _showPassword =
     false; // Variable to track whether the password should be shown or hidden.
@@ -77,7 +71,18 @@ class _LoginPageState extends State<LoginPage> {
                 GestureDetector(
                   onTap: () {
                     // Sending data to the server
+                    Content content = jsonLoginSend(
+                        email: _usernameController.toString(),
+                        password: _passwordController.toString());
+
+                    TypeJson data =
+                        TypeJson(type: 1, code: 1, content: content);
+
                     widget.connection.query(data.toJson());
+
+                    // Recipt data to the server
+                    widget.connection.getData();
+
                     if (_formKey.currentState!.validate()) {
                       if (login) {
                         Navigator.push(
@@ -210,7 +215,10 @@ class _LoginPageState extends State<LoginPage> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const SignUpPage()),
+          MaterialPageRoute(
+              builder: (context) => SignUpPage(
+                    connection: widget.connection,
+                  )),
         );
       },
       child: const Text(
