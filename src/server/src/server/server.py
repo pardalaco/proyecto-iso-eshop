@@ -17,10 +17,12 @@
 import asyncio
 import logging
 import time
+import json
 
 import schedule
 
 from src.database.database import Database
+from src.server.message_handler import MessageHandler
 
 
 #***************************************************************************************************
@@ -31,7 +33,7 @@ class Server:
 		self.buffer_size = buffer_size
 		self.database = Database()
 
-		self.schedule_daily_task()
+		#@idea self.schedule_daily_task()
 
 
 #***************************************************************************************************
@@ -50,6 +52,7 @@ class Server:
 
 #***************************************************************************************************
 	def set_up_logger(self) -> None: 
+		# @todo (If there is time) Apply the logger
 		now = time.datetime.now()
 
 		# Configure and set loggers
@@ -65,19 +68,32 @@ class Server:
 		main_file_handler = logging.FileHandler(f"../../logs/{now.day}_{now.month}_{now.year}.log")
 		main_file_handler.setFormatter(logger_formatter_file)
 		self.logger.addHandler(main_file_handler)
+		
 
 
 #***************************************************************************************************
 	async def handle_client(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
-		# @todo Real implementation
-		data = await reader.read(self.buffer_size)
-		message = data.decode('utf-8')
-		addr = writer.get_extra_info('peername')
+		handler = MessageHandler()
+		address = writer.get_extra_info('peername')
 
-		print(f"Received {message} from {addr}")
+		while True:
+			data = await reader.read(self.buffer_size)
+			if not data:
+				# Client disconnected
+				break
 
-		writer.write("ACK".encode('utf-8'))
-		await writer.drain()
+			message = data.decode('utf-8')
+			print(f"Received from {address}: {message}")
+			
+			try:
+				message_json = json.loads(message)
+				response = handler.handle_message(message_json)
+			except json.JSONDecodeError:
+				print(f"Received malformed JSON from {address}")
+				response = "ERROR"
+
+			writer.write(response.encode('utf-8'))
+			await writer.drain()
 
 		writer.close()
 

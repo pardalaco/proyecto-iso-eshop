@@ -15,35 +15,40 @@
 #  *              If not, see <http://www.gnu.org/licenses/>.
 #***************************************************************************************************
 import sqlite3
-import asyncio
-
-from src.models.user import User
-from src.models.product import Product
 
 
 #***************************************************************************************************
 class Database:
-	def __init__(self, *args, **kwargs) -> None:
-		self.connection = sqlite3.connect("../../../database/isoDB.db")
-		self.cursor = self.connection.cursor()
-		self.cursor.execute("PRAGMA foreign_keys = ON;")
+	connection = sqlite3.connect("../../src/database/isoDB.db")
+	cursor = connection.cursor()
+	cursor.execute("PRAGMA foreign_keys = ON;")
 
 
 #***************************************************************************************************
-	async def query_user() -> User:
+	@classmethod
+	def email_exists(cls, email: str) -> bool:
 		pass
 
 
 #***************************************************************************************************
-	async def store_user(user: User) -> None:
+	@classmethod
+	def password_matches(cls, email: str, password: str) -> bool:
+		query = "SELECT pwd FROM cliente WHERE email = ?"
+		cls.cursor.execute(query, (email,))
+		user_pwd = cls.cursor.fetchone()
+
+		return True if user_pwd == password else False
+
+
+#***************************************************************************************************
+	@classmethod
+	def is_admin(email: str) -> bool:
 		pass
 
 
 #***************************************************************************************************
-	async def query_products() -> list[Product]:
-		pass
-
-
-#***************************************************************************************************
-	async def store_product(product: Product) -> None:
-		pass
+	@classmethod
+	def user_signup(cls, email: str, username: str, password: str) -> None:
+		query = "INSERT INTO cliente (email, nombre, pwd) VALUES (?, ?, ?)"
+		cls.cursor.execute(query, (email, username, password))
+		cls.connection.commit()

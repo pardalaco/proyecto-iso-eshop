@@ -14,31 +14,36 @@
 #  *              along with the "eshop - proyecto iso" project. 
 #  *              If not, see <http://www.gnu.org/licenses/>.
 #***************************************************************************************************
-import sys
-import os
-current_directory = os.path.dirname(os.path.abspath(__file__))
-root_directory = os.path.join(current_directory, "..")
-sys.path.append(root_directory)
-
-
-#***************************************************************************************************
 import asyncio
-
-from config import settings
-from src.server.server import Server
+import json
 
 
 #***************************************************************************************************
-def main() -> None:
-	server_instance = Server(
-		host = settings.HOST,
-		port = settings.PORT,
-		buffer_size = settings.BUFFER_SIZE
-	)
+async def tcp_client(message: str, host: str, port: int):
+    reader, writer = await asyncio.open_connection(host, port)
 
-	asyncio.run(server_instance.start())
+    print(f"Send: {message}")
+    writer.write(message.encode())
+
+    data = await reader.read(100)
+    print(f"Received: {data.decode()}")
+
+    writer.close()
+    await writer.wait_closed()
 
 
 #***************************************************************************************************
 if __name__ == "__main__":
-	main()
+	print("Testing User Log in")
+	msg_type = 1
+	msg_code = 1
+	msg_content = {"email": "test@gmail.com", "password": "test"}
+	message = json.dumps({"type": msg_type, "code": msg_code, "content": msg_content})
+	asyncio.run(tcp_client(message, "127.0.0.1", 32768))
+
+	print("\nTesting Invalid Type & Code")
+	msg_type = 43
+	msg_code = 123
+	msg_content = {"This": "won't work"}
+	message = json.dumps({"type": msg_type, "code": msg_code, "content": msg_content})
+	asyncio.run(tcp_client(message, "127.0.0.1", 32768))
