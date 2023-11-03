@@ -3,6 +3,7 @@
 	- [Main format](#main-format)
 	- [Type and code explanation](#type-and-code-explanation)
 	- [JSON Definitions](#json-definitions)
+		- [**Error**](#error)
 		- [**User Access**](#user-access)
 			- [**Log in**](#log-in)
 			- [**Sign up**](#sign-up)
@@ -20,6 +21,8 @@
 }
 ```
 ## Type and code explanation
+* Type 0 → Error
+  - Code 0 → Invalid Type or Code 
 * Type 1 → User Access:
   - Code 1 → Log in
   - Code 2 → Sign up
@@ -28,6 +31,17 @@
   - Code 2 → Search by ID
   - Code 3 → Search by TAG(s)
 ## JSON Definitions
+### **Error**
+```js
+{
+	type: 0,
+	code: <int> (errcode),
+	content: {
+		details: <str>
+	}
+}
+```
+---
 ### **User Access**
 #### **Log in**
 * Sent from client
@@ -82,7 +96,7 @@
 ```js
 {
 	type: 2,
-	code: 1,
+	code: <int> (code),
 	content: {
 		amount: <int>,
 		products: <list[<dict{id: <int>, name: <str>, description: <str>, price: <float>, tags: <list[<str>]>}>]>
