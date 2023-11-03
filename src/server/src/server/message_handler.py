@@ -48,32 +48,30 @@ class MessageHandler:
 
 #***************************************************************************************************
 	def handle_user_login(self, content: dict) -> dict:
-		# @todo if not Database.email_exists(content.get("email")) or not Database.password_matches(content.get("password")):
-		if not Database.password_matches(content.get("email"), content.get("password")): # @debug
-			return {"success": False, "admin": False}
+		if not Database.email_exists(content.get("email")) \
+			or not Database.password_matches(content.get("email"), content.get("password")):
+				return {"success": False, "admin": False}
 
 		success = True
 		admin = False
-		# @todo if is_admin(content.get("email")):
-		# 	admin = True
+		if Database.is_admin(content.get("email")):
+			admin = True
 		
 		return {"success": success, "admin": admin}
 
 
 #***************************************************************************************************
 	def handle_user_signup(self, content: dict) -> dict:
-		# if Database.email_exists(content.get("email")):
-		# 	return {"success": False}
-		# else:
+		if Database.email_exists(content.get("email")):
+			return {"success": False}
+		else:
 			Database.user_signup(content.get("email"), content.get("username"), content.get("password"))
 			return {"success": True}
 
 
 #***************************************************************************************************
 	def handle_request_all_products(self, content: dict) -> dict:
-		# Fetch all products
-		# ...
-		pass
+		return Database.fetch_all_products()
 
 
 #***************************************************************************************************

@@ -99,7 +99,12 @@
 	code: <int> (code),
 	content: {
 		amount: <int>,
-		products: <list[<dict{id: <int>, name: <str>, description: <str>, price: <float>, tags: <list[<str>]>}>]>
+		products: <list[<dict{id: <int>, 
+													name: <str>, 
+													description: <str>, 
+													price: <float>, 
+													tags: <str>}>
+										]>
 	}
 }
 ```
