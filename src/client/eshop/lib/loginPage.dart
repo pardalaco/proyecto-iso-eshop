@@ -1,7 +1,10 @@
 // Jsons
-import 'package:eshop/jsons/typeJson.dart';
-import 'package:eshop/jsons/contentJson.dart';
-import 'package:eshop/jsons/loginJson.dart';
+
+//import 'package:eshop/jsons/typeJson.dart';
+//import 'package:eshop/jsons/contentJson.dart';
+
+import 'package:eshop/jsons/loginJsonSend.dart';
+import 'package:eshop/jsons/loginJsonRecipt.dart';
 
 // Conexion
 import 'package:eshop/sockets/connection.dart';
@@ -71,20 +74,23 @@ class _LoginPageState extends State<LoginPage> {
                 GestureDetector(
                   onTap: () {
                     // Sending data to the server
-                    Content content = jsonLoginSend(
-                        email: _usernameController.toString(),
-                        password: _passwordController.toString());
 
-                    TypeJson data =
-                        TypeJson(type: 1, code: 1, content: content);
+                    TypeSend data = TypeSend(
+                        type: 1,
+                        code: 1,
+                        content: ContentSend(
+                            email: _usernameController.toString(),
+                            password: _passwordController.toString()));
 
                     widget.connection.query(data.toJson());
 
                     // Recipt data to the server
-                    widget.connection.getData();
+                    var dataRecipt = widget.connection.getData();
+
+                    TypeRecipt j = TypeRecipt.fromJson(dataRecipt);
 
                     if (_formKey.currentState!.validate()) {
-                      if (login) {
+                      if (login && j.content.success == 1) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
