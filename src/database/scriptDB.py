@@ -13,6 +13,26 @@ cursor.execute(
 )
 cursor.execute(
 	'''
+        DROP TABLE IF EXISTS Direccion;
+    '''
+)
+cursor.execute(
+	'''
+        DROP TABLE IF EXISTS Tarjeta;
+    '''
+)
+cursor.execute(
+	'''
+        DROP TABLE IF EXISTS Carrito;
+    '''
+)
+cursor.execute(
+	'''
+        DROP TABLE IF EXISTS Contiene;
+    '''
+)
+cursor.execute(
+	'''
         DROP TABLE IF EXISTS Producto;
     '''
 )
@@ -33,11 +53,9 @@ cursor.execute(
     '''
 	    CREATE TABLE Cliente (
             email VARCHAR(40) NOT NULL,
-            nombre VARCHAR(45) NULL,
-            apellidos VARCHAR(70) NULL,
+            nombre VARCHAR(45) NULL DEFAULT 'Mr',
+            apellidos VARCHAR(70) NULL DEFAULT 'Robberino',
             pwd VARCHAR(45) NOT NULL,
-            direccion VARCHAR(45) NULL,
-            tarjeta VARCHAR(45) NULL,
             admin TINYINT NULL DEFAULT 0,
             PRIMARY KEY (email)
 	    ) WITHOUT ROWID;
@@ -45,12 +63,69 @@ cursor.execute(
 )
 cursor.execute(
     '''
+	    CREATE TABLE Direccion (
+            email VARCHAR(40) NOT NULL,
+            direccion VARCHAR(45) NOT NULL,
+            PRIMARY KEY (email, direccion),
+            FOREIGN KEY (email)
+                REFERENCES Cliente (email)
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE
+	    ) WITHOUT ROWID;
+    '''
+)
+cursor.execute(
+    '''
+	    CREATE TABLE Tarjeta (
+            email VARCHAR(40) NOT NULL,
+            tarjeta VARCHAR(45) NOT NULL,
+            PRIMARY KEY (email, tarjeta),
+            FOREIGN KEY (email)
+                REFERENCES Cliente (email)
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE
+	    ) WITHOUT ROWID;
+    '''
+)
+cursor.execute(
+    '''
+	    CREATE TABLE Carrito (
+            email VARCHAR(40) NOT NULL,
+            total DECIMAL(7,2) NOT NULL DEFAULT 0.0,
+            PRIMARY KEY (email),
+            FOREIGN KEY (email)
+                REFERENCES Cliente (email)
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE
+	    ) WITHOUT ROWID;
+    '''
+)
+cursor.execute(
+    '''
+	    CREATE TABLE Contiene (
+            email VARCHAR(40) NOT NULL,
+            idProducto INT NOT NULL,
+            cantidad INT DEFAULT 1,
+            PRIMARY KEY (email, idProducto),
+            FOREIGN KEY (email)
+                REFERENCES Carrito (email)
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE,
+            FOREIGN KEY (idProducto)
+                REFERENCES Producto (id)
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE
+	    ) WITHOUT ROWID;
+    '''
+)
+cursor.execute(
+    '''
 	    CREATE TABLE Producto (
             id INT NOT NULL,
-            nombre VARCHAR(45) NULL,
-            descripcion VARCHAR(100) NULL,
-            imagen VARCHAR(80) NULL,
-            precio DECIMAL(7,2) NULL,
+            nombre VARCHAR(45) NOT NULL,
+            descripcion VARCHAR(100) NOT NULL,
+            imagen VARCHAR(80) NOT NULL,
+            precio DECIMAL(7,2) NOT NULL,
             PRIMARY KEY (id)
 	    ) WITHOUT ROWID;
     '''
@@ -58,9 +133,8 @@ cursor.execute(
 cursor.execute(
     '''
 	    CREATE TABLE Tag (
-            id INT NOT NULL,
-            nombre VARCHAR(45) NOT NULL UNIQUE,
-            PRIMARY KEY (id)
+            nombre VARCHAR(45) NOT NULL,
+            PRIMARY KEY (nombre)
         ) WITHOUT ROWID;
     '''
 )
@@ -68,67 +142,31 @@ cursor.execute(
     '''
 	    CREATE TABLE Clasificacion (
             idProducto INT NOT NULL,
-            idTag INT NOT NULL,
-            PRIMARY KEY (idProducto, idTag ),
+            tag INT NOT NULL,
+            PRIMARY KEY (idProducto, tag),
             FOREIGN KEY (idProducto)
                 REFERENCES Producto (id)
                     ON DELETE CASCADE
                     ON UPDATE CASCADE,
-            FOREIGN KEY (idTag)
-                REFERENCES Tag (id)
+            FOREIGN KEY (tag)
+                REFERENCES Tag (nombre)
                     ON DELETE CASCADE
                     ON UPDATE CASCADE
 	    ) WITHOUT ROWID;
     '''
 )
 
-
-#adding clients
 cursor.execute(
-	'''
-	    INSERT INTO cliente (email, nombre, apellidos, pwd, direccion, tarjeta, admin) 
-	    VALUES  ('hmongom@gmail.com', 'Hiram', 'Montejano', 'hmongom', 'direccionHiram', 'tarjetaHiram', 1),
-		    	('drovmar@gmail.com', 'Daniel', 'Rovira', 'drovmar', 'direccionDani', 'tarjetaDaniel', 1),
-                ('psegmar1@gmail.com', 'Pablo', 'Segovia', 'psegmar1', 'direccionPablo', 'tarjetaPablo', 1),
-		    	('jsanver@gmail.com', 'Joan', 'Sanchez', 'jsanver', 'direccionJoan', 'tarjetaJoan', 1),
-                ('test@gmail.com', 'test', 'testApellido', 'test', 'direccionTest', 'tarjetaTest', 0);
-	'''
-)
-
-#adding products
-cursor.execute(
-	'''
-	    INSERT INTO Producto 
-	    VALUES 	(1, 'iPhone 12', 'Movil que funciona de maravilla pero radioactivo', '/imagenes/iPhone12', 799.99),
-			    (2, 'Air Jordan Zoom', 'Zapatillas para saltar mucho', '/imagenes/Jordan', 180.00),
-			    (3, 'Cuchillo de carne', 'Cuchillo muy afilado', '/imagenes/cuchillo', 80.00),
-                (4, 'Apple Watch 7', 'Reloj que hace muchas cosas', '/imagenes/appleWatch7', 439.95);     
+    '''
+	    CREATE TRIGGER TOTAL_CARRITO AFTER INSERT ON Contiene 
+        FOR EACH ROW
+        BEGIN
+        UPDATE Carrito
+        SET total = total + ((SELECT precio FROM Producto WHERE id = NEW.idProducto))*NEW.cantidad
+        WHERE email = NEW.email;
+        END;
     '''
 )
 
-#adding tags
-cursor.execute(
-	'''
-	    INSERT INTO tag
-	    VALUES 	(1, 'tecnologia'),
-			    (2, 'ropa'),
-                (3, 'cocina'),
-			    (4, 'libros'),
-                (5, 'moto'),
-			    (6, 'cascos');
-	'''
-)
-
-cursor.execute(
-    '''
-	    INSERT INTO clasificacion
-	    VALUES	(1, 1),
-		    	(2, 2),
-                (3, 3),
-			    (4, 1),
-                (4, 2);
-	'''
-)
-connection.commit()
 connection.close()
 print("Ejecución con éxito.")
