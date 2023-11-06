@@ -1,4 +1,3 @@
-
 - [JSON Message Structure](#json-message-structure)
 	- [Main format](#main-format)
 	- [Type and code explanation](#type-and-code-explanation)
@@ -11,7 +10,7 @@
 			- [**Request all Products**](#request-all-products)
 			- [**Request product(s) by ID**](#request-products-by-id)
 			- [**Request product(s) by TAG(s)**](#request-products-by-tags)
-# JSON Message Structure
+# JSON Message Structure (Deprecated, Pending New Version)
 ## Main format
 ```js
 {
