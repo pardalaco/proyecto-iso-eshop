@@ -10,7 +10,7 @@ class Connection {
   var first = true;
 
   Future<void> _firstTime(Map<String, dynamic> js) async {
-    client = await Socket.connect('127.0.0.1', 32768);
+    client = await Socket.connect('10.0.2.2', 32768);
     final send = jsonEncode(js);
     client.write(send);
     subscription = client.listen((List<int> data1) {

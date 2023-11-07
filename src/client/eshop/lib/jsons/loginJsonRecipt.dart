@@ -33,8 +33,8 @@ class TypeRecipt {
 }
 
 class ContentRecipt {
-  int success;
-  int admin;
+  bool success;
+  bool admin;
 
   ContentRecipt({
     required this.success,

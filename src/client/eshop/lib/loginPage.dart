@@ -1,10 +1,8 @@
 // Jsons
-
-//import 'package:eshop/jsons/typeJson.dart';
-//import 'package:eshop/jsons/contentJson.dart';
-
 import 'package:eshop/jsons/loginJsonSend.dart';
 import 'package:eshop/jsons/loginJsonRecipt.dart';
+
+import 'dart:developer' as dev;
 
 // Conexion
 import 'package:eshop/sockets/connection.dart';
@@ -12,6 +10,8 @@ import 'package:eshop/sockets/connection.dart';
 import 'package:eshop/signUpPage.dart';
 import 'package:flutter/material.dart';
 import 'package:eshop/products_list_view.dart';
+
+import 'dart:async';
 
 //import 'first_page/container.dart';
 
@@ -72,25 +72,15 @@ class _LoginPageState extends State<LoginPage> {
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 // Login button
                 GestureDetector(
-                  onTap: () {
+                  onTap: () async {
                     // Sending data to the server
-
-                    TypeSend data = TypeSend(
-                        type: 1,
-                        code: 1,
-                        content: ContentSend(
-                            email: _usernameController.toString(),
-                            password: _passwordController.toString()));
-
-                    widget.connection.query(data.toJson());
-
-                    // Recipt data to the server
-                    var dataRecipt = widget.connection.getData();
-
-                    TypeRecipt j = TypeRecipt.fromJson(dataRecipt);
+                    bool b = await _datossend();
 
                     if (_formKey.currentState!.validate()) {
-                      if (login && j.content.success == 1) {
+                      if (login
+                          //&& j.content.success == 1
+                          &&
+                          b) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -263,4 +253,25 @@ class _LoginPageState extends State<LoginPage> {
               child: const Text("Accept")),
         ],
       );
+
+  Future<bool> _datossend() async {
+    TypeSend data = TypeSend(
+        type: 1,
+        code: 1,
+        content: ContentSend(
+            email: _usernameController.text.toString(),
+            password: _passwordController.text.toString()));
+
+    //print(data.toJson().toString());
+
+    await widget.connection.query(data.toJson());
+    //print("---> ENVIADO: " + data.toJson().toString());
+
+    // Recipt data to the server
+    var dataRecipt = widget.connection.getData();
+    //print("<--- RECIVIDO:" + dataRecipt.toString());
+
+    TypeRecipt j = TypeRecipt.fromJson(dataRecipt);
+    return j.content.success;
+  }
 }
