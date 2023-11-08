@@ -7,6 +7,9 @@ import 'dart:developer' as dev;
 // Conexion
 import 'package:eshop/sockets/connection.dart';
 
+// Future
+import 'package:eshop/future/futureLogin.dart';
+
 import 'package:eshop/signUpPage.dart';
 import 'package:flutter/material.dart';
 import 'package:eshop/products_list_view.dart';
@@ -77,12 +80,14 @@ class _LoginPageState extends State<LoginPage> {
                     if (_formKey.currentState!.validate()) {
                       if (login[0]) {
                         Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ProductsPage(
-                                    connection: widget.connection,
-                                  )),
-                        );
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FutureLogin(
+                                connection: widget.connection,
+                                user: _usernameController.text.toString(),
+                                pwd: _passwordController.text.toString(),
+                              ),
+                            ));
                       } else {
                         showDialog(
                             context: context,
