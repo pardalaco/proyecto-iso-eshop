@@ -158,15 +158,8 @@ cursor.execute(
 
 cursor.execute(
     '''
-	    CREATE TRIGGER TOTAL_CARRITO AFTER INSERT ON Contiene 
-        FOR EACH ROW
-        BEGIN
-        UPDATE Carrito
-        SET total = total + ((SELECT precio FROM Producto WHERE id = NEW.idProducto))*NEW.cantidad
-        WHERE email = NEW.email;
-        END;
+	    DROP TRIGGER IF EXISTS TOTAL_CARRITO;
     '''
 )
-
 connection.close()
 print("Ejecución con éxito.")
