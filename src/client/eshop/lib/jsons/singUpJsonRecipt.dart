@@ -1,25 +1,26 @@
 // To parse this JSON data, do
 //
-//     final welcome = loginSend(jsonString);
+//     final welcome = singUpRecipt(jsonString);
 
 import 'dart:convert';
 
-LoginRecipt loginSend(String str) => LoginRecipt.fromJson(json.decode(str));
+SingUpRecipt singUpRecipt(String str) =>
+    SingUpRecipt.fromJson(json.decode(str));
 
-String loginSendToJson(LoginRecipt data) => json.encode(data.toJson());
+String loginSendToJson(SingUpRecipt data) => json.encode(data.toJson());
 
-class LoginRecipt {
+class SingUpRecipt {
   int type;
   int code;
   ContentRecipt content;
 
-  LoginRecipt({
+  SingUpRecipt({
     required this.type,
     required this.code,
     required this.content,
   });
 
-  factory LoginRecipt.fromJson(Map<String, dynamic> json) => LoginRecipt(
+  factory SingUpRecipt.fromJson(Map<String, dynamic> json) => SingUpRecipt(
         type: json["type"],
         code: json["code"],
         content: ContentRecipt.fromJson(json["content"]),

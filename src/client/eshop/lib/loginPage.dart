@@ -75,25 +75,17 @@ class _LoginPageState extends State<LoginPage> {
                 GestureDetector(
                   onTap: () async {
                     // Sending data to the server
-                    var login = await _data();
 
                     if (_formKey.currentState!.validate()) {
-                      if (login[0]) {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => FutureLogin(
-                                connection: widget.connection,
-                                user: _usernameController.text.toString(),
-                                pwd: _passwordController.text.toString(),
-                              ),
-                            ));
-                      } else {
-                        showDialog(
-                            context: context,
-                            builder: (context) =>
-                                createAlert(context, login[1]));
-                      }
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => FutureLogin(
+                              connection: widget.connection,
+                              user: _usernameController.text.toString(),
+                              pwd: _passwordController.text.toString(),
+                            ),
+                          ));
                     }
                   },
                   child: _loginButton(),
@@ -226,64 +218,5 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
-  }
-
-  AlertDialog createAlert(BuildContext context, String message) => AlertDialog(
-        title: const Text("Error"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              message,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.blue,
-              ),
-              onPressed: () {
-                debugPrint("Press Accept");
-                Navigator.of(context).pop();
-              },
-              child: const Text("Accept")),
-        ],
-      );
-
-  Future<List<dynamic>> _data() async {
-    TypeSend data = TypeSend(
-        type: 1,
-        code: 1,
-        content: ContentSend(
-            email: _usernameController.text.toString(),
-            password: _passwordController.text.toString()));
-
-    //print(data.toJson().toString());
-
-    await widget.connection.query(data.toJson());
-    print("---> ENVIADO: " + data.toJson().toString());
-
-    // Recipt data from the server
-    var dataRecipt = widget.connection.getData();
-    print("<--- RECIBIDO: " + dataRecipt.toString());
-
-    TypeRecipt dataReturn = TypeRecipt.fromJson(dataRecipt);
-
-    // Create a List with the boolean and the string
-
-    if (dataReturn.type != 1) {
-      return [false, "Server error. Type error."];
-    } else if (dataReturn.code != 1) {
-      return [false, "Server error. Code error."];
-    } else if (!dataReturn.content.success) {
-      return [false, "Authentication error."];
-    }
-
-    return [dataReturn.content.success, "All good"];
   }
 }

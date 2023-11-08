@@ -203,11 +203,7 @@ class _SignUpPageState extends State<SignUpPage> {
   _loginTag() {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => LoginPage(connection: widget.connection)),
-        );
+        Navigator.of(context).pop();
       },
       child: const Text(
         "Already have an account? Log in.",

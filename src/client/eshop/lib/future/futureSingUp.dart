@@ -5,16 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:eshop/products_list_view.dart';
 
 // Json
-import 'package:eshop/jsons/loginJsonSend.dart';
-import 'package:eshop/jsons/loginJsonRecipt.dart';
+import 'package:eshop/jsons/singUpJsonSend.dart';
+import 'package:eshop/jsons/singUpJsonRecipt.dart';
 
 // Conexion
 import 'package:eshop/sockets/connection.dart';
 
 Future<List<dynamic>> _data(
-    Connection connection, String user, String pwd) async {
-  LoginSend data = LoginSend(
-      type: 1, code: 1, content: ContentSend(email: user, password: pwd));
+    Connection connection, String user, String email, String pwd) async {
+  SingUpSend data = SingUpSend(
+      type: 1,
+      code: 2,
+      content: ContentSend(username: user, email: email, password: pwd));
 
   //print(data.toJson().toString());
   print("---> ENVIADO: " + data.toJson().toString());
@@ -24,29 +26,30 @@ Future<List<dynamic>> _data(
   var dataRecipt = connection.getData();
   print("<--- RECIBIDO: " + dataRecipt.toString());
 
-  LoginRecipt dataReturn = LoginRecipt.fromJson(dataRecipt);
+  SingUpRecipt dataReturn = SingUpRecipt.fromJson(dataRecipt);
 
   // Create a List with the boolean and the string
 
   if (dataReturn.type != 1) {
     return [false, "Server error. Type error."];
-  } else if (dataReturn.code != 1) {
+  } else if (dataReturn.code != 2) {
     return [false, "Server error. Code error."];
   } else if (!dataReturn.content.success) {
-    return [false, "Authentication error."];
+    return [false, "Sing Up error."];
   }
 
-  return [dataReturn.content.success, "All good"];
+  return [dataReturn.content.success, "All good. User created"];
 }
 
-class FutureLogin extends StatelessWidget {
+class FutureSingUp extends StatelessWidget {
   Connection connection;
-  String user, pwd;
+  String user, email, pwd;
 
-  FutureLogin(
+  FutureSingUp(
       {super.key,
       required this.connection,
       required this.user,
+      required this.email,
       required this.pwd});
 
   AlertDialog createAlert(BuildContext context, String message) => AlertDialog(
@@ -99,7 +102,7 @@ class FutureLogin extends StatelessWidget {
             return const CircularProgressIndicator();
           }
         },
-        future: _data(connection, user, pwd),
+        future: _data(connection, user, email, pwd),
       ),
     );
   }
