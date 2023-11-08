@@ -102,90 +102,13 @@ cursor.execute(
 )
 connection.commit()
 
-
-
-#Testing
 cursor.execute(
     '''    
-        SELECT producto.id, producto.nombre, producto.descripcion, producto.imagen, producto.precio, tag.nombre
-        FROM producto, clasificacion, tag
-        WHERE producto.id = clasificacion.idProducto AND clasificacion.tag = tag.nombre
-	        AND tag.nombre = 'tecnologia';
+        UPDATE Contiene
+		SET cantidad = 2
+		WHERE email = 'psegmar1@gmail.com';
     '''
 )
-data = cursor.fetchall()
-print("Productos con tag tecnologia:")
-for row in data:
-	print(row)
-'''
-Debe devolver:
-Productos con tag tecnologia:
-(1, 'iPhone 12', 'Movil que funciona de maravilla pero radioactivo', '/imagenes/iPhone12', 799.99, 'tecnologia')
-(4, 'Apple Watch 7', 'Reloj que hace muchas cosas', '/imagenes/appleWatch7', 439.95, 'tecnologia')
-'''
-	
-print("\n")
-cursor.execute(
-    '''    
-        SELECT *
-        FROM cliente;
-    '''
-)
-data = cursor.fetchall()
-print("Clientes del sistema:")
-for row in data:
-	print(row)
-'''
-Debe devolver: 
-Clientes del sistema:
-('drovmar@gmail.com', 'Daniel', 'Rovira', 'drovmar', 1)
-('hmongom5@gmail.com', 'Mr', 'Robberino', 'hmongom', 1)
-('hmongom@gmail.com', 'Hiram', 'Montejano', 'hmongom', 1)
-('jsanver@gmail.com', 'Joan', 'Sanchez', 'jsanver', 1)
-('psegmar1@gmail.com', 'Pablo', 'Segovia', 'psegmar1', 1)
-('test@gmail.com', 'test', 'testApellido', 'test', 0)
-'''
-
-print("\n")
-cursor.execute(
-    '''    
-        SELECT *
-        FROM Direccion;
-    '''
-)
-data = cursor.fetchall()
-print("Direcciones del sistema:")
-for row in data:
-	print(row)
-'''
-Debe devolver: 
-Direcciones del sistema:
-('drovmar@gmail.com', 'Narnia')
-('hmongom@gmail.com', 'Xativa')
-('jsanver@gmail.com', 'Alcoy')
-('jsanver@gmail.com', 'Narnia del norte')
-('psegmar1@gmail.com', 'Ontenyent')
-'''
-print("\n")
-cursor.execute(
-    '''    
-        SELECT *
-        FROM Tarjeta;
-    '''
-)
-data = cursor.fetchall()
-print("Tarjetas del sistema:")
-for row in data:
-	print(row)
-'''
-Debe devolver: 
-Tarjetas del sistema:
-('drovmar@gmail.com', '4444')
-('hmongom@gmail.com', '1234')
-('jsanver@gmail.com', '123213123123')
-('jsanver@gmail.com', 'diferente')
-('psegmar1@gmail.com', '1234')
-'''
 
 print("\n")
 cursor.execute(
@@ -195,17 +118,9 @@ cursor.execute(
     '''
 )
 data = cursor.fetchall()
-print("Carritos del sistema:")
+print("Contenido de los carritos del sistema:")
 for row in data:
 	print(row)
-'''
-Debe devolver: 
-Carritos del sistema:
-('drovmar@gmail.com', 0)
-('hmongom@gmail.com', 0)
-('jsanver@gmail.com', 0)
-('psegmar1@gmail.com', 0)
-'''
 
 print("\n")
 cursor.execute(
@@ -218,35 +133,26 @@ data = cursor.fetchall()
 print("Contenido de los carritos del sistema:")
 for row in data:
 	print(row)
-'''
-Debe devolver: 
-Contenido de los carritos del sistema:
-('hmongom@gmail.com', 2, 1)
-('jsanver@gmail.com', 1, 1)
-('jsanver@gmail.com', 2, 3)
-('psegmar1@gmail.com', 4, 1)
-'''
+
+cursor.execute(
+    '''    
+        UPDATE Contiene
+		SET cantidad = 1
+		WHERE email = 'psegmar1@gmail.com';
+    '''
+)
 
 print("\n")
 cursor.execute(
     '''    
         SELECT *
-        FROM Tag;
+        FROM Carrito;
     '''
 )
 data = cursor.fetchall()
-print("Tags del sistema:")
+print("Contenido de los carritos del sistema:")
 for row in data:
 	print(row)
-'''
-Debe devolver: 
-Tags del sistema:
-('cascos',)
-('cocina',)
-('libros',)
-('moto',)
-('ropa',)
-('tecnologia',)
-'''
+
 
 connection.close()
