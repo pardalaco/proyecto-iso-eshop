@@ -29,8 +29,6 @@ final TextEditingController _usernameController = TextEditingController();
 final TextEditingController _passwordController = TextEditingController();
 final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-const bool login = true;
-
 bool _showPassword =
     false; // Variable to track whether the password should be shown or hidden.
 
@@ -74,24 +72,22 @@ class _LoginPageState extends State<LoginPage> {
                 GestureDetector(
                   onTap: () async {
                     // Sending data to the server
-                    bool b = await _datossend();
+                    var login = await _data();
 
                     if (_formKey.currentState!.validate()) {
-                      if (login
-                          //&& j.content.success == 1
-                          &&
-                          b) {
+                      if (login[0]) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const ProductsPage()),
+                              builder: (context) => ProductsPage(
+                                    connection: widget.connection,
+                                  )),
                         );
                       } else {
                         showDialog(
                             context: context,
-                            builder: (context) => createAlert(
-                                  context,
-                                ));
+                            builder: (context) =>
+                                createAlert(context, login[1]));
                       }
                     }
                   },
@@ -227,14 +223,14 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  AlertDialog createAlert(BuildContext context) => AlertDialog(
-        title: const Text("Authentication error"),
-        content: const Column(
+  AlertDialog createAlert(BuildContext context, String message) => AlertDialog(
+        title: const Text("Error"),
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              "Incorrect username or password",
-              style: TextStyle(
+              message,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -254,7 +250,7 @@ class _LoginPageState extends State<LoginPage> {
         ],
       );
 
-  Future<bool> _datossend() async {
+  Future<List<dynamic>> _data() async {
     TypeSend data = TypeSend(
         type: 1,
         code: 1,
@@ -265,13 +261,24 @@ class _LoginPageState extends State<LoginPage> {
     //print(data.toJson().toString());
 
     await widget.connection.query(data.toJson());
-    //print("---> ENVIADO: " + data.toJson().toString());
+    print("---> ENVIADO: " + data.toJson().toString());
 
-    // Recipt data to the server
+    // Recipt data from the server
     var dataRecipt = widget.connection.getData();
-    //print("<--- RECIVIDO:" + dataRecipt.toString());
+    print("<--- RECIBIDO: " + dataRecipt.toString());
 
-    TypeRecipt j = TypeRecipt.fromJson(dataRecipt);
-    return j.content.success;
+    TypeRecipt dataReturn = TypeRecipt.fromJson(dataRecipt);
+
+    // Create a List with the boolean and the string
+
+    if (dataReturn.type != 1) {
+      return [false, "Server error. Type error."];
+    } else if (dataReturn.code != 1) {
+      return [false, "Server error. Code error."];
+    } else if (!dataReturn.content.success) {
+      return [false, "Authentication error."];
+    }
+
+    return [dataReturn.content.success, "All good"];
   }
 }

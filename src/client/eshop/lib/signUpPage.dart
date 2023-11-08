@@ -65,7 +65,8 @@ class _SignUpPageState extends State<SignUpPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const ProductsPage()),
+                            builder: (context) =>
+                                ProductsPage(connection: widget.connection)),
                       );
                     }
                   },
