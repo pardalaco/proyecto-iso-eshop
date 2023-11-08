@@ -1,8 +1,4 @@
-// Jsons
-import 'package:eshop/jsons/loginJsonSend.dart';
-import 'package:eshop/jsons/loginJsonRecipt.dart';
 
-import 'dart:developer' as dev;
 
 // Conexion
 import 'package:eshop/sockets/connection.dart';
@@ -12,9 +8,7 @@ import 'package:eshop/future/futureLogin.dart';
 
 import 'package:eshop/signUpPage.dart';
 import 'package:flutter/material.dart';
-import 'package:eshop/products_list_view.dart';
 
-import 'dart:async';
 
 //import 'first_page/container.dart';
 
