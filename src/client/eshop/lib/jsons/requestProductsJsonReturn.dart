@@ -13,8 +13,8 @@ String requestProductsReciptToJson(RequestProductsRecipt data) =>
 class RequestProductsRecipt {
   int type;
   int code;
-  String content;
-
+  Map<String, dynamic> content;
+  
   RequestProductsRecipt({
     required this.type,
     required this.code,

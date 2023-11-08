@@ -2,27 +2,36 @@ import 'dart:developer' as dev;
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 
-Future<String> getProducts(BuildContext context) async {
-  //var data = await DefaultAssetBundle.of(context)
-  //   .loadString("assets/json/products.json'");
-  dev.log('HOLA');
-  try {
-    var data = await rootBundle.loadString('assets/json/products.json');
-    //var file = File('assets/json/products.json');
-    //var data = await file.readAsString();
+// Json
+import 'package:eshop/jsons/requestProductsJsonSend.dart';
+import 'package:eshop/jsons/requestProductsJsonReturn.dart';
 
-    dev.log(data.toString());
-    //return data;
-    return data;
-  } catch (e) {
-    dev.log(e.toString());
+// Conexion
+import 'package:eshop/sockets/connection.dart';
 
-    return '';
-  }
+Future<String> _data(Connection connection) async {
+  RequestProductsSend data = RequestProductsSend(type: 2, code: 1, content: {});
+
+  //print(data.toJson().toString());
+
+  print("---> ENVIADO: " + data.toJson().toString());
+  await connection.query(data.toJson());
+
+  // Recipt data from the server
+  var dataRecipt = connection.getData();
+  print("<--- RECIBIDO: " + dataRecipt.toString());
+
+  RequestProductsRecipt dataReturn = RequestProductsRecipt.fromJson(dataRecipt);
+
+  // Create a List with the boolean and the string
+
+  return dataReturn.content.toString();
 }
 
 class FutureJson extends StatelessWidget {
-  const FutureJson({super.key});
+  Connection connection;
+
+  FutureJson({super.key, required this.connection});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +44,7 @@ class FutureJson extends StatelessWidget {
           return const CircularProgressIndicator();
         }
       },
-      future: getProducts(context),
+      future: _data(connection),
     ));
   }
 }
