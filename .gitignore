@@ -1,2 +1,10 @@
 *.db
 .DS_Store
+/.venv
+**/__pycache__/**
+/.vscode
+/src/client/eshop/linux/
+/src/client/eshop/macos/
+/src/client/eshop/test/
+/src/client/eshop/web/
+/src/client/eshop/windows/
