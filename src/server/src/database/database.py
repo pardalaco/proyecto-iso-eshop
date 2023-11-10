@@ -19,7 +19,7 @@ import sqlite3
 
 #***************************************************************************************************
 class Database:
-	connection = sqlite3.connect("../../../src/database/isoDB.db")
+	connection = sqlite3.connect("../../src/database/isoDB.db")
 	cursor = connection.cursor()
 	cursor.execute("PRAGMA foreign_keys = ON;")
 
