@@ -26,7 +26,6 @@ Future<List<dynamic>> _data(
   print("<--- RECIBIDO: " + dataRecipt.toString());
 
   SingUpRecipt dataReturn = SingUpRecipt.fromJson(dataRecipt);
-  print("------------------------------------------------");
 
   // Create a List with the boolean and the string
 
