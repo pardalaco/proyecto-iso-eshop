@@ -1,5 +1,5 @@
+import 'package:eshop/future/futureSingUp.dart';
 import 'package:flutter/material.dart';
-import 'package:eshop/products_list_view.dart';
 //import 'first_page/container.dart';
 //import 'package:drovmar_pfinal/future/alert.dart';
 
@@ -62,11 +62,15 @@ class _SignUpPageState extends State<SignUpPage> {
                   onTap: () {
                     if (_formKey.currentState!.validate()) {
                       Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                ProductsPage(connection: widget.connection)),
-                      );
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => FutureSingUp(
+                              connection: widget.connection,
+                              email: _emailController.text.toString(),
+                              user: _usernameController.text.toString(),
+                              pwd: _passwordController.text.toString(),
+                            ),
+                          ));
                     }
                   },
                   child: _singUpButton(),

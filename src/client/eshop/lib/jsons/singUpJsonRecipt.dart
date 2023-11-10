@@ -35,20 +35,16 @@ class SingUpRecipt {
 
 class ContentRecipt {
   bool success;
-  bool admin;
 
   ContentRecipt({
     required this.success,
-    required this.admin,
   });
 
   factory ContentRecipt.fromJson(Map<String, dynamic> json) => ContentRecipt(
         success: json["success"],
-        admin: json["admin"],
       );
 
   Map<String, dynamic> toJson() => {
         "success": success,
-        "admin": admin,
       };
 }
