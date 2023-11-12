@@ -1,7 +1,7 @@
-- [JSON Message Structure](#json-message-structure)
-	- [Main format](#main-format)
-	- [Type Meaning](#type-meaning)
-	- [JSON Definitions](#json-definitions)
+- [**JSON Message Structure**](#json-message-structure)
+	- [**Main format**](#main-format)
+	- [**Type and Code Meaning**](#type-and-code-meaning)
+	- [**JSON Definitions**](#json-definitions)
 		- [**0. Error**](#0-error)
 			- [**0.0. Invalid Type or Code**](#00-invalid-type-or-code)
 		- [**1. User Access**](#1-user-access)
@@ -29,8 +29,8 @@
 		- [**6. Information Requests**](#6-information-requests)
 			- [**6.1. Request User Info**](#61-request-user-info)
 			- [**6.2. Request Cart Info**](#62-request-cart-info)
-# JSON Message Structure
-## Main format
+# **JSON Message Structure**
+## **Main format**
 ```js
 {
 	type: "int",
@@ -38,7 +38,7 @@
 	content: "dict"{}
 }
 ```
-## Type Meaning
+## **Type and Code Meaning**
 * Type 0 → Error
   - Code 0 → Invalid Type or Code 
 * Type 1 → User Access:
@@ -66,7 +66,7 @@
 * Type 6 → Information Request
 	- Code 1 → Request User Info
 	- Code 2 → Request Cart Info
-## JSON Definitions
+## **JSON Definitions**
 ---
 &nbsp;
 ### **0. Error**
@@ -281,12 +281,11 @@ server = {
 ### **4. Related to Cart**
 #### **4.1. Add product**
 ```js
-@todo
 client = {
 	type: 4,
 	code: 1,
 	content: {
-
+		id: "int"
 	}
 }
 ```
@@ -301,12 +300,12 @@ server = {
 ```
 #### **4.2. Edit quantity of product**
 ```js
-@todo
 client = {
 	type: 4,
 	code: 2,
 	content: {
-
+		id: "int",
+		quantity: "int"
 	}
 }
 ```
@@ -321,12 +320,11 @@ server = {
 ```
 #### **4.3. Remove product**
 ```js
-@todo
 client = {
 	type: 4,
 	code: 3,
 	content: {
-
+		id: "int"
 	}
 }
 ```
@@ -421,17 +419,16 @@ server = {
 ```
 #### **5.4. Edit Payment**
 ```js
-@todo
 client = {
 	type: 5,
 	code: 4,
 	content: {
-
+		op: "int", // 0: add, 1: remove
+		payment: "str"
 	}
 }
 ```
 ```js
-@todo
 server = {
 	type: 5,
 	code: 4,
@@ -442,17 +439,16 @@ server = {
 ```
 #### **5.5. Edit Address**
 ```js
-@todo
 client = {
 	type: 5,
 	code: 5,
 	content: {
-
+		op: "int", // 0: add, 1: remove
+		address: "str"
 	}
 }
 ```
 ```js
-@todo
 server = {
 	type: 5,
 	code: 5,
@@ -473,12 +469,15 @@ client = {
 }
 ```
 ```js
-@todo
 server = {
 	type: 6,
 	code: 1,
 	content: {
-
+		email: "str",
+		name: "str",
+		surname: "str",
+		payments: "list"["str"],
+		addresses: "list"["str"]
 	}
 }
 ```
@@ -491,12 +490,17 @@ client = {
 }
 ```
 ```js
-@todo
 server = {
 	type: 6,
 	code: 2,
 	content: {
-		
+		total: "float",
+		products: "list"["dict"{
+			id: "int",
+			name: "str",
+			image: "@todo",
+			price: "float"
+		}]
 	}
 }
 ```
