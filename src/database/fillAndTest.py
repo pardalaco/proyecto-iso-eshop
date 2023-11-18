@@ -72,53 +72,72 @@ cursor.execute(
 cursor.execute(
     '''
 	    INSERT INTO Tarjeta
-	    VALUES	('jsanver@gmail.com', '123213123123'),
-		        ('jsanver@gmail.com', 'diferente'),
-		    	('hmongom@gmail.com', '1234'),
-                ('psegmar1@gmail.com', '1234'),
-			    ('drovmar@gmail.com', '4444');
+	    VALUES	('jsanver@gmail.com', '123213123123', 'Tarjeta 1'),
+		        ('jsanver@gmail.com', 'diferente', 'Tarjeta 2'),
+		    	('hmongom@gmail.com', '1234', 'Tarjeta 1'),
+                ('psegmar1@gmail.com', '1234', 'Tarjeta 1'),
+			    ('drovmar@gmail.com', '4444', 'Tarjeta 1');
 	'''
 )
 
 cursor.execute(
     '''
-	    INSERT INTO Carrito (email)
-	    VALUES	('jsanver@gmail.com'),
-		    	('hmongom@gmail.com'),
-                ('psegmar1@gmail.com'),
-			    ('drovmar@gmail.com');
+	    INSERT INTO Carrito (id, email)
+	    VALUES	(1, 'jsanver@gmail.com'),
+		    	(2, 'hmongom@gmail.com'),
+                (3, 'psegmar1@gmail.com'),
+			    (4, 'drovmar@gmail.com');
 	'''
 )
 cursor.execute(
     '''
 	    INSERT INTO Contiene 
-	    VALUES	('jsanver@gmail.com', 1, 3),
-		    	('hmongom@gmail.com', 2, 1),
-		    	('hmongom@gmail.com', 1, 1),
-				('jsanver@gmail.com', 2, 1),
-				('jsanver@gmail.com', 4, 1),
-				('psegmar1@gmail.com', 4, 1);
+	    VALUES	(1, 1, 3),
+		    	(2, 2, 1),
+		    	(2, 1, 1),
+				(1, 2, 1),
+				(1, 4, 1),
+				(3, 4, 1);
 	'''
 )
-connection.commit()
+cursor.execute(
+    '''
+	    INSERT INTO Pedido 
+	    VALUES	(1, 'jsanver@gmail.com', 'direccion1', 'Tarjeta 2', 23.0, 'Preparado');
+	'''
+)
 
 cursor.execute(
     '''    
-        UPDATE Contiene
-		SET cantidad = 2
-		WHERE email = 'psegmar1@gmail.com';
+        SELECT *
+        FROM Pedido;
     '''
 )
+data = cursor.fetchall()
+print("Contenido de los Pedidos del sistema:")
+for row in data:
+	print(row)
+
+print("\n")
+cursor.execute(
+    '''
+	DELETE FROM Cliente WHERE email='jsanver@gmail.com';
+	'''
+)
+
+connection.commit()
+
+
 
 print("\n")
 cursor.execute(
     '''    
         SELECT *
-        FROM Carrito;
+        FROM Pedido;
     '''
 )
 data = cursor.fetchall()
-print("Contenido de los carritos del sistema:")
+print("Contenido de los Pedidos del sistema:")
 for row in data:
 	print(row)
 
@@ -134,13 +153,7 @@ print("Contenido de los carritos del sistema:")
 for row in data:
 	print(row)
 
-cursor.execute(
-    '''    
-        UPDATE Contiene
-		SET cantidad = 1
-		WHERE email = 'psegmar1@gmail.com';
-    '''
-)
+
 
 print("\n")
 cursor.execute(
