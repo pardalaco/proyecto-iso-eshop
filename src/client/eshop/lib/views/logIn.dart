@@ -98,7 +98,7 @@ class _MyForm extends State<_MyBody> {
                   ),
                   hintText: "user@tuemail.com",
                   filled: true,
-                  fillColor: const Color.fromARGB(255, 123, 123, 123),
+                  fillColor: CustomColors.n2,
                 ),
                 validator: (value) {
                   if (value?.isEmpty ?? true) return 'Campo obligatorio';
@@ -125,7 +125,7 @@ class _MyForm extends State<_MyBody> {
                   ),
                   hintText: "Tu contraseña",
                   filled: true,
-                  fillColor: const Color.fromARGB(255, 123, 123, 123),
+                  fillColor: CustomColors.n2,
                 ),
                 validator: (value) {
                   if (value?.isEmpty ?? true) return 'Campo obligatorio';
@@ -157,7 +157,10 @@ class _MyForm extends State<_MyBody> {
                     } else {
                       showDialog(
                         context: context,
-                        builder: (context) => Home(connection: connection),
+                        builder: (context) => Home(
+                          connection: connection,
+                          admin: d["content"]["admin"],
+                        ),
                       );
                     }
                   } else {
@@ -211,7 +214,7 @@ void _goToRegister(BuildContext context) {
 }
 
 Widget _MyAlert(context) => AlertDialog(
-        title: const Text("Error de autenticación"),
+        title: const Text("Error"),
         content: const Text(
           "Usuario o contraseña erroneo",
           style: TextStyle(
