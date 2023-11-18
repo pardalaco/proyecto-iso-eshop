@@ -41,6 +41,16 @@ cursor.execute(
         DROP TABLE IF EXISTS Clasificacion;
     '''
 )
+cursor.execute(
+	'''
+        DROP TABLE IF EXISTS Pedido;
+    '''
+)
+cursor.execute(
+	'''
+        DROP TABLE IF EXISTS LineaPedido;
+    '''
+)
 
 cursor.execute(
 	'''
@@ -56,7 +66,7 @@ cursor.execute(
             nombre VARCHAR(45) NULL DEFAULT 'Mr',
             apellidos VARCHAR(70) NULL DEFAULT 'Robberino',
             pwd VARCHAR(45) NOT NULL,
-            admin TINYINT NULL DEFAULT 0,
+            admin TINYINT NOT NULL DEFAULT 0,
             PRIMARY KEY (email)
 	    ) WITHOUT ROWID;
     '''
@@ -79,6 +89,7 @@ cursor.execute(
 	    CREATE TABLE Tarjeta (
             email VARCHAR(40) NOT NULL,
             tarjeta VARCHAR(45) NOT NULL,
+            nombre VARCHAR(80) NOT NULL,
             PRIMARY KEY (email, tarjeta),
             FOREIGN KEY (email)
                 REFERENCES Cliente (email)
@@ -90,9 +101,10 @@ cursor.execute(
 cursor.execute(
     '''
 	    CREATE TABLE Carrito (
+            id INT NOT NULL,
             email VARCHAR(40) NOT NULL,
             total DECIMAL(7,2) NOT NULL DEFAULT 0.0,
-            PRIMARY KEY (email),
+            PRIMARY KEY (id),
             FOREIGN KEY (email)
                 REFERENCES Cliente (email)
                     ON DELETE CASCADE
@@ -103,12 +115,12 @@ cursor.execute(
 cursor.execute(
     '''
 	    CREATE TABLE Contiene (
-            email VARCHAR(40) NOT NULL,
+            idCarrito INT NOT NULL,
             idProducto INT NOT NULL,
-            cantidad INT DEFAULT 1,
-            PRIMARY KEY (email, idProducto),
-            FOREIGN KEY (email)
-                REFERENCES Carrito (email)
+            cantidad INT NOT NULL DEFAULT 1,
+            PRIMARY KEY (idCarrito, idProducto),
+            FOREIGN KEY (idCarrito)
+                REFERENCES Carrito (id)
                     ON DELETE CASCADE
                     ON UPDATE CASCADE,
             FOREIGN KEY (idProducto)
@@ -142,7 +154,7 @@ cursor.execute(
     '''
 	    CREATE TABLE Clasificacion (
             idProducto INT NOT NULL,
-            tag INT NOT NULL,
+            tag VARHCAR(45) NOT NULL,
             PRIMARY KEY (idProducto, tag),
             FOREIGN KEY (idProducto)
                 REFERENCES Producto (id)
@@ -150,6 +162,39 @@ cursor.execute(
                     ON UPDATE CASCADE,
             FOREIGN KEY (tag)
                 REFERENCES Tag (nombre)
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE
+	    ) WITHOUT ROWID;
+    '''
+)
+
+cursor.execute(
+    '''
+	    CREATE TABLE Pedido (
+            id INT NOT NULL,
+            email VARCHAR(40),
+            direccion VARCHAR(45) NOT NULL,
+            tarjeta VARCHAR(45) NOT NULL,
+            total DECIMAL(7,2) NOT NULL,
+            estado VARCHAR(20) NOT NULL DEFAULT 'Invoiced',
+            PRIMARY KEY (id),
+            FOREIGN KEY (email)
+                REFERENCES Cliente (email)
+                    ON DELETE SET NULL
+                    ON UPDATE CASCADE
+	    ) WITHOUT ROWID;
+    '''
+)
+
+cursor.execute(
+    '''
+	    CREATE TABLE LineaPedido (
+            idPedido INT NOT NULL,
+            idProducto INT NOT NULL,
+            cantidad INT NOT NULL,
+            PRIMARY KEY (idPedido, idProducto),
+            FOREIGN KEY (idPedido)
+                REFERENCES Pedido (id)
                     ON DELETE CASCADE
                     ON UPDATE CASCADE
 	    ) WITHOUT ROWID;
