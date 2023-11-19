@@ -29,13 +29,13 @@ PRIVILEGE_NONE = 0
 PRIVILEGE_NORMAL_USER = 1
 PRIVILEGE_ADMIN = 2
 
-current_privilege = PRIVILEGE_NONE
+current_privilege = {"privilege": PRIVILEGE_NONE}
 input_type = [": ", ">> ", "# "]
 
 
 #***************************************************************************************************
 def get_user_input() -> list[str]:
-	user_input = input(input_type[current_privilege])
+	user_input = input(input_type[current_privilege["privilege"]])
 	return user_input.split()
 
 
@@ -57,12 +57,14 @@ async def main() -> None:
 			message = json.dumps(message)
 			writer.write(message.encode())
 			data = await reader.read(1024)
-			print(f"Received: {data.decode()}")
+			data = data.decode()
+			response = json.loads(data)
+			communication, message = execute_command(input_list, current_privilege, True, response)
 		else:
 			if message is None:
 				print("Exiting the application")
 				sys.exit(0)
-			print(message)
+		print(message)
 
 	writer.close()
 	await writer.wait_closed()

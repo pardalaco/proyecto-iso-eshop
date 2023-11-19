@@ -30,14 +30,18 @@ COMMANDS = {**general_command_handlers, **user_command_handlers, **shop_command_
 
 
 #***************************************************************************************************
-def execute_command(input_list: list[str], privilege: int) -> Union[tuple[bool, str], 
-																																		tuple[bool, dict]]:
+def execute_command(input_list: list[str], privilege: dict, 
+										isresponse: bool = False, response: str = None) -> Union[tuple[bool, str], 
+																																						tuple[bool, dict]]:
 	command = input_list[0].lower()
-	args = input_list[1:]
 	command_handler = COMMANDS.get(command, handle_default)
-	return command_handler(privilege, args)
+	if isresponse:
+		args = [response]
+	else:
+		args = input_list[1:]
+	return command_handler(isresponse, privilege, args)
 
 
 #***************************************************************************************************
-def handle_default(privilege: int, args: list[str]) -> tuple[bool, str]:
+def handle_default(isresponse: bool, privilege: int, args: list[str]) -> tuple[bool, str]:
 	return (False, "Unknown command.")
