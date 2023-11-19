@@ -11,14 +11,18 @@
 			- [**2.1. Request all Products**](#21-request-all-products)
 			- [**2.2. Request product by ID**](#22-request-product-by-id)
 			- [**2.3. Request product(s) by TAG(s)**](#23-request-products-by-tags)
+			- [**2.4. Request product(s) by Keyword**](#24-request-products-by-keyword)
 		- [**3. Manage Products (Admin)**](#3-manage-products-admin)
 			- [**3.1. Add new product**](#31-add-new-product)
 			- [**3.2. Edit product**](#32-edit-product)
 			- [**3.3. Remove product**](#33-remove-product)
 		- [**4. Related to Cart**](#4-related-to-cart)
-			- [**4.1. Add product**](#41-add-product)
-			- [**4.2. Edit quantity of product**](#42-edit-quantity-of-product)
-			- [**4.3. Remove product**](#43-remove-product)
+			- [**4.1. Create Cart**](#41-create-cart)
+			- [**4.2. Edit Cart name**](#42-edit-cart-name)
+			- [**4.3. Delete Cart**](#43-delete-cart)
+			- [**4.4. Add product**](#44-add-product)
+			- [**4.5. Edit quantity of product**](#45-edit-quantity-of-product)
+			- [**4.6. Remove product**](#46-remove-product)
 			- [**4.4. Purchase**](#44-purchase)
 		- [**5. User Info**](#5-user-info)
 			- [**5.1. Edit name**](#51-edit-name)
@@ -29,6 +33,10 @@
 		- [**6. Information Requests**](#6-information-requests)
 			- [**6.1. Request User Info**](#61-request-user-info)
 			- [**6.2. Request Cart Info**](#62-request-cart-info)
+		- [**7. Orders**](#7-orders)
+			- [**7.1. @todo**](#71-todo)
+		- [**8. Orders (ADMIN)**](#8-orders-admin)
+			- [**8.1. @todo**](#81-todo)
 # **JSON Message Structure**
 ## **Main format**
 ```js
@@ -48,15 +56,19 @@
   - Code 1 → All products
   - Code 2 → Search by ID
   - Code 3 → Search by TAG(s)
+  - Code 4 → Search by Keyword
 * Type 3 → Manage Products (Admin)
   - Code 1 → Add product
   - Code 2 → Edit product
   - Code 3 → Remove product
-* Type 4 → Related to Cart
-	- Code 1 → Add product
-	- Code 2 → Edit quantity of product
-	- Code 3 → Remove product
-	- Code 4 → Purchase
+* Type 4 → Related to Carts
+  - Code 1 → Create Cart
+  - Code 2 → Edit Cart name
+  - Code 3 → Delete Cart
+	- Code 4 → Add product
+	- Code 5 → Edit quantity of product
+	- Code 6 → Remove product
+	- Code 7 → Purchase
 * Type 5 → User Info
 	- Code 1 → Edit Name
 	- Code 2 → Edit Email
@@ -66,6 +78,10 @@
 * Type 6 → Information Request
 	- Code 1 → Request User Info
 	- Code 2 → Request Cart Info
+* Type 7 → Orders
+	- Code 1 → 
+* Type 8 → Orders (ADMIN)
+	- Code 1 →
 ## **JSON Definitions**
 ---
 &nbsp;
@@ -207,6 +223,35 @@ server = {
 	}
 }
 ```
+#### **2.4. Request product(s) by Keyword**
+```js
+client = {
+	type: 2,
+	code: 4,
+	content: {
+		keyword: "str"
+	}
+}
+```
+```js
+server = {
+	type: 2,
+	code: 4,
+	content: {
+		amount: "int",
+		products: "list"[
+			"dict"{
+				id: "int", 
+				name: "str", 
+				description: "str", 
+				image: "@todo",
+				price: "float",
+				tags: "str,str*,.."
+			}
+		]
+	}
+}
+```
 ---
 &nbsp;
 ### **3. Manage Products (Admin)**
@@ -279,13 +324,13 @@ server = {
 ---
 &nbsp;
 ### **4. Related to Cart**
-#### **4.1. Add product**
+#### **4.1. Create Cart**
 ```js
 client = {
 	type: 4,
 	code: 1,
 	content: {
-		id: "int"
+		name: "str"
 	}
 }
 ```
@@ -298,12 +343,72 @@ server = {
 	}
 }
 ```
-#### **4.2. Edit quantity of product**
+#### **4.2. Edit Cart name**
 ```js
 client = {
 	type: 4,
 	code: 2,
 	content: {
+		prevname: "str",
+		newname: "str"
+	}
+}
+```
+```js
+server = {
+	type: 4,
+	code: 2,
+	content: {
+		success: "bool"
+	}
+}
+```
+#### **4.3. Delete Cart**
+```js
+client = {
+	type: 4,
+	code: 3,
+	content: {
+		name: "str"
+	}
+}
+```
+```js
+server = {
+	type: 4,
+	code: 3,
+	content: {
+		success: "bool"
+	}
+}
+```
+#### **4.4. Add product**
+```js
+client = {
+	type: 4,
+	code: 4,
+	content: {
+		cartname: "str",
+		id: "int"
+	}
+}
+```
+```js
+server = {
+	type: 4,
+	code: 4,
+	content: {
+		success: "bool"
+	}
+}
+```
+#### **4.5. Edit quantity of product**
+```js
+client = {
+	type: 4,
+	code: 5,
+	content: {
+		cartname: "str",
 		id: "int",
 		quantity: "int"
 	}
@@ -312,18 +417,19 @@ client = {
 ```js
 server = {
 	type: 4,
-	code: 2,
+	code: 5,
 	content: {
 		success: "bool"
 	}
 }
 ```
-#### **4.3. Remove product**
+#### **4.6. Remove product**
 ```js
 client = {
 	type: 4,
-	code: 3,
+	code: 6,
 	content: {
+		cartname: "str",
 		id: "int"
 	}
 }
@@ -331,7 +437,7 @@ client = {
 ```js
 server = {
 	type: 4,
-	code: 3,
+	code: 6,
 	content: {
 		success: "bool"
 	}
@@ -342,18 +448,19 @@ server = {
 @todo
 client = {
 	type: 4,
-	code: 4,
+	code: 7,
 	content: {
-
+		cartname: "str",
 	}
 }
 ```
 ```js
-# @todo
 server = {
 	type: 4,
-	code: 4,
+	code: 7,
 	content: {
+		success: "bool"
+		orderid: "int"
 	}
 }
 ```
@@ -486,7 +593,9 @@ server = {
 client = {
 	type: 6,
 	code: 2,
-	content: {}
+	content: {
+		cartname: "str"
+	}
 }
 ```
 ```js
@@ -504,3 +613,12 @@ server = {
 	}
 }
 ```
+---
+&nbsp;
+### **7. Orders**
+#### **7.1. @todo**
+
+---
+&nbsp;
+### **8. Orders (ADMIN)**
+#### **8.1. @todo**
