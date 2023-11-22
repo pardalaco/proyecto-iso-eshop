@@ -4,11 +4,31 @@ stages:
 auto-merge-docs-to-main:
   stage: merge
   script:
-    - git fetch origin main
-    - git checkout main
-    - git diff --name-only origin/$CI_COMMIT_BRANCH origin/main | grep '^docs/' | xargs -I % git checkout $CI_COMMIT_BRANCH -- "%"
-    - git diff --quiet || git commit -m "Merged changes from docs/ of $CI_COMMIT_BRANCH into main"
-    - git push https://hmongom_upv:${ProjectAccessToken}@gitalcoi.dsic.upv.es/hmongom_upv/eshop main
+     - |
+      # Fetch the main branch and check it out locally
+      git fetch origin main
+      git checkout main
+      
+      # Check if the file exists in the main branch
+      if git ls-files | grep -q '^docs/test.txt'; then
+        # If it exists, checkout changes from the current branch
+        git diff --name-only origin/$CI_COMMIT_BRANCH origin/main | grep '^docs/' | xargs -I % git checkout $CI_COMMIT_BRANCH -- "%"
+      fi
+      
+      # Check if there are any changes
+      if ! git diff --quiet; then
+        # If there are changes, commit and push to the main branch
+        git commit -m "Merged changes from docs/ of $CI_COMMIT_BRANCH into main"
+        git push https://hmongom_upv:${ProjectAccessToken}@gitalcoi.dsic.upv.es/hmongom_upv/eshop main
+      fi
+
+      # Check for new files in docs/ and add them to the current main branch
+      new_docs=$(git diff --name-only origin/main..$CI_COMMIT_BRANCH | grep '^docs/')
+      if [ -n "$new_docs" ]; then
+        git add $new_docs
+        git commit -m "Added new files to docs/"
+        git push https://hmongom_upv:${ProjectAccessToken}@gitalcoi.dsic.upv.es/hmongom_upv/eshop $CI_COMMIT_BRANCH
+      fi
   only:
     changes:
       - docs/**/*
