@@ -3,7 +3,7 @@ stages:
 
 auto-merge-docs-to-main:
   stage: merge
-  script:
+  script: |
      - # Fetch the main branch and check it out locally
       git fetch origin main
       git checkout main
