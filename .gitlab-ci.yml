@@ -1,8 +1,3 @@
-on:
-  push:
-    branches:
-      - '*'
-
 stages:
   - merge
 
@@ -10,11 +5,17 @@ auto-merge-docs-to-main:
   stage: merge
   script:
     - git checkout main
-    - git fetch
-    - git checkout origin/$CI_COMMIT_BRANCH docs
+    - git pull --no-rebase
+    - git checkout $CI_COMMIT_BRANCH docs
     - git add docs
     - git commit -m "Merged /docs from $CI_COMMIT_BRANCH"
-    - git push
+    - git config --global user.email "your_email@example.com"
+    - git config --global user.name "Your Name"
+    - git remote set-url origin 'https://oauth2:${ProjectAccessToken}@gitalcoi.dsic.upv.es/hmongom_upv/eshop'
+    - git push origin main
   only:
     changes:
       - docs/**/*
+  except:
+    - main
+    - release
