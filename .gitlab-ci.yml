@@ -4,9 +4,9 @@ stages:
 auto-merge-docs-to-main:
   stage: merge
   script:
-    - git fetch origin/main
-    - git checkout origin/main
-    - git checkout origin/$CI_COMMIT_BRANCH docs
+    - git checkout main
+    - git fetch
+    - git checkout $CI_COMMIT_BRANCH docs
     - git add docs
     - git commit -m "Merged /docs from $CI_COMMIT_BRANCH"
     - git push
