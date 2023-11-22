@@ -9,6 +9,9 @@ auto-merge-docs-to-main:
     - git checkout $CI_COMMIT_BRANCH docs
     - git add docs
     - git commit -m "Merged /docs from $CI_COMMIT_BRANCH"
+    - git config --global user.email "your_email@example.com"
+    - git config --global user.name "Your Name"
+    - 'git remote set-url origin https://oauth2:${ProjectAccessToken}@gitalcoi.dsic.upv.es/hmongom_upv/eshop'
     - git push
   only:
     changes:
