@@ -11,8 +11,6 @@ auto-merge-docs-to-main:
   script:
     - git fetch origin/main
     - git checkout origin/main
-    - git add -A
-    - git stash
     - git checkout origin/$CI_COMMIT_BRANCH docs
     - git add docs
     - git commit -m "Merged /docs from $CI_COMMIT_BRANCH"
@@ -20,4 +18,3 @@ auto-merge-docs-to-main:
   only:
     changes:
       - docs/**/*
-      - documentation/**/*
