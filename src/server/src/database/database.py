@@ -53,33 +53,30 @@ class Database:
 
 #***************************************************************************************************
 	@classmethod
-	def user_signup(cls, email: str, username: str, password: str) -> list:
-		query = "INSERT INTO cliente (email, nombre, pwd) VALUES (?, ?, ?)"
-		cls.cursor.execute(query, (email, username, password))
+	def user_signup(cls, email: str, password: str) -> list:
+		query = "INSERT INTO cliente (email, pwd) VALUES (?, ?)"
+		cls.cursor.execute(query, (email, password))
 		cls.connection.commit()
+		# @todo check errors and proper return
 
 
 #***************************************************************************************************
 	@classmethod
-	def fetch_all_products(cls) -> list:
+	def fetch_all_products(cls) -> dict:
 		query = """
-			SELECT 
-				p.id AS product_id,
-				p.nombre AS product_name,
-				p.descripcion AS product_description,
-				p.imagen AS product_image,
-				p.precio AS product_price,
-				GROUP_CONCAT(t.nombre) AS tags
-			FROM 
-				Producto p
-			LEFT JOIN 
-				Clasificacion c ON p.id = c.idProducto
-			LEFT JOIN 
-				Tag t ON c.idTag = t.id
-			GROUP BY 
-				p.id, p.nombre, p.descripcion, p.imagen, p.precio
-			ORDER BY 
-				p.id;
+			SELECT p.id AS product_id,
+        p.nombre AS product_name,
+        p.descripcion AS product_description,
+        p.imagen AS product_image,
+        p.precio AS product_price,
+        GROUP_CONCAT(t.nombre) AS tags
+			FROM Producto p
+			JOIN Clasificacion c 
+					ON p.id = c.idProducto
+			LEFT JOIN Tag t 
+					ON c.tag = t.nombre
+			GROUP BY p.id, p.nombre, p.descripcion, p.imagen, p.precio
+			ORDER BY p.id;
 		"""
 		cls.cursor.execute(query)
 		results = cls.cursor.fetchall()
@@ -88,3 +85,89 @@ class Database:
 			products.append({"product_id": row[0], "product_name": row[1], "product_description": row[2], 
 											 "product_image": row[3], "product_price": row[4], "tags": row[5]})
 		return {"amount": len(products), "products": products}
+
+
+#***************************************************************************************************
+	@classmethod
+	def fetch_product_by_id(cls, product_id: int) -> dict:
+		query = """
+		SELECT 	p.id AS product_id,
+        		p.nombre AS product_name,
+        		p.descripcion AS product_description,
+        		p.imagen AS product_image,
+        		p.precio AS product_price,
+        		GROUP_CONCAT(t.nombre) AS tags
+		FROM Producto p
+		JOIN Clasificacion c 
+				ON p.id = c.idProducto
+		LEFT JOIN Tag t 
+				ON c.tag = t.nombre
+		WHERE p.id = ?
+		GROUP BY p.id, p.nombre, p.descripcion, p.imagen, p.precio
+		ORDER BY p.id;
+		"""
+		cls.cursor.execute(query, product_id)
+		results = cls.cursor.fetchall()
+		results = results[0]
+		print(f"Results: {results}")
+		products = {"product_id": results[0], "product_name": results[1], 
+								"product_description": results[2], "product_image": results[3], 
+								"product_price": results[4], "tags": results[5]}
+		return {"amount": 1, "products": products}
+
+
+#***************************************************************************************************
+	@classmethod
+	def fetch_products_by_tags(cls, tags: list[str]) -> dict:
+		query = """
+		SELECT  p.id,
+						p.nombre,
+						p.descripcion,
+						p.imagen,
+						p.precio,
+						GROUP_CONCAT(t.nombre) AS tags
+		FROM producto p
+		INNER JOIN Clasificacion c ON c.idProducto = p.id 
+		LEFT JOIN Tag t ON c.tag = t.nombre
+		WHERE c.tag IN (
+		""" + ",".join("?" for i in range(len(tags))) + ")"
+
+		query += "GROUP BY p.id, p.nombre, p.descripcion, p.imagen, p.precio ORDER BY p.id"
+		cls.cursor.execute(query, tags)
+		results = cls.cursor.fetchall()
+		products = []
+		for row in results:
+			products.append({"product_id": row[0], "product_name": row[1], "product_description": row[2], 
+											 "product_image": row[3], "product_price": row[4], "tags": row[5]})
+		return {"amount": len(products), "products": products}
+
+
+#***************************************************************************************************
+	@classmethod
+	def fetch_products_by_keyword(cls, keyword: str) -> dict:
+		# @idea
+		return {"amount": 0, "products": {}}
+		
+		query = """
+			
+		"""
+		cls.cursor.execute(query)
+		results = cls.cursor.fetchall()
+		products = []
+		for row in results:
+			products.append({"product_id": row[0], "product_name": row[1], "product_description": row[2], 
+											 "product_image": row[3], "product_price": row[4], "tags": row[5]})
+		return {"amount": len(products), "products": products}
+
+
+#***************************************************************************************************
+	@classmethod
+	def fetch_tags(cls) -> list:
+		query = """
+		SELECT nombre
+		FROM Tag;
+		"""
+		cls.cursor.execute(query)
+		results = cls.cursor.fetchall()
+		results = [tag[0].capitalize() for tag in results]
+		return {"tags": results}

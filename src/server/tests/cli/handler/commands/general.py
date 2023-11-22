@@ -44,6 +44,8 @@ def user_help() -> str:
 def shop_help() -> str:
 	return """
 	Available Commands:
+		list-products (lp) [-tags <tag> <tag> ...] [keyword] - List products by tags or keyword. 
+				If no tags or keyword are provided, it lists all available products.
 	"""
 
 def admin_help() -> str:

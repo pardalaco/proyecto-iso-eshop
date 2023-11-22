@@ -12,6 +12,7 @@
 			- [**2.2. Request product by ID**](#22-request-product-by-id)
 			- [**2.3. Request product(s) by TAG(s)**](#23-request-products-by-tags)
 			- [**2.4. Request product(s) by Keyword**](#24-request-products-by-keyword)
+			- [**2.5. Request all Tags**](#25-request-all-tags)
 		- [**3. Manage Products (Admin)**](#3-manage-products-admin)
 			- [**3.1. Add new product**](#31-add-new-product)
 			- [**3.2. Edit product**](#32-edit-product)
@@ -252,9 +253,27 @@ server = {
 	}
 }
 ```
+#### **2.5. Request all Tags**
+```js
+client = {
+	type: 2,
+	code: 5,
+	content: {}
+}
+```
+```js
+server = {
+	type: 2,
+	code: 5,
+	content: {
+		tags: "list"["str"]
+	}
+}
+```
 ---
 &nbsp;
 ### **3. Manage Products (Admin)**
+@todo these should send mail to check if admin = true
 #### **3.1. Add new product**
 ```js
 client = {
@@ -467,6 +486,7 @@ server = {
 ---
 &nbsp;
 ### **5. User Info**
+@todo this ones should send the user email always
 #### **5.1. Edit name**
 ```js
 client = {

@@ -1,0 +1,45 @@
+Shop:
+	[x] list all products
+	[x] list products by TAGS
+	[x] list product by ID
+	[x] list TAGS
+----------------------------------------------------------------------------------------------------
+Cart:
+	[] create new cart with NAME
+	[] delete cart by ID
+	[] list cart NAMES and IDs
+	[] update cart NAME by ID
+	[] purchase cart by cart ID
+	[] insert product into cart ID by product ID
+	[] remove product from cart ID by product ID
+----------------------------------------------------------------------------------------------------
+Order:
+	[] add new order from cart ID and empty cart by cart ID
+	[] list order STATUS by order ID
+	[] cancel order if STATUS = "invoiced" else nah
+----------------------------------------------------------------------------------------------------
+Admin General:
+	[] list all users (gets EMAIL and NAME)
+----------------------------------------------------------------------------------------------------
+Admin Products:
+	[] edit product NAME, TAGS, DESCRIPTION, etc
+	[] delete product by product ID
+	[] insert new product with all fields
+----------------------------------------------------------------------------------------------------
+Admin Order:
+	[] list all orders
+	[] change order STATUS on order ID
+----------------------------------------------------------------------------------------------------
+User:
+	[] list user info
+	[] update NAME
+	[] update EMAIL
+	[] update PASSWORD
+----------------------------------------------------------------------------------------------------
+User order info:
+	[] add PAYMENT
+	[] edit PAYMENT
+	[] remove PAYMENT
+	[] add ADDRESS
+	[] edit ADDRESS
+	[] remove ADDRESS

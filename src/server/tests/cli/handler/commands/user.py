@@ -40,6 +40,12 @@ def handle_login(isresponse: bool, privilege: dict, args: list[str]) -> tuple[bo
 #***************************************************************************************************
 def handle_signup(isresponse: bool, privilege: int, args: list[str]) -> tuple[bool, dict]:
 	if privilege["privilege"] == PRIVILEGE_NONE:
+		if isresponse:
+			success = args[0]["content"]["success"]
+			if success:
+				return (False, "Signup Successful")
+			else:
+				return (False, "Signup Unsuccessful")
 		if (len(args) != 2):
 			return (False, "Invalid Argument Count")
 		return (True, {"type": 1, "code": 2, "content": {"email": args[0], "password": args[1]}})

@@ -25,8 +25,9 @@ class MessageHandler:
 			(1, 1): self.handle_user_login,
 			(1, 2): self.handle_user_signup,
 			(2, 1): self.handle_request_all_products,
-			(2, 2): self.handle_request_products_by_id,
+			(2, 2): self.handle_request_product_by_id,
 			(2, 3): self.handle_request_products_by_tags,
+			(2, 5): self.handle_request_all_tags
 		}
 
 
@@ -65,7 +66,7 @@ class MessageHandler:
 		if Database.email_exists(content.get("email")):
 			return {"success": False}
 		else:
-			Database.user_signup(content.get("email"), content.get("username"), content.get("password"))
+			Database.user_signup(content.get("email"), content.get("password"))
 			return {"success": True}
 
 
@@ -75,14 +76,17 @@ class MessageHandler:
 
 
 #***************************************************************************************************
-	def handle_request_products_by_id(self, content: dict) -> dict:
-		# Fetch products by ID
-		# ...
-		pass
+	def handle_request_product_by_id(self, content: dict) -> dict:
+		product_id = content["id"]
+		return Database.fetch_product_by_id(product_id)
 
 
 #***************************************************************************************************
 	def handle_request_products_by_tags(self, content: dict) -> dict:
-		# Fetch products by tags
-		# ...
-		pass
+		tags = content["tags"].split(",")
+		return Database.fetch_products_by_tags(tags)
+
+
+#***************************************************************************************************
+	def handle_request_all_tags(self, content: dict) -> dict:
+		return Database.fetch_tags()
