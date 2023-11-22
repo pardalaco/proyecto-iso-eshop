@@ -1,0 +1,20 @@
+on:
+  push:
+    branches:
+      - '*'
+
+stages:
+  - merge
+
+auto-merge-docs-to-main:
+  stage: merge
+  script:
+    - git checkout main
+    - git fetch
+    - git checkout origin/$CI_COMMIT_BRANCH docs
+    - git add docs
+    - git commit -m "Merged /docs from $CI_COMMIT_BRANCH"
+    - git push
+  only:
+    changes:
+      - docs/**/*
