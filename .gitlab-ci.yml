@@ -4,21 +4,18 @@ stages:
 auto-merge-docs-to-main:
   stage: merge
   script: |
-     - # Fetch the main branch and check it out locally
       git fetch origin main
       git checkout main
 
-      # Check if there are any changes
-      if ! git diff --quiet origin/main $CI_COMMIT_BRANCH -- docs/; then
-        # If there are changes, add them to the staging area
-        git add docs/
+      # Add all changes in docs/ to the staging area
+      git add docs/
 
-        # Commit the changes
-        git commit -m "Merged changes from docs/ of $CI_COMMIT_BRANCH into main"
+      # Commit the changes
+      git commit -m "Merged changes from docs/ of $CI_COMMIT_BRANCH into main"
 
-        # Push the changes to the main branch
-        git push https://hmongom_upv:${ProjectAccessToken}@gitalcoi.dsic.upv.es/hmongom_upv/eshop main
-      fi
+      # Push the changes to the main branch
+      git push https://hmongom_upv:${ProjectAccessToken}@gitalcoi.dsic.upv.es/hmongom_upv/eshop main
+
   only:
     changes:
       - docs/**/*
