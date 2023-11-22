@@ -9,7 +9,7 @@ auto-merge-docs-to-main:
     - git checkout $CI_COMMIT_BRANCH docs
     - git add docs
     - git diff --staged --quiet || git commit -m "Merged /docs from $CI_COMMIT_BRANCH"
-    - git remote set-url origin 'https://oauth2:${ProjectAccessToken}@gitalcoi.dsic.upv.es/hmongom_upv/eshop'
+    - git remote set-url origin https://oauth2:${ProjectAccessToken}@gitalcoi.dsic.upv.es/hmongom_upv/eshop
     - git push origin main
   only:
     changes:
