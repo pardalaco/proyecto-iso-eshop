@@ -8,10 +8,8 @@ auto-merge-docs-to-main:
     - git pull --no-rebase
     - git checkout backend docs
     - git add docs
-    - git commit -m "Merged /docs from backend"
-    - git config --global user.email "your_email@example.com"
-    - git config --global user.name "Your Name"
-    - git remote set-url origin 'https://oauth2:${ProjectAccessToken}@gitalcoi.dsic.upv.es/hmongom_upv/eshop'
+    - git diff --staged --quiet || git commit -m "Merged /docs from $CI_COMMIT_BRANCH"
+    - git remote set-url origin https://oauth2:${ProjectAccessToken}@gitalcoi.dsic.upv.es/hmongom_upv/eshop
     - git push origin main
   only:
     changes:
