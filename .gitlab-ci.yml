@@ -1,0 +1,17 @@
+stages:
+  - merge
+
+auto-merge-docs-to-main:
+  stage: merge
+  script:
+    - git fetch origin main
+    - git checkout main
+    - git diff --name-only $CI_COMMIT_BRANCH main | grep '^docs/' | xargs git checkout $CI_COMMIT_BRANCH
+    - git diff --quiet || git commit -m "Merged changes from docs/ of $CI_COMMIT_BRANCH into main"
+    - git push https://${ProjectAccessToken}@gitalcoi.dsic.upv.es/hmongom_upv/eshop main
+  only:
+    changes:
+      - docs/**/*
+  except:
+    - main
+    - release
