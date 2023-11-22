@@ -1,8 +1,3 @@
-on:
-  push:
-    branches:
-      - '*'
-
 stages:
   - merge
 
@@ -18,3 +13,6 @@ auto-merge-docs-to-main:
   only:
     changes:
       - docs/**/*
+  except:
+    - main
+    - release
