@@ -6,9 +6,9 @@ auto-merge-docs-to-main:
   script:
     - git checkout main
     - git pull --no-rebase
-    - git checkout $CI_COMMIT_BRANCH docs
+    - git checkout backend docs
     - git add docs
-    - git commit -m "Merged /docs from $CI_COMMIT_BRANCH"
+    - git commit -m "Merged /docs from backend"
     - git config --global user.email "your_email@example.com"
     - git config --global user.name "Your Name"
     - git remote set-url origin 'https://oauth2:${ProjectAccessToken}@gitalcoi.dsic.upv.es/hmongom_upv/eshop'
