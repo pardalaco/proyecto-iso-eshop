@@ -8,7 +8,7 @@ auto-merge-docs-to-main:
     - git checkout main
     - git diff --name-only origin/$CI_COMMIT_BRANCH origin/main | grep '^docs/' | xargs -I % git checkout $CI_COMMIT_BRANCH -- "%"
     - git diff --quiet || git commit -m "Merged changes from docs/ of $CI_COMMIT_BRANCH into main"
-    - git push https://${ProjectAccessToken}@gitalcoi.dsic.upv.es/hmongom_upv/eshop main
+    - git push https://hmongom_upv:${ProjectAccessToken}@gitalcoi.dsic.upv.es/hmongom_upv/eshop main
   only:
     changes:
       - docs/**/*
