@@ -5,7 +5,7 @@ auto-merge-docs-to-main:
   stage: merge
   script:
     - git checkout main
-    - git pull
+    - git pull --no-rebase
     - git checkout $CI_COMMIT_BRANCH docs
     - git add docs
     - git commit -m "Merged /docs from $CI_COMMIT_BRANCH"
