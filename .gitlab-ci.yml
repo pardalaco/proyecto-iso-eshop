@@ -9,42 +9,14 @@ stages:
 auto-merge-docs-to-main:
   stage: merge
   script:
-    - |
-      # Fetch the main branch and check it out locally
-      git fetch origin main
-      git checkout main
-      
-      # Check if the file exists in the main branch
-      if git ls-files | grep -q '^docs/'; then
-        # If it exists, checkout changes from the current branch
-        git diff --name-only origin/$CI_COMMIT_BRANCH origin/main | grep '^docs/' | xargs -I % git checkout $CI_COMMIT_BRANCH -- "%"
-      fi
-      
-      # Check if there are any changes
-      if ! git diff --quiet; then
-        # If there are changes, commit and push to the main branch
-        git commit -am "Merge changes from $CI_COMMIT_BRANCH into main"
-        git push https://hmongom_upv:${ProjectAccessToken}@gitalcoi.dsic.upv.es/hmongom_upv/eshop main
-      fi
-
-      # Check for new files, edits, and removals in docs/ and add, commit, and push them to the current branch
-      git diff --name-status origin/main..$CI_COMMIT_BRANCH | grep '^docs/' | while read -r status file; do
-        case $status in
-          "A") # New file
-            git add "$file"
-            git commit -m "Added $file to docs/"
-            ;;
-          "M") # Modified file
-            git add "$file"
-            git commit -m "Modified $file in docs/"
-            ;;
-          "D") # Deleted file
-            git rm "$file"
-            git commit -m "Removed $file from docs/"
-            ;;
-        esac
-      done
-      git push https://hmongom_upv:${ProjectAccessToken}@gitalcoi.dsic.upv.es/hmongom_upv/eshop $CI_COMMIT_BRANCH
+    - git checkout origin/main
+    - git fetch
+    - git add -A
+    - git stash
+    - git checkout origin/$CI_COMMIT_BRANCH docs
+    - git add docs
+    - git commit -m "Merged /docs from $CI_COMMIT_BRANCH"
+    - git push
   only:
     changes:
       - docs/**/*
