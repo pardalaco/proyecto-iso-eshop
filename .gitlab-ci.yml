@@ -9,8 +9,8 @@ stages:
 auto-merge-docs-to-main:
   stage: merge
   script:
+    - git fetch origin/main
     - git checkout origin/main
-    - git fetch
     - git add -A
     - git stash
     - git checkout origin/$CI_COMMIT_BRANCH docs
