@@ -103,6 +103,7 @@ cursor.execute(
 	    CREATE TABLE Carrito (
             ROWID INTEGER NOT NULL,
             email VARCHAR(40) NOT NULL,
+            nombre VARCHAR(40) NOT NULL Default 'Carrito',
             total DECIMAL(7,2) NOT NULL DEFAULT 0.0,
             PRIMARY KEY (ROWID),
             FOREIGN KEY (email)
