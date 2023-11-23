@@ -101,15 +101,15 @@ cursor.execute(
 cursor.execute(
     '''
 	    CREATE TABLE Carrito (
-            id INT NOT NULL,
+            ROWID INTEGER NOT NULL,
             email VARCHAR(40) NOT NULL,
             total DECIMAL(7,2) NOT NULL DEFAULT 0.0,
-            PRIMARY KEY (id),
+            PRIMARY KEY (ROWID),
             FOREIGN KEY (email)
                 REFERENCES Cliente (email)
                     ON DELETE CASCADE
                     ON UPDATE CASCADE
-	    ) WITHOUT ROWID;
+	    );
     '''
 )
 cursor.execute(
@@ -120,11 +120,11 @@ cursor.execute(
             cantidad INT NOT NULL DEFAULT 1,
             PRIMARY KEY (idCarrito, idProducto),
             FOREIGN KEY (idCarrito)
-                REFERENCES Carrito (id)
+                REFERENCES Carrito (ROWID)
                     ON DELETE CASCADE
                     ON UPDATE CASCADE,
             FOREIGN KEY (idProducto)
-                REFERENCES Producto (id)
+                REFERENCES Producto (ROWID)
                     ON DELETE CASCADE
                     ON UPDATE CASCADE
 	    ) WITHOUT ROWID;
@@ -133,13 +133,13 @@ cursor.execute(
 cursor.execute(
     '''
 	    CREATE TABLE Producto (
-            id INT NOT NULL,
+            ROWID INTEGER NOT NULL,
             nombre VARCHAR(45) NOT NULL,
             descripcion VARCHAR(100) NOT NULL,
             imagen VARCHAR(80) NOT NULL,
             precio DECIMAL(7,2) NOT NULL,
-            PRIMARY KEY (id)
-	    ) WITHOUT ROWID;
+            PRIMARY KEY (ROWID)
+	    );
     '''
 )
 cursor.execute(
@@ -157,7 +157,7 @@ cursor.execute(
             tag VARHCAR(45) NOT NULL,
             PRIMARY KEY (idProducto, tag),
             FOREIGN KEY (idProducto)
-                REFERENCES Producto (id)
+                REFERENCES Producto (ROWID)
                     ON DELETE CASCADE
                     ON UPDATE CASCADE,
             FOREIGN KEY (tag)
@@ -171,18 +171,18 @@ cursor.execute(
 cursor.execute(
     '''
 	    CREATE TABLE Pedido (
-            id INT NOT NULL,
+            ROWID INTEGER NOT NULL,
             email VARCHAR(40),
             direccion VARCHAR(45) NOT NULL,
             tarjeta VARCHAR(45) NOT NULL,
             total DECIMAL(7,2) NOT NULL,
             estado VARCHAR(20) NOT NULL DEFAULT 'Invoiced',
-            PRIMARY KEY (id),
+            PRIMARY KEY (ROWID),
             FOREIGN KEY (email)
                 REFERENCES Cliente (email)
                     ON DELETE SET NULL
                     ON UPDATE CASCADE
-	    ) WITHOUT ROWID;
+	    );
     '''
 )
 
@@ -194,7 +194,7 @@ cursor.execute(
             cantidad INT NOT NULL,
             PRIMARY KEY (idPedido, idProducto),
             FOREIGN KEY (idPedido)
-                REFERENCES Pedido (id)
+                REFERENCES Pedido (ROWID)
                     ON DELETE CASCADE
                     ON UPDATE CASCADE
 	    ) WITHOUT ROWID;
