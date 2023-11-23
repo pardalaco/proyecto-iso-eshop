@@ -27,11 +27,11 @@ cursor.execute(
 #adding products
 cursor.execute(
 	'''
-	    INSERT INTO Producto 
-	    VALUES 	(1, 'iPhone 12', 'Movil que funciona de maravilla pero radioactivo', '/imagenes/iPhone12', 799.99),
-			    (2, 'Air Jordan Zoom', 'Zapatillas para saltar mucho', '/imagenes/Jordan', 180.00),
-			    (3, 'Cuchillo de carne', 'Cuchillo muy afilado', '/imagenes/cuchillo', 80.00),
-                (4, 'Apple Watch 7', 'Reloj que hace muchas cosas', '/imagenes/appleWatch7', 439.95);     
+	    INSERT INTO Producto (nombre, descripcion, imagen, precio)
+	    VALUES 	('iPhone 12', 'Movil que funciona de maravilla pero radioactivo', '/imagenes/iPhone12', 799.99),
+			    ('Air Jordan Zoom', 'Zapatillas para saltar mucho', '/imagenes/Jordan', 180.00),
+			    ('Cuchillo de carne', 'Cuchillo muy afilado', '/imagenes/cuchillo', 80.00),
+                ('Apple Watch 7', 'Reloj que hace muchas cosas', '/imagenes/appleWatch7', 439.95);     
     '''
 )
 
@@ -82,11 +82,11 @@ cursor.execute(
 
 cursor.execute(
     '''
-	    INSERT INTO Carrito (id, email)
-	    VALUES	(1, 'jsanver@gmail.com'),
-		    	(2, 'hmongom@gmail.com'),
-                (3, 'psegmar1@gmail.com'),
-			    (4, 'drovmar@gmail.com');
+	    INSERT INTO Carrito (email)
+	    VALUES	('jsanver@gmail.com'),
+		    	('hmongom@gmail.com'),
+                ('psegmar1@gmail.com'),
+			    ('drovmar@gmail.com');
 	'''
 )
 cursor.execute(
@@ -163,7 +163,7 @@ cursor.execute(
     '''
 )
 data = cursor.fetchall()
-print("Contenido de los carritos del sistema:")
+print("Carritos del sistema:")
 for row in data:
 	print(row)
 
