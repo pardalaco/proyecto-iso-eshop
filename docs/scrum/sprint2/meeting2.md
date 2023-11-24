@@ -19,11 +19,20 @@ Review de progreso y planificación
 ---
 
 ## 3. Puntos Destacados
+- Review del diagrama de flujo inicial de la aplicación.
+- Se comenta y se toman decisiones sobre la navegación y diferentes utilidades.
+- Muchas vistas únicas se deciden cambiar a pop-up.
+- Se decide sobre los widgets y componentes a usar.
+- Se decide inglés como idioma de la app.
+- Se ha decidido en los identificadores de producto, carrito y pedido en la base de datos.
 
-review del diagrama de flujo inicial de la aplicación
-se comenta y se toman decisiones sobre la navegación y diferentes utilidades
-muchas vistas únicas se deciden cambiar a pop-up
-se decide sobre los widgets y componentes a usar
-se decide inglés como idioma de la app
+---
 
-se ha decidido en los identificadores de producto, carrito y pedido en la base de datos
+## 4. Acciones a Seguir/Próximos Pasos:
+- Implementación de las decisiones tomadas sobre la navegación y utilidades.
+- Cambio de vistas únicas a pop-up según lo decidido.
+- Selección e implementación de widgets y componentes específicos.
+- Adaptación de la app al idioma inglés.
+- Actualización de la base de datos con los nuevos identificadores de producto, carrito y pedido.
+
+---
