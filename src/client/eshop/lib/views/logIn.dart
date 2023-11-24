@@ -97,6 +97,9 @@ class _MyForm extends State<_MyBody> {
                         const BorderSide(width: 3, color: CustomColors.n1),
                     borderRadius: BorderRadius.circular(15),
                   ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: CustomColors.n1),
+                  ),
                   hintText: "user@youremail.com",
                   filled: true,
                   fillColor: CustomColors.n2,
