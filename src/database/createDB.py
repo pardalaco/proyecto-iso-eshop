@@ -176,6 +176,7 @@ cursor.execute(
             email VARCHAR(40),
             direccion VARCHAR(45) NOT NULL,
             tarjeta VARCHAR(45) NOT NULL,
+            fecha VARCHAR(20) NOT NULL,
             total DECIMAL(7,2) NOT NULL,
             estado VARCHAR(20) NOT NULL DEFAULT 'Invoiced',
             PRIMARY KEY (ROWID),
@@ -191,12 +192,17 @@ cursor.execute(
     '''
 	    CREATE TABLE LineaPedido (
             idPedido INT NOT NULL,
-            idProducto INT NOT NULL,
+            nombre VARCHAR(45) NOT NULL,
+            idProducto INT,
             cantidad INT NOT NULL,
-            PRIMARY KEY (idPedido, idProducto),
+            PRIMARY KEY (idPedido, nombre),
             FOREIGN KEY (idPedido)
                 REFERENCES Pedido (ROWID)
                     ON DELETE CASCADE
+                    ON UPDATE CASCADE
+            FOREIGN KEY (idProducto)
+                REFERENCES Producto (ROWID)
+                    ON DELETE SET NULL
                     ON UPDATE CASCADE
 	    ) WITHOUT ROWID;
     '''

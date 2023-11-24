@@ -102,8 +102,8 @@ cursor.execute(
 )
 cursor.execute(
     '''
-	    INSERT INTO Pedido 
-	    VALUES	(1, 'jsanver@gmail.com', 'direccion1', 'Tarjeta 2', 23.0, 'Preparado');
+	    INSERT INTO Pedido (email, direccion, tarjeta, fecha, total, estado)
+	    VALUES	('jsanver@gmail.com', 'direccion1', 'Tarjeta 2', '22/11/2023', 23.0, 'Preparado');
 	'''
 )
 
