@@ -20,26 +20,28 @@ from .. import PRIVILEGE_ADMIN, PRIVILEGE_NORMAL_USER, PRIVILEGE_NONE
 
 
 #***************************************************************************************************
-def handle_login(isresponse: bool, privilege: dict, args: list[str]) -> tuple[bool, dict]:
-	if privilege["privilege"] == PRIVILEGE_NONE:
+def handle_login(isresponse: bool, current_user: dict, args: list[str]) -> tuple[bool, dict]:
+	if current_user["privilege"] == PRIVILEGE_NONE:
 		if isresponse:
 			success = args[0]["content"]["success"]
 			if success:
-				privilege["privilege"] = PRIVILEGE_NORMAL_USER
+				current_user["privilege"] = PRIVILEGE_NORMAL_USER
 				return (False, "Login Successful")
 			else:
+				current_user["email"] = None
 				return (False, "Login Unsuccessful")
 		else:
 			if (len(args) != 2):
 				return (False, "Invalid Argument Count")
+			current_user["email"] = args[0]
 			return (True, {"type": 1, "code": 1, "content": {"email": args[0], "password": args[1]}})
 	else:
 		return (False, "This command is unavailable while logged in")
 
 
 #***************************************************************************************************
-def handle_signup(isresponse: bool, privilege: int, args: list[str]) -> tuple[bool, dict]:
-	if privilege["privilege"] == PRIVILEGE_NONE:
+def handle_signup(isresponse: bool, current_user: dict, args: list[str]) -> tuple[bool, dict]:
+	if current_user["privilege"] == PRIVILEGE_NONE:
 		if isresponse:
 			success = args[0]["content"]["success"]
 			if success:
@@ -54,11 +56,12 @@ def handle_signup(isresponse: bool, privilege: int, args: list[str]) -> tuple[bo
 
 
 #***************************************************************************************************
-def handle_logout(isresponse: bool, privilege: int, args: list[str]) -> tuple[bool, dict]:
-	if privilege["privilege"] == PRIVILEGE_NONE:
+def handle_logout(isresponse: bool, current_user: dict, args: list[str]) -> tuple[bool, dict]:
+	if current_user["privilege"] == PRIVILEGE_NONE:
 		return (False, "You are not logged in")
 	else:
-		privilege["privilege"] = PRIVILEGE_NONE
+		current_user["privilege"] = PRIVILEGE_NONE
+		current_user["email"] = None
 		return (False, "Successfully logged out")
 
 

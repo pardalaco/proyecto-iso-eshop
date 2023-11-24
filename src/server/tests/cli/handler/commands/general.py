@@ -19,15 +19,15 @@ from .. import PRIVILEGE_ADMIN, PRIVILEGE_NORMAL_USER, PRIVILEGE_NONE
 
 
 #***************************************************************************************************
-def handle_quit(isresponse: bool, privilege: dict, args: list[str]) ->  tuple[bool, str]:
+def handle_quit(isresponse: bool, current_user: dict, args: list[str]) ->  tuple[bool, str]:
 	return (False, None)
 
 
 #***************************************************************************************************
-def handle_help(isresponse: bool, privilege: dict, args: list[str]) -> tuple[bool, str]:
-	if privilege["privilege"] == PRIVILEGE_ADMIN:
+def handle_help(isresponse: bool, current_user: dict, args: list[str]) -> tuple[bool, str]:
+	if current_user["privilege"] == PRIVILEGE_ADMIN:
 		return (False, admin_help() + note_help())
-	elif privilege["privilege"] == PRIVILEGE_NORMAL_USER:
+	elif current_user["privilege"] == PRIVILEGE_NORMAL_USER:
 		return (False, shop_help() + note_help())
 	else:
 		return (False, user_help() + note_help())

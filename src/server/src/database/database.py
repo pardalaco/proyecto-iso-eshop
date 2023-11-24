@@ -171,3 +171,16 @@ class Database:
 		results = cls.cursor.fetchall()
 		results = [tag[0].capitalize() for tag in results]
 		return {"tags": results}
+
+
+#***************************************************************************************************
+	@classmethod
+	def fetch_carts(cls, email: str) -> dict:
+		query = """
+		SELECT ROWID, nombre 
+		FROM Carrito
+		WHERE email = ?;
+		"""
+		cls.cursor.execute(query, (email,))
+		cartlist = cls.cursor.fetchall()
+		return {"carts": [{"cartid": cart[0], "cartname": cart[1]} for cart in cartlist]}

@@ -19,6 +19,7 @@ from typing import Union
 from .commands.general import general_command_handlers
 from .commands.user import user_command_handlers
 from .commands.shop import shop_command_handlers
+from .commands.cart import cart_command_handlers
 from .commands.admin import admin_command_handlers
 
 from . import PRIVILEGE_ADMIN, PRIVILEGE_NORMAL_USER, PRIVILEGE_NONE
@@ -26,11 +27,11 @@ from . import PRIVILEGE_ADMIN, PRIVILEGE_NORMAL_USER, PRIVILEGE_NONE
 
 #***************************************************************************************************
 COMMANDS = {**general_command_handlers, **user_command_handlers, **shop_command_handlers, 
-						**admin_command_handlers}
+						**cart_command_handlers, **admin_command_handlers}
 
 
 #***************************************************************************************************
-def execute_command(input_list: list[str], privilege: dict, 
+def execute_command(input_list: list[str], current_user: dict, 
 										isresponse: bool = False, response: str = None) -> Union[tuple[bool, str], 
 																																						tuple[bool, dict]]:
 	command = input_list[0].lower()
@@ -39,9 +40,9 @@ def execute_command(input_list: list[str], privilege: dict,
 		args = [response]
 	else:
 		args = input_list[1:]
-	return command_handler(isresponse, privilege, args)
+	return command_handler(isresponse, current_user, args)
 
 
 #***************************************************************************************************
-def handle_default(isresponse: bool, privilege: int, args: list[str]) -> tuple[bool, str]:
+def handle_default(isresponse: bool, current_user: dict, args: list[str]) -> tuple[bool, str]:
 	return (False, "Unknown command.")

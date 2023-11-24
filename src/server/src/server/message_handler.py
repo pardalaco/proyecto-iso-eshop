@@ -27,7 +27,8 @@ class MessageHandler:
 			(2, 1): self.handle_request_all_products,
 			(2, 2): self.handle_request_product_by_id,
 			(2, 3): self.handle_request_products_by_tags,
-			(2, 5): self.handle_request_all_tags
+			(2, 5): self.handle_request_all_tags,
+			(4, 8): self.handle_request_user_carts
 		}
 
 
@@ -90,3 +91,8 @@ class MessageHandler:
 #***************************************************************************************************
 	def handle_request_all_tags(self, content: dict) -> dict:
 		return Database.fetch_tags()
+
+
+#***************************************************************************************************
+	def handle_request_user_carts(self, content: dict) -> dict:
+		return Database.fetch_carts(email = content["email"])

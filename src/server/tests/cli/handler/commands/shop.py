@@ -18,8 +18,8 @@ from .. import PRIVILEGE_ADMIN, PRIVILEGE_NORMAL_USER, PRIVILEGE_NONE
 
 
 #***************************************************************************************************
-def handle_list_products(isresponse: bool, privilege: dict, args: list[str]) -> tuple[bool, dict]:
-	if privilege["privilege"] == PRIVILEGE_NONE:
+def handle_list_products(isresponse: bool, current_user: dict, args: list[str]) -> tuple[bool, dict]:
+	if current_user["privilege"] == PRIVILEGE_NONE:
 		return (False, "You need to Log in to use this command")
 	else:
 		if isresponse:
@@ -42,8 +42,8 @@ def handle_list_products(isresponse: bool, privilege: dict, args: list[str]) -> 
 
 
 #***************************************************************************************************
-def handle_product(isresponse: bool, privilege: dict, args: list[str]) -> tuple[bool, dict]:
-	if privilege["privilege"] == PRIVILEGE_NONE:
+def handle_product(isresponse: bool, current_user: dict, args: list[str]) -> tuple[bool, dict]:
+	if current_user["privilege"] == PRIVILEGE_NONE:
 		return (False, "You need to Log in to use this command")
 	else:
 		if isresponse:
@@ -55,8 +55,8 @@ def handle_product(isresponse: bool, privilege: dict, args: list[str]) -> tuple[
 
 
 #***************************************************************************************************
-def handle_list_tags(isresponse: bool, privilege: dict, args: list[str]) -> tuple[bool, dict]:
-	if privilege["privilege"] == PRIVILEGE_NONE:
+def handle_list_tags(isresponse: bool, current_user: dict, args: list[str]) -> tuple[bool, dict]:
+	if current_user["privilege"] == PRIVILEGE_NONE:
 		return (False, "You need to Log in to use this command")
 	else:
 		if isresponse:

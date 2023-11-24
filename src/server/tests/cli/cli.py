@@ -29,13 +29,13 @@ PRIVILEGE_NONE = 0
 PRIVILEGE_NORMAL_USER = 1
 PRIVILEGE_ADMIN = 2
 
-current_privilege = {"privilege": PRIVILEGE_NONE}
+current_user = {"privilege": PRIVILEGE_NONE, "email": None}
 input_type = [": ", ">> ", "# "]
 
 
 #***************************************************************************************************
 def get_user_input() -> list[str]:
-	user_input = input(input_type[current_privilege["privilege"]])
+	user_input = input(input_type[current_user["privilege"]])
 	return user_input.split()
 
 
@@ -52,14 +52,14 @@ async def main() -> None:
 	print("Welcome to eShop!\nType [help, h] to see what you can do at any time!")
 	while True:
 		input_list = get_user_input()
-		communication, message = execute_command(input_list, current_privilege)
+		communication, message = execute_command(input_list, current_user)
 		if communication:
 			message = json.dumps(message)
 			writer.write(message.encode())
 			data = await reader.read(1024)
 			data = data.decode()
 			response = json.loads(data)
-			communication, message = execute_command(input_list, current_privilege, True, response)
+			communication, message = execute_command(input_list, current_user, True, response)
 		else:
 			if message is None:
 				print("Exiting the application")
