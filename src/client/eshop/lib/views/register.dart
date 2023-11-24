@@ -50,8 +50,11 @@ class _MyFormR extends State<_MyBodyR> {
         padding: EdgeInsetsDirectional.symmetric(
             horizontal: size.width * 0.05, vertical: size.height * 0.03),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          SizedBox(
+            height: size.height * 0.1,
+          ),
           const Text(
-            'Regístrate',
+            'Register',
             style: TextStyle(
                 color: Colors.white, fontSize: 35, fontWeight: FontWeight.bold),
           ),
@@ -61,7 +64,7 @@ class _MyFormR extends State<_MyBodyR> {
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               const Text(
-                'Nombre',
+                'Name',
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -75,12 +78,15 @@ class _MyFormR extends State<_MyBodyR> {
                         const BorderSide(width: 3, color: CustomColors.n1),
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  hintText: "Tu nombre",
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: CustomColors.n1),
+                  ),
+                  hintText: "Your name",
                   filled: true,
                   fillColor: CustomColors.n2,
                 ),
                 validator: (value) {
-                  if (value?.isEmpty ?? true) return 'Campo obligatorio';
+                  if (value?.isEmpty ?? true) return 'Required';
                   return null;
                 },
                 onSaved: (value) => name = value,
@@ -101,19 +107,22 @@ class _MyFormR extends State<_MyBodyR> {
                         const BorderSide(width: 3, color: CustomColors.n1),
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  hintText: "Tu email",
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: CustomColors.n1),
+                  ),
+                  hintText: "Your email",
                   filled: true,
                   fillColor: CustomColors.n2,
                 ),
                 validator: (value) {
-                  if (value?.isEmpty ?? true) return 'Campo obligatorio';
+                  if (value?.isEmpty ?? true) return 'Required';
                   return null;
                 },
                 onSaved: (value) => email = value,
               ),
               SizedBox(height: size.height * 0.05),
               const Text(
-                'Contraseña',
+                'Password',
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -128,12 +137,15 @@ class _MyFormR extends State<_MyBodyR> {
                         const BorderSide(width: 3, color: CustomColors.n1),
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  hintText: "Tu contraseña",
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: CustomColors.n1),
+                  ),
+                  hintText: "Your password",
                   filled: true,
                   fillColor: CustomColors.n2,
                 ),
                 validator: (value) {
-                  if (value?.isEmpty ?? true) return 'Campo obligatorio';
+                  if (value?.isEmpty ?? true) return 'Required';
                   return null;
                 },
                 onSaved: (value) => password = value,
@@ -147,7 +159,7 @@ class _MyFormR extends State<_MyBodyR> {
 
                   if ((formState?.validate() ?? false)) {
                     formState!.save(); // Guarda valores en var. de estado
-                    Connection connection = Connection();
+                    /*Connection connection = Connection();
                     await connection.query({
                       "type": 1,
                       "code": 2,
@@ -164,16 +176,19 @@ class _MyFormR extends State<_MyBodyR> {
                         builder: (context) => _MyAlert(context),
                       );
                     } else {
+                      //@todo pedir perfil
+                      
                       showDialog(
                         context: context,
                         builder: (context) =>
                             Home(connection: connection, admin: false),
                       );
-                    }
+                    }*/
+                    Navigator.of(context).pop();
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Formulario inválido'),
+                        content: Text('Invalid form'),
                       ),
                     );
                   }
@@ -190,14 +205,14 @@ class _MyFormR extends State<_MyBodyR> {
                   ),
                 ),
                 child: const Text(
-                  'Registrarse',
+                  'Create account',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 ),
               ),
               SizedBox(height: size.height * 0.01),
               ListTile(
                 title: const Text(
-                  "Ya tienes cuenta? Inicia sesión",
+                  "Already have an acount? Log in",
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -223,7 +238,7 @@ void _goToLogIn(BuildContext context) {
 Widget _MyAlert(context) => AlertDialog(
         title: const Text("Error"),
         content: const Text(
-          "No se ha podido llevar a cabo el registro",
+          "Unsuccessful registration",
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
         ),
