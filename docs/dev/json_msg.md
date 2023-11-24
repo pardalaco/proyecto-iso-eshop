@@ -1,6 +1,5 @@
 - [**JSON Message Structure**](#json-message-structure)
 	- [**Main format**](#main-format)
-	- [**Type and Code Meaning**](#type-and-code-meaning)
 	- [**JSON Definitions**](#json-definitions)
 		- [**0. Error**](#0-error)
 			- [**0.0. Invalid Type or Code**](#00-invalid-type-or-code)
@@ -24,7 +23,9 @@
 			- [**4.4. Add product**](#44-add-product)
 			- [**4.5. Edit quantity of product**](#45-edit-quantity-of-product)
 			- [**4.6. Remove product**](#46-remove-product)
-			- [**4.4. Purchase**](#44-purchase)
+			- [**4.6. Request Cart Products**](#46-request-cart-products)
+			- [**4.8. Request all Carts**](#48-request-all-carts)
+			- [**4.9. Purchase**](#49-purchase)
 		- [**5. User Info**](#5-user-info)
 			- [**5.1. Edit name**](#51-edit-name)
 			- [**5.2. Edit email**](#52-edit-email)
@@ -33,7 +34,6 @@
 			- [**5.5. Edit Address**](#55-edit-address)
 		- [**6. Information Requests**](#6-information-requests)
 			- [**6.1. Request User Info**](#61-request-user-info)
-			- [**6.2. Request Cart Info**](#62-request-cart-info)
 		- [**7. Orders**](#7-orders)
 			- [**7.1. @todo**](#71-todo)
 		- [**8. Orders (ADMIN)**](#8-orders-admin)
@@ -47,42 +47,6 @@
 	content: "dict"{}
 }
 ```
-## **Type and Code Meaning**
-* Type 0 → Error
-  - Code 0 → Invalid Type or Code 
-* Type 1 → User Access:
-  - Code 1 → Log in
-  - Code 2 → Sign up
-* Type 2 → Product(s) Request
-  - Code 1 → All products
-  - Code 2 → Search by ID
-  - Code 3 → Search by TAG(s)
-  - Code 4 → Search by Keyword
-* Type 3 → Manage Products (Admin)
-  - Code 1 → Add product
-  - Code 2 → Edit product
-  - Code 3 → Remove product
-* Type 4 → Related to Carts
-  - Code 1 → Create Cart
-  - Code 2 → Edit Cart name
-  - Code 3 → Delete Cart
-	- Code 4 → Add product
-	- Code 5 → Edit quantity of product
-	- Code 6 → Remove product
-	- Code 7 → Purchase
-* Type 5 → User Info
-	- Code 1 → Edit Name
-	- Code 2 → Edit Email
-	- Code 3 → Edit Password
-	- Code 4 → Edit Payment Option
-	- Code 5 → Edit Address
-* Type 6 → Information Request
-	- Code 1 → Request User Info
-	- Code 2 → Request Cart Info
-* Type 7 → Orders
-	- Code 1 → 
-* Type 8 → Orders (ADMIN)
-	- Code 1 →
 ## **JSON Definitions**
 ---
 &nbsp;
@@ -349,7 +313,8 @@ client = {
 	type: 4,
 	code: 1,
 	content: {
-		name: "str"
+		email: "str",
+		cartname: "str"
 	}
 }
 ```
@@ -368,7 +333,8 @@ client = {
 	type: 4,
 	code: 2,
 	content: {
-		prevname: "str",
+		email: "str",
+		cartid: "int",
 		newname: "str"
 	}
 }
@@ -388,7 +354,8 @@ client = {
 	type: 4,
 	code: 3,
 	content: {
-		name: "str"
+		email: "str",
+		cartid: "int"
 	}
 }
 ```
@@ -407,8 +374,9 @@ client = {
 	type: 4,
 	code: 4,
 	content: {
-		cartname: "str",
-		id: "int"
+		email: "str",
+		cartid: "int",
+		productid: "int"
 	}
 }
 ```
@@ -427,8 +395,9 @@ client = {
 	type: 4,
 	code: 5,
 	content: {
-		cartname: "str",
-		id: "int",
+		email: "str",
+		cartid: "int",
+		productid: "int",
 		quantity: "int"
 	}
 }
@@ -448,8 +417,9 @@ client = {
 	type: 4,
 	code: 6,
 	content: {
-		cartname: "str",
-		id: "int"
+		email: "str",
+		cartid: "int",
+		productid: "int"
 	}
 }
 ```
@@ -462,12 +432,65 @@ server = {
 	}
 }
 ```
-#### **4.4. Purchase**
+#### **4.6. Request Cart Products**
+```js
+client = {
+	type: 4,
+	code: 7,
+	content: {
+		email: "str",
+		cartid: "int",
+	}
+}
+```
+```js
+server = {
+	type: 4,
+	code: 7,
+	content: {
+		products: "list"[
+			"dict"{
+				id: "int", 
+				name: "str", 
+				description: "str", 
+				image: "@todo",
+				price: "float",
+				tags: "str,str,.."
+			}
+		]
+	}
+}
+```
+#### **4.8. Request all Carts**
+```js
+client = {
+	type: 4,
+	code: 8,
+	content: {
+		email: "str"
+	}
+}
+```
+```js
+server = {
+	type: 4,
+	code: 8,
+	content: {
+		carts: "list"[
+			"dict"{
+				cartid: "int",
+				cartname: "str"							
+			}
+		]
+	}
+}
+```
+#### **4.9. Purchase**
 ```js
 @todo
 client = {
 	type: 4,
-	code: 7,
+	code: 9,
 	content: {
 		cartname: "str",
 	}
@@ -476,7 +499,7 @@ client = {
 ```js
 server = {
 	type: 4,
-	code: 7,
+	code: 9,
 	content: {
 		success: "bool"
 		orderid: "int"
@@ -605,31 +628,6 @@ server = {
 		surname: "str",
 		payments: "list"["str"],
 		addresses: "list"["str"]
-	}
-}
-```
-#### **6.2. Request Cart Info**
-```js
-client = {
-	type: 6,
-	code: 2,
-	content: {
-		cartname: "str"
-	}
-}
-```
-```js
-server = {
-	type: 6,
-	code: 2,
-	content: {
-		total: "float",
-		products: "list"["dict"{
-			id: "int",
-			name: "str",
-			image: "@todo",
-			price: "float"
-		}]
 	}
 }
 ```
