@@ -58,7 +58,7 @@ cursor.execute(
                 (4, 'ropa');
 	'''
 )
-
+""" Multi tarjeta y direccion
 cursor.execute(
     '''
 	    INSERT INTO Direccion
@@ -79,6 +79,7 @@ cursor.execute(
 			    ('drovmar@gmail.com', '4444', 'Tarjeta 1');
 	'''
 )
+"""
 
 cursor.execute(
     '''
@@ -137,7 +138,7 @@ cursor.execute(
     '''
 )
 data = cursor.fetchall()
-print("Contenido de los Pedidos del sistema:")
+print("Contenido de los Clientes del sistema:")
 for row in data:
 	print(row)
 
@@ -145,7 +146,7 @@ print("\n")
 cursor.execute(
     '''    
         SELECT *
-        FROM Contiene;
+        FROM Cliente;
     '''
 )
 data = cursor.fetchall()

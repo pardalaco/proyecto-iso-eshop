@@ -13,16 +13,6 @@ cursor.execute(
 )
 cursor.execute(
 	'''
-        DROP TABLE IF EXISTS Direccion;
-    '''
-)
-cursor.execute(
-	'''
-        DROP TABLE IF EXISTS Tarjeta;
-    '''
-)
-cursor.execute(
-	'''
         DROP TABLE IF EXISTS Carrito;
     '''
 )
@@ -43,15 +33,14 @@ cursor.execute(
 )
 cursor.execute(
 	'''
-        DROP TABLE IF EXISTS Pedido;
+        DROP TABLE IF EXISTS LineaPedido;
     '''
 )
 cursor.execute(
 	'''
-        DROP TABLE IF EXISTS LineaPedido;
+        DROP TABLE IF EXISTS Pedido;
     '''
 )
-
 cursor.execute(
 	'''
         DROP TABLE IF EXISTS Tag;
@@ -65,36 +54,11 @@ cursor.execute(
             email VARCHAR(40) NOT NULL,
             nombre VARCHAR(45) NULL DEFAULT 'Mr',
             apellidos VARCHAR(70) NULL DEFAULT 'Robberino',
+            tarjeta VARCHAR(45) NULL,
+            direccion VARCHAR(45) NULL,
             pwd VARCHAR(45) NOT NULL,
             admin TINYINT NOT NULL DEFAULT 0,
             PRIMARY KEY (email)
-	    ) WITHOUT ROWID;
-    '''
-)
-cursor.execute(
-    '''
-	    CREATE TABLE Direccion (
-            email VARCHAR(40) NOT NULL,
-            direccion VARCHAR(45) NOT NULL,
-            PRIMARY KEY (email, direccion),
-            FOREIGN KEY (email)
-                REFERENCES Cliente (email)
-                    ON DELETE CASCADE
-                    ON UPDATE CASCADE
-	    ) WITHOUT ROWID;
-    '''
-)
-cursor.execute(
-    '''
-	    CREATE TABLE Tarjeta (
-            email VARCHAR(40) NOT NULL,
-            tarjeta VARCHAR(45) NOT NULL,
-            nombre VARCHAR(80) NOT NULL,
-            PRIMARY KEY (email, tarjeta),
-            FOREIGN KEY (email)
-                REFERENCES Cliente (email)
-                    ON DELETE CASCADE
-                    ON UPDATE CASCADE
 	    ) WITHOUT ROWID;
     '''
 )
@@ -168,7 +132,6 @@ cursor.execute(
 	    ) WITHOUT ROWID;
     '''
 )
-
 cursor.execute(
     '''
 	    CREATE TABLE Pedido (
@@ -187,7 +150,6 @@ cursor.execute(
 	    );
     '''
 )
-
 cursor.execute(
     '''
 	    CREATE TABLE LineaPedido (
@@ -207,7 +169,6 @@ cursor.execute(
 	    ) WITHOUT ROWID;
     '''
 )
-
 cursor.execute(
     '''
 	    DROP TRIGGER IF EXISTS TOTAL_CARRITO;
