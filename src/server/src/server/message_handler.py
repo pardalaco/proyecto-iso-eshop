@@ -39,7 +39,10 @@ class MessageHandler:
 			(4, 9): self.handle_purchase,
 			(5, 4): self.handle_edit_payment,
 			(5, 5): self.handle_edit_address,
-			(5, 6): self.handle_user_info
+			(5, 6): self.handle_user_info,
+			(6, 1): self.handle_list_orders,
+			(6, 2): self.handle_order_details,
+			(6, 3): self.handle_cancel_order
 		}
 
 
@@ -232,3 +235,29 @@ class MessageHandler:
 		email = content["email"]
 		user_info = Database.fetch_user_info(email)
 		return user_info
+
+
+#***************************************************************************************************
+	def handle_list_orders(self, content: dict) -> dict:
+		email = content["email"]
+		return Database.fetch_orders(email)
+		
+
+#***************************************************************************************************
+	def handle_order_details(self, content: dict) -> dict:
+		email = content["email"]
+		orderid = content["orderid"]
+		if Database.is_user_order(email, orderid):
+			return Database.fetch_order_details(orderid)
+		else:
+			return {"success": False}
+		
+
+#***************************************************************************************************
+	def handle_cancel_order(self, content: dict) -> dict:
+		email = content["email"]
+		orderid = content["orderid"]
+		if Database.is_user_order(email, orderid):
+			if Database.fetch_order_status(orderid) == "Invoiced":
+				return {"success": Database.cancel_order(orderid)}
+		return {"success": False}

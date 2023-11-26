@@ -152,7 +152,6 @@ def handle_list_carts(isresponse: bool, current_user: dict, args: list[str]) -> 
 
 #***************************************************************************************************
 def handle_purchase(isresponse: bool, current_user: dict, args: list[str]) -> tuple[bool, dict]:
-	# @test
 	if current_user["privilege"] == PRIVILEGE_NONE:
 		return (False, "You need to Log in to use this command")
 	else:

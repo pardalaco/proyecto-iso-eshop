@@ -20,6 +20,7 @@ from .commands.general import general_command_handlers
 from .commands.user import user_command_handlers
 from .commands.shop import shop_command_handlers
 from .commands.cart import cart_command_handlers
+from .commands.order import order_command_handlers
 from .commands.admin import admin_command_handlers
 
 from . import PRIVILEGE_ADMIN, PRIVILEGE_NORMAL_USER, PRIVILEGE_NONE
@@ -27,7 +28,7 @@ from . import PRIVILEGE_ADMIN, PRIVILEGE_NORMAL_USER, PRIVILEGE_NONE
 
 #***************************************************************************************************
 COMMANDS = {**general_command_handlers, **user_command_handlers, **shop_command_handlers, 
-						**cart_command_handlers, **admin_command_handlers}
+						**cart_command_handlers, **order_command_handlers, **admin_command_handlers}
 
 
 #***************************************************************************************************

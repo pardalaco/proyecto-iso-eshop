@@ -480,3 +480,80 @@ class Database:
 			cls.connection.rollback()
 			print(f"(!) An error ocurred while editing address: \n{e}")
 			return False
+
+
+#***************************************************************************************************
+	@classmethod
+	def is_user_order(cls, email: str, orderid: int) -> bool:
+		query = """
+		SELECT COUNT(*)
+		FROM Pedido
+		WHERE ROWID = ? AND email = ?;
+		"""
+		cls.cursor.execute(query, (orderid, email))
+		results = cls.cursor.fetchall()
+		return results[0][0] > 0
+
+
+#***************************************************************************************************
+	@classmethod
+	def fetch_order_status(cls, orderid: int) -> str:
+		query = """
+		SELECT estado
+		FROM Pedido
+		WHERE ROWID = ?;
+		"""
+		cls.cursor.execute(query, (orderid,))
+		results = cls.cursor.fetchall()
+		print(results)
+		return results[0][0]
+
+
+#***************************************************************************************************
+	@classmethod
+	def fetch_orders(cls, email: str) -> dict:
+		query = """
+		SELECT *
+		FROM Pedido
+		WHERE email = ?
+		"""
+		cls.cursor.execute(query, (email,))
+		results = cls.cursor.fetchall()
+		print(results)
+		orders = []
+		for order in results:
+			orders.append({"orderid": order[0], "date": order[4], "total": order[5], 
+											"status": order[6]})
+		return {"orders": orders}
+
+
+#***************************************************************************************************
+	@classmethod
+	def fetch_order_details(cls, orderid: int) -> dict:
+		query = """
+		SELECT *
+		FROM Pedido
+		WHERE ROWID = ?;
+		"""
+		cls.cursor.execute(query, (orderid,))
+		results = cls.cursor.fetchall()[0]
+		return {"success": True, "orderid": results[0], "email": results[1], "address": results[2],
+						"payment": results[3], "date": results[4], "total": results[5], "status": results[6]}
+
+
+#***************************************************************************************************
+	@classmethod
+	def cancel_order(cls, orderid: int) -> bool:
+		query = """
+		UPDATE Pedido
+		SET estado = 'Cancelled'
+		WHERE ROWID = ?;
+		"""
+		try:
+			cls.cursor.execute(query, (orderid,))
+			cls.connection.commit()
+			return True
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error ocurred while deleting order: \n{e}")
+			return False
