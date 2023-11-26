@@ -6,19 +6,9 @@ Table Cliente {
   nombre varchar(45) [note: "default Mr"]
   apellidos VARCHAR(70) [note: "default Robberino"]
   pwd VARCHAR [not null]
+  tarjeta VARCHAR(45)
+  direccion VARCHAR(45)
   admin TINYINT [note: "default 0"]
-}
-
-Table Direccion {
-  email varchar(40) [pk]
-  direccion VARCHAR(45) [pk]
-
-}
-
-Table Tarjeta {
-  email varchar(40) [pk]
-  tarjeta VARCHAR(45) [pk]
-  nombre varchar(80) [not null]
 }
 
 Table Carrito {
@@ -72,8 +62,6 @@ Table LineaPedido {
 
 Ref: Clasificacion.idProducto > Producto.ROWID
 Ref: Clasificacion.tag > Tag.nombre 
-Ref: Direccion.email > Cliente.email
-Ref: Tarjeta.email > Cliente.email
 Ref: Carrito.email > Cliente.email
 Ref: Contiene.idCarrito > Carrito.ROWID //ON DELETE CASCADE
 Ref: Contiene.idProducto > Producto.ROWID
