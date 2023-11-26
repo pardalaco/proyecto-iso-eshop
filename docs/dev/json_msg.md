@@ -33,10 +33,12 @@
 			- [**5.4. Edit Payment**](#54-edit-payment)
 			- [**5.5. Edit Address**](#55-edit-address)
 			- [**5.6. Request User Info**](#56-request-user-info)
-		- [**7. Orders**](#7-orders)
+		- [**6. Orders**](#6-orders)
+			- [**6.1. Request Orders**](#61-request-orders)
+			- [**6.2. Request Order Details**](#62-request-order-details)
+			- [**6.3. Cancel Order**](#63-cancel-order)
+		- [**7. Orders (ADMIN)**](#7-orders-admin)
 			- [**7.1.**](#71)
-		- [**8. Orders (ADMIN)**](#8-orders-admin)
-			- [**8.1.**](#81)
 # **JSON Message Structure**
 ## **Main format**
 ```js
@@ -639,12 +641,82 @@ server = {
 ```
 ---
 &nbsp;
-### **7. Orders**
-@todo Orders
-#### **7.1.**
-
+### **6. Orders**
+#### **6.1. Request Orders**
+```js
+client = {
+	type: 6,
+	code: 1,
+	content: {
+		email: "str"
+	}
+}
+```
+```js
+server = {
+	type: 6,
+	code: 1,
+	content: {
+		orders: "list"[
+			"dict"{
+				orderid: "int",
+				date: "date",
+				total: "float",
+				status: "str"
+			}
+		]
+	}
+}
+```
+#### **6.2. Request Order Details**
+```js
+client = {
+	type: 6,
+	code: 2,
+	content: {
+		email: "str",
+		orderid: "int"
+	}
+}
+```
+```js
+server = {
+	type: 6,
+	code: 1,s
+	content: {
+		success: "bool",
+		orderid: "int",
+		email: "str",
+		address: "str",
+		payment: "str",
+		date: "date",
+		total: "float",
+		status: "str"
+	}
+}
+```
+#### **6.3. Cancel Order**
+```js
+client = {
+	type: 6,
+	code: 3,
+	content: {
+		email: "str",
+		orderid: "int"
+	}
+}
+```
+```js
+server = {
+	type: 6,
+	code: 3,
+	content: {
+		success: "bool"
+	}
+}
+```
 ---
 &nbsp;
-### **8. Orders (ADMIN)**
+### **7. Orders (ADMIN)**
 @todo Orders (ADMIN)
-#### **8.1.**
+#### **7.1.**
