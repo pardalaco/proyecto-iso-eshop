@@ -23,7 +23,7 @@
 			- [**4.4. Add product**](#44-add-product)
 			- [**4.5. Edit quantity of product**](#45-edit-quantity-of-product)
 			- [**4.6. Remove product**](#46-remove-product)
-			- [**4.6. Request Cart Products**](#46-request-cart-products)
+			- [**4.7. Request Cart Products**](#47-request-cart-products)
 			- [**4.8. Request all Carts**](#48-request-all-carts)
 			- [**4.9. Purchase**](#49-purchase)
 		- [**5. User Info**](#5-user-info)
@@ -35,9 +35,9 @@
 		- [**6. Information Requests**](#6-information-requests)
 			- [**6.1. Request User Info**](#61-request-user-info)
 		- [**7. Orders**](#7-orders)
-			- [**7.1. @todo**](#71-todo)
+			- [**7.1.**](#71)
 		- [**8. Orders (ADMIN)**](#8-orders-admin)
-			- [**8.1. @todo**](#81-todo)
+			- [**8.1.**](#81)
 # **JSON Message Structure**
 ## **Main format**
 ```js
@@ -127,7 +127,7 @@ server = {
 				id: "int", 
 				name: "str", 
 				description: "str", 
-				image: "@todo",
+				image: "@todo image",
 				price: "float",
 				tags: "str,str,.."
 			}
@@ -153,7 +153,7 @@ server = {
 		id: "int", 
 		name: "str", 
 		description: "str", 
-		image: "@todo",
+		image: "@todo image",
 		price: "float",
 		tags: "str,str,.."
 	}
@@ -180,7 +180,7 @@ server = {
 				id: "int", 
 				name: "str", 
 				description: "str", 
-				image: "@todo",
+				image: "@todo image",
 				price: "float",
 				tags: "str,str,.."
 			}
@@ -209,7 +209,7 @@ server = {
 				id: "int", 
 				name: "str", 
 				description: "str", 
-				image: "@todo",
+				image: "@todo image",
 				price: "float",
 				tags: "str,str*,.."
 			}
@@ -237,17 +237,17 @@ server = {
 ---
 &nbsp;
 ### **3. Manage Products (Admin)**
-@todo these should send mail to check if admin = true
 #### **3.1. Add new product**
 ```js
 client = {
 	type: 3,
 	code: 1,
 	content: {
+		email: "str",
 		id: "int", 
 		name: "str", 
 		description: "str", 
-		image: "@todo",
+		image: "@todo image",
 		price: "float",
 		tags: "str,str,.."
 	}
@@ -268,6 +268,7 @@ client = {
 	type: 3,
 	code: 2,
 	content: {
+		email: "str",
 		"str"(field): "str"(value),
 		"str"(field): "str"(value),
 		..
@@ -291,6 +292,7 @@ client = {
 	type: 3,
 	code: 3,
 	content: {
+		email: "str",
 		id: "int"
 	}
 }
@@ -432,7 +434,7 @@ server = {
 	}
 }
 ```
-#### **4.6. Request Cart Products**
+#### **4.7. Request Cart Products**
 ```js
 client = {
 	type: 4,
@@ -448,14 +450,17 @@ server = {
 	type: 4,
 	code: 7,
 	content: {
+		success: "bool",
+		amount: "int",
 		products: "list"[
 			"dict"{
 				id: "int", 
 				name: "str", 
 				description: "str", 
-				image: "@todo",
+				image: "@todo image",
 				price: "float",
-				tags: "str,str,.."
+				tags: "str,str,..",
+				quantity: "int"
 			}
 		]
 	}
@@ -486,8 +491,8 @@ server = {
 }
 ```
 #### **4.9. Purchase**
+@todo Purchase
 ```js
-@todo
 client = {
 	type: 4,
 	code: 9,
@@ -509,13 +514,13 @@ server = {
 ---
 &nbsp;
 ### **5. User Info**
-@todo this ones should send the user email always
 #### **5.1. Edit name**
 ```js
 client = {
 	type: 5,
 	code: 1,
 	content: {
+		email: "str",
 		name: "str"
 	}
 }
@@ -535,7 +540,8 @@ client = {
 	type: 5,
 	code: 2,
 	content: {
-		email: "str"
+		email: "str",
+		newemail: "str"
 	}
 }
 ```
@@ -554,6 +560,7 @@ client = {
 	type: 5,
 	code: 3,
 	content: {
+		email: "str",
 		password: "str"
 	}
 }
@@ -573,8 +580,8 @@ client = {
 	type: 5,
 	code: 4,
 	content: {
-		op: "int", // 0: add, 1: remove
-		payment: "str"
+		email: "str",
+		payment: "str",
 	}
 }
 ```
@@ -593,8 +600,8 @@ client = {
 	type: 5,
 	code: 5,
 	content: {
-		op: "int", // 0: add, 1: remove
-		address: "str"
+		email: "str",
+		address: "str",
 	}
 }
 ```
@@ -626,17 +633,19 @@ server = {
 		email: "str",
 		name: "str",
 		surname: "str",
-		payments: "list"["str"],
-		addresses: "list"["str"]
+		payment: "str",
+		address: "str"
 	}
 }
 ```
 ---
 &nbsp;
 ### **7. Orders**
-#### **7.1. @todo**
+@todo Orders
+#### **7.1.**
 
 ---
 &nbsp;
 ### **8. Orders (ADMIN)**
-#### **8.1. @todo**
+@todo Orders (ADMIN)
+#### **8.1.**
