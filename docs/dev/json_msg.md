@@ -631,8 +631,8 @@ server = {
 	code: 6,
 	content: {
 		email: "str",
-		name: "str",
 		password: "str",
+		name: "str",
 		surname: "str",
 		payment: "str",
 		address: "str"
@@ -682,7 +682,7 @@ client = {
 ```js
 server = {
 	type: 6,
-	code: 1,s
+	code: 1,
 	content: {
 		success: "bool",
 		orderid: "int",
