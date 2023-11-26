@@ -15,6 +15,7 @@
 #  *              If not, see <http://www.gnu.org/licenses/>.
 #***************************************************************************************************
 import sqlite3
+from datetime import datetime
 
 
 #***************************************************************************************************
@@ -53,11 +54,31 @@ class Database:
 
 #***************************************************************************************************
 	@classmethod
-	def user_signup(cls, email: str, password: str) -> list:
+	def user_signup(cls, email: str, password: str) -> bool:
 		query = "INSERT INTO cliente (email, pwd) VALUES (?, ?)"
-		cls.cursor.execute(query, (email, password))
-		cls.connection.commit()
-		# @todo check errors and proper return
+		try:
+			cls.cursor.execute(query, (email, password))
+			cls.connection.commit()
+			return True
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error ocurred while adding new user: \n{e}")
+			return False
+
+
+#***************************************************************************************************
+	@classmethod
+	def fetch_user_info(cls, email: str) -> tuple:
+		query = """
+		SELECT *
+		FROM Cliente
+		WHERE email = ?;
+		"""
+		cls.cursor.execute(query, (email,))
+		user_info = cls.cursor.fetchall()[0]
+		return {"email": user_info[0], "name": user_info[1], "surname": user_info[2], 
+						"payment": user_info[3], "address": user_info[4], "password": user_info[5], 
+						"admin": user_info[6] }
 
 
 #***************************************************************************************************
@@ -109,7 +130,6 @@ class Database:
 		cls.cursor.execute(query, product_id)
 		results = cls.cursor.fetchall()
 		results = results[0]
-		print(f"Results: {results}")
 		products = {"product_id": results[0], "product_name": results[1], 
 								"product_description": results[2], "product_image": results[3], 
 								"product_price": results[4], "tags": results[5]}
@@ -162,7 +182,7 @@ class Database:
 
 #***************************************************************************************************
 	@classmethod
-	def fetch_tags(cls) -> list:
+	def fetch_tags(cls) -> dict:
 		query = """
 		SELECT nombre
 		FROM Tag;
@@ -175,12 +195,288 @@ class Database:
 
 #***************************************************************************************************
 	@classmethod
+	def is_user_cart(cls, email: str, cartid: int) -> bool:
+		query = """
+		SELECT COUNT(*)
+		FROM Carrito
+		WHERE ROWID = ? AND email = ?;
+		"""
+		cls.cursor.execute(query, (cartid, email))
+		results = cls.cursor.fetchall()
+		return results[0][0] > 0
+
+
+#***************************************************************************************************
+	@classmethod
+	def new_cart(cls, email: str, cartname: str) -> bool:
+		query = """
+		INSERT INTO Carrito (email, nombre)
+			VALUES (?, ?);
+		"""
+		try:
+			cls.cursor.execute(query, (email, cartname))
+			cls.connection.commit()
+			return True
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error ocurred while adding new cart: \n{e}")
+			return False
+
+
+#***************************************************************************************************
+	@classmethod
+	def edit_cart(cls, email: str, cartid: int, newname: str) -> bool:
+		query = """
+		UPDATE Carrito 
+		SET nombre = ?
+		WHERE ROWID = ? AND email = ?;
+		"""
+		try:
+			cls.cursor.execute(query, (newname, cartid, email))
+			cls.connection.commit()
+			return True
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error ocurred while editing a cart: \n{e}")
+			return False
+
+
+#***************************************************************************************************
+	@classmethod
+	def remove_cart(cls, email: str, cartid: int) -> bool:
+		query = """
+		DELETE FROM Carrito 
+			WHERE ROWID = ? AND email = ?;
+		"""
+		try:
+			cls.cursor.execute(query, (cartid, email))
+			cls.connection.commit()
+			return True
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error ocurred while removing a cart: \n{e}")
+			return False
+
+
+#***************************************************************************************************
+	@classmethod
+	def add_product_to_cart(cls, cartid: int, productid: int) -> bool:
+		query = """
+			INSERT INTO Contiene 
+				VALUES(?, ?, ?);
+		"""
+		try:
+			cls.cursor.execute(query, (cartid, productid, 1))
+			cls.connection.commit()
+			return True
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error ocurred while adding a product to a cart: \n{e}")
+			return False
+
+
+#***************************************************************************************************
+	@classmethod
+	def edit_product_quantity(cls, cartid: int, productid: int, quantity: int) -> bool:
+		query = """
+		UPDATE Contiene
+		SET cantidad = ?
+		WHERE idCarrito = ? AND idProducto = ?;
+		"""
+		try:
+			cls.cursor.execute(query, (quantity, cartid, productid))
+			cls.connection.commit()
+			return True
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error ocurred while editing product quantity on a cart: \n{e}")
+			return False
+
+
+#***************************************************************************************************
+	@classmethod
+	def remove_product_from_cart(cls, cartid: int, productid: int) -> bool:
+		query = """
+		DELETE FROM Contiene 
+		WHERE idCarrito = ? AND idProducto = ?;
+		"""
+		try:
+			cls.cursor.execute(query, (cartid, productid))
+			cls.connection.commit()
+			return True
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error ocurred while removing a product from a cart: \n{e}")
+			return False
+
+
+#***************************************************************************************************
+	@classmethod
+	def request_cart_products(cls, cartid: int) -> dict:
+		query = """
+		SELECT	producto.ROWID,
+        		producto.nombre,
+						producto.descripcion,
+						producto.imagen,
+						producto.precio, 
+						contiene.cantidad, 
+						GROUP_CONCAT(clasificacion.tag) AS tags
+		FROM producto, contiene, clasificacion
+		WHERE contiene.idProducto = producto.ROWID 
+				AND clasificacion.idProducto = producto.ROWID  
+				AND CONTIENE.idCarrito = ?
+		GROUP BY producto.ROWID, producto.nombre, producto.descripcion, producto.imagen, 
+						producto.precio, contiene.cantidad;
+		"""
+		cls.cursor.execute(query, (cartid,))
+		results = cls.cursor.fetchall()
+		products = []
+		for row in results:
+			products.append({"product_id": row[0], "product_name": row[1], "product_description": row[2], 
+											 "product_image": row[3], "product_price": row[4], "tags": row[6], 
+											 "quantity": row[5]})
+		total = cls.get_cart_total(cartid)
+		return {"success": True, "amount": len(products), "total": total, "products": products}
+
+
+#***************************************************************************************************
+	@classmethod
 	def fetch_carts(cls, email: str) -> dict:
 		query = """
 		SELECT ROWID, nombre 
 		FROM Carrito
 		WHERE email = ?;
 		"""
+
 		cls.cursor.execute(query, (email,))
 		cartlist = cls.cursor.fetchall()
-		return {"carts": [{"cartid": cart[0], "cartname": cart[1]} for cart in cartlist]}
+		total = []
+		for cart in cartlist:
+			total.append(cls.get_cart_total(cart[0]))
+		return {"carts": [{"cartid": cart[0], "cartname": cart[1], "total": total[i]} 
+						for i, cart in enumerate(cartlist)]}
+
+
+#***************************************************************************************************
+	@classmethod
+	def cart_has_content(cls, cartid: int) -> bool:
+		query = """
+		SELECT COUNT(*)
+		FROM Contiene
+		WHERE idCarrito = ?;
+		"""
+		cls.cursor.execute(query, (cartid,))
+		contents = cls.cursor.fetchall()[0]
+		return len(contents) > 0
+
+
+#***************************************************************************************************
+	@classmethod
+	def create_order(cls, email: str, cartid: int) -> int:
+		user_info = cls.fetch_user_info(email)
+		cart_total = cls.get_cart_total(cartid)
+		current_date = datetime.now()
+		current_date = current_date.strftime("%d/%m/%Y")
+		query = """
+		INSERT INTO Pedido (email, direccion, tarjeta, fecha, total, estado) 
+		VALUES (?, ?, ?, ?, ?, 'Invoiced');
+		"""
+		try:
+			cls.cursor.execute(query, (user_info["email"], user_info["address"], user_info["payment"],
+																 current_date, cart_total))
+			orderid = cls.cursor.lastrowid
+			cls.connection.commit()
+			return orderid
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error ocurred while creating order: \n{e}")
+			return 0
+
+
+#***************************************************************************************************
+	@classmethod
+	def fill_order(cls, cartid: int, orderid: int) -> bool:
+		query = """
+		INSERT INTO LineaPedido 
+		SELECT pedido.ROWID, producto.nombre, Contiene.idProducto, Contiene.cantidad
+		FROM Pedido, producto, Contiene 
+		WHERE Pedido.ROWID = ?  
+			AND Contiene.idCarrito = ? 
+			AND Contiene.idProducto = producto.ROWID;
+		"""
+		try:
+			cls.cursor.execute(query, (orderid, cartid))
+			cls.connection.commit()
+			return True
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error ocurred while filling order with cart contents: \n{e}")
+			return False
+
+
+#***************************************************************************************************
+	@classmethod
+	def empty_cart(cls, cartid: int) -> bool:
+		query = """
+		DELETE FROM Contiene
+		WHERE idCarrito = ?;
+		"""
+		try:
+			cls.cursor.execute(query, (cartid,))
+			cls.connection.commit()
+			return True
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error ocurred while emptying cart: \n{e}")
+			return False
+
+
+#***************************************************************************************************
+	@classmethod
+	def get_cart_total(cls, cartid: int) -> float:
+		query = """
+		SELECT Contiene.cantidad, Producto.precio 
+		FROM Contiene, Producto 
+		WHERE Contiene.idProducto = Producto.ROWID AND Contiene.idCarrito = ?;
+		"""
+		cls.cursor.execute(query, (cartid,))
+		productlist = cls.cursor.fetchall()
+		total = 0
+		for product in productlist:
+			total += product[0] * product[1]
+		return total
+
+#***************************************************************************************************
+	@classmethod
+	def edit_payment(cls, email: str, payment: str) -> bool:
+		query = """
+		UPDATE Cliente
+		SET tarjeta = ?
+		WHERE email = ?
+		"""
+		try:
+			cls.cursor.execute(query, (payment, email))
+			cls.connection.commit()
+			return True
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error ocurred while editing payment: \n{e}")
+			return False
+
+
+#***************************************************************************************************
+	@classmethod
+	def edit_address(cls, email: str, address: str) -> bool:
+		query = """
+		UPDATE Cliente
+		SET direccion = ?
+		WHERE email = ?
+		"""
+		try:
+			cls.cursor.execute(query, (address, email))
+			cls.connection.commit()
+			return True
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error ocurred while editing address: \n{e}")
+			return False

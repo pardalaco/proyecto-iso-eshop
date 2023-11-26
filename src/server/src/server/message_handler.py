@@ -28,7 +28,18 @@ class MessageHandler:
 			(2, 2): self.handle_request_product_by_id,
 			(2, 3): self.handle_request_products_by_tags,
 			(2, 5): self.handle_request_all_tags,
-			(4, 8): self.handle_request_user_carts
+			(4, 1): self.handle_new_cart,
+			(4, 2): self.handle_edit_cart,
+			(4, 3): self.handle_remove_cart,
+			(4, 4): self.handle_add_product_to_cart,
+			(4, 5): self.handle_edit_product_quantity,
+			(4, 6): self.handle_remove_product_from_cart,
+			(4, 7): self.handle_request_cart_products,
+			(4, 8): self.handle_request_user_carts,
+			(4, 9): self.handle_purchase,
+			(5, 4): self.handle_edit_payment,
+			(5, 5): self.handle_edit_address,
+			(5, 6): self.handle_user_info
 		}
 
 
@@ -64,11 +75,15 @@ class MessageHandler:
 
 #***************************************************************************************************
 	def handle_user_signup(self, content: dict) -> dict:
-		if Database.email_exists(content.get("email")):
+		email = content["email"]
+		password = content["password"]
+		if Database.email_exists(email):
 			return {"success": False}
 		else:
-			Database.user_signup(content.get("email"), content.get("password"))
-			return {"success": True}
+			success = Database.user_signup(email, password)
+			if success:
+				self.handle_new_cart({"email": email, "cartname": "Carrito"})
+			return {"success": success}
 
 
 #***************************************************************************************************
@@ -94,5 +109,126 @@ class MessageHandler:
 
 
 #***************************************************************************************************
+	def handle_new_cart(self, content: dict) -> dict:
+		print(content)
+		email = content["email"]
+		cartname = content["cartname"]
+		success = Database.new_cart(email, cartname)
+		return {"success": success}
+
+
+#***************************************************************************************************
+	def handle_edit_cart(self, content: dict) -> dict:
+		email = content["email"]
+		cartid = content["cartid"]
+		newname = content["newname"]
+		success = Database.edit_cart(email, cartid, newname)
+		return {"success": success}
+
+
+#***************************************************************************************************
+	def handle_remove_cart(self, content: dict) -> dict:
+		email = content["email"]
+		cartid = content["cartid"]
+		success = Database.remove_cart(email, cartid)
+		return {"success": success}
+
+#***************************************************************************************************
+	def handle_add_product_to_cart(self, content: dict) -> dict:
+		email = content["email"]
+		cartid = content["cartid"]
+		productid = content["productid"]
+		success = Database.is_user_cart(email, cartid)
+		if not success:
+			return {"success": success}
+		else:
+			success = Database.add_product_to_cart(cartid, productid)
+			return {"success": success}
+
+
+#***************************************************************************************************
+	def handle_edit_product_quantity(self, content: dict) -> dict:
+		email = content["email"]
+		cartid = content["cartid"]
+		productid = content["productid"]
+		quantity = content["quantity"]
+		success = Database.is_user_cart(email, cartid)
+		if not success:
+			return {"success": success}
+		else:
+			success = Database.edit_product_quantity(cartid, productid, quantity)
+			return {"success": success}
+
+
+#***************************************************************************************************
+	def handle_remove_product_from_cart(self, content: dict) -> dict:
+		email = content["email"]
+		cartid = content["cartid"]
+		productid = content["productid"]
+		success = Database.is_user_cart(email, cartid)
+		if not success:
+			return {"success": success}
+		else:
+			success = Database.remove_product_from_cart(cartid, productid)
+			return {"success": success}
+
+
+#***************************************************************************************************
+	def handle_request_cart_products(self, content: dict) -> dict:
+		email = content["email"]
+		cartid = content["cartid"]
+		success = Database.is_user_cart(email, cartid)
+		if not success:
+			return {"success": success, "amount": 0, "products": {}}
+		else:
+			return Database.request_cart_products(cartid)
+
+
+#***************************************************************************************************
 	def handle_request_user_carts(self, content: dict) -> dict:
 		return Database.fetch_carts(email = content["email"])
+
+
+#***************************************************************************************************
+	def handle_purchase(self, content: dict) -> dict:
+		email = content["email"]
+		cartid = content["cartid"]
+		if not Database.is_user_cart(email, cartid):
+			return {"success": False}
+		if not Database.cart_has_content(cartid):
+			return{"success": False}
+		
+		orderid = Database.create_order(email, cartid)
+		if orderid == 0:
+			return {"success": False}
+		
+		if not Database.fill_order(cartid, orderid):
+			return {"success": False}
+		
+		if not Database.empty_cart(cartid):
+			return {"success": False}
+
+		return {"success": True, "orderid": orderid}
+
+
+#***************************************************************************************************
+	def handle_edit_payment(self, content: dict) -> dict:
+		email = content["email"]
+		payment = content["payment"]
+		success = Database.edit_payment(email, payment)
+		return {"success": success}
+
+
+#***************************************************************************************************
+	def handle_edit_address(self, content: dict) -> dict:
+		email = content["email"]
+		address = content["address"]
+		success = Database.edit_address(email, address)
+		return {"success": success}
+
+
+#***************************************************************************************************
+	def handle_user_info(self, content: dict) -> dict:
+		email = content["email"]
+		user_info = Database.fetch_user_info(email)
+		return user_info

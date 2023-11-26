@@ -66,8 +66,58 @@ def handle_logout(isresponse: bool, current_user: dict, args: list[str]) -> tupl
 
 
 #***************************************************************************************************
+def handle_edit_payment(isresponse: bool, current_user: dict, args: list[str]) -> tuple[bool, dict]:
+	if current_user["privilege"] == PRIVILEGE_NONE:
+		return (False, "You need to Log in to use this command")
+	else:
+		if isresponse:
+			if args[0]["content"]["success"] == True:
+				return (False, "Payment edited successfully")
+			else:
+				return (False, "There was an error while editing the payment")
+		else:
+			return (True, {"type": 5, "code": 4, "content": {"email": current_user["email"],
+																												"payment": " ".join(args)}})
+
+
+#***************************************************************************************************
+def handle_edit_address(isresponse: bool, current_user: dict, args: list[str]) -> tuple[bool, dict]:
+	if current_user["privilege"] == PRIVILEGE_NONE:
+		return (False, "You need to Log in to use this command")
+	else:
+		if isresponse:
+			if args[0]["content"]["success"] == True:
+				return (False, "Address edited successfully")
+			else:
+				return (False, "There was an error while editing the address")
+		else:
+			return (True, {"type": 5, "code": 5, "content": {"email": current_user["email"],
+																												"address": " ".join(args)}})
+
+
+#***************************************************************************************************
+def handle_user_info(isresponse: bool, current_user: dict, args: list[str]) -> tuple[bool, dict]:
+	if current_user["privilege"] == PRIVILEGE_NONE:
+		return (False, "You need to Log in to use this command")
+	else:
+		if isresponse:
+			return (False, args[0])
+		else:
+			return (True, {"type": 5, "code": 6, "content": {"email": current_user["email"]}})
+
+
+#***************************************************************************************************
 user_command_handlers = {
     "login": handle_login,
     "signup": handle_signup,
-    "logout": handle_logout
+    "logout": handle_logout,
+
+		"edit-payment": handle_edit_payment,
+		"epy": handle_edit_payment,
+
+		"edit-address": handle_edit_address,
+		"ead": handle_edit_address,
+
+		"user-info": handle_user_info,
+		"ui": handle_user_info
 }

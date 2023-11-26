@@ -32,8 +32,7 @@
 			- [**5.3. Edit password**](#53-edit-password)
 			- [**5.4. Edit Payment**](#54-edit-payment)
 			- [**5.5. Edit Address**](#55-edit-address)
-		- [**6. Information Requests**](#6-information-requests)
-			- [**6.1. Request User Info**](#61-request-user-info)
+			- [**5.6. Request User Info**](#56-request-user-info)
 		- [**7. Orders**](#7-orders)
 			- [**7.1.**](#71)
 		- [**8. Orders (ADMIN)**](#8-orders-admin)
@@ -452,6 +451,7 @@ server = {
 	content: {
 		success: "bool",
 		amount: "int",
+		total: "float",
 		products: "list"[
 			"dict"{
 				id: "int", 
@@ -484,20 +484,21 @@ server = {
 		carts: "list"[
 			"dict"{
 				cartid: "int",
-				cartname: "str"							
+				cartname: "str",
+				total: "float"							
 			}
 		]
 	}
 }
 ```
 #### **4.9. Purchase**
-@todo Purchase
 ```js
 client = {
 	type: 4,
 	code: 9,
 	content: {
-		cartname: "str",
+		email: "str",
+		cartid: "int",
 	}
 }
 ```
@@ -614,24 +615,22 @@ server = {
 	}
 }
 ```
----
-&nbsp;
-### **6. Information Requests**
-#### **6.1. Request User Info**
+#### **5.6. Request User Info**
 ```js
 client = {
-	type: 6,
-	code: 1,
+	type: 5,
+	code: 6,
 	content: {}
 }
 ```
 ```js
 server = {
-	type: 6,
-	code: 1,
+	type: 5,
+	code: 6,
 	content: {
 		email: "str",
 		name: "str",
+		password: "str",
 		surname: "str",
 		payment: "str",
 		address: "str"
