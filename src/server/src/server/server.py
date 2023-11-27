@@ -92,6 +92,7 @@ class Server:
 				print(f"Received malformed JSON from {address}")
 				response = "ERROR"
 
+			print(f"Responded to {address}: {response}")
 			writer.write(response.encode('utf-8'))
 			await writer.drain()
 
