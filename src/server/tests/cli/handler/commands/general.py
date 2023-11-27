@@ -14,7 +14,6 @@
 #  *              along with the "eshop - proyecto iso" project. 
 #  *              If not, see <http://www.gnu.org/licenses/>.
 #***************************************************************************************************
-from typing import Union
 from .. import PRIVILEGE_ADMIN, PRIVILEGE_NORMAL_USER, PRIVILEGE_NONE
 
 
@@ -26,7 +25,7 @@ def handle_quit(isresponse: bool, current_user: dict, args: list[str]) ->  tuple
 #***************************************************************************************************
 def handle_help(isresponse: bool, current_user: dict, args: list[str]) -> tuple[bool, str]:
 	if current_user["privilege"] == PRIVILEGE_ADMIN:
-		return (False, admin_help() + note_help())
+		return (False, shop_help() + admin_help() + note_help())
 	elif current_user["privilege"] == PRIVILEGE_NORMAL_USER:
 		return (False, shop_help() + note_help())
 	else:
@@ -36,27 +35,59 @@ def handle_help(isresponse: bool, current_user: dict, args: list[str]) -> tuple[
 def user_help() -> str:
 	return """
 	Available Commands:
-		login <email> <password> - Log in with your email and password.
-		signup <email> <password> - Register a new account with email and password.
+		login <email> <password>
+		signup <email> <password>
 	"""
 	
 
 def shop_help() -> str:
 	return """
-	Available Commands:
-		list-products (lp) [-tags <tag> <tag> ...] [keyword] - List products by tags or keyword. 
-				If no tags or keyword are provided, it lists all available products.
+	User Commands:
+		edit-payment (epy) <payment>
+		edit-address (ead) <address>
+		user-info (ui)
+
+	Shop Commands:
+		list-products (lp) [-tags <tag> <tag> ...]
+		product (p) <product_id>
+		tags (t)
+
+	Cart Commands:
+		new-cart (nc) <cart_name>
+		edit-cart (ec) <cart_id> <cart_name>
+		remove-cart (rc) <cart_id>
+		add-product (ap) <cart_id> <product_id>
+		edit-product-quantity (epq) <cart_id> <product_id> <quantity>
+		remove-product (rp) <cart_id> <product_id>
+		list-cart-products (lcp) <cart_id>
+		list-carts (lc)
+		pruchase-cart (pc) <cart_id>
+
+	Order Commands:
+		list-orders (lo)
+		order-details (od) <order_id>
+		cancel-order (co) <order_id>
 	"""
 
 def admin_help() -> str:
 	return """
-	Available Commands:
+	Admin Commands:
+		new-product (np) <name> <description> <image> <price>
+		edit-product (ep) <product_id> <field> <value> 
+			(field can be: "nombre", "descripcion", "imagen", "precio")
+		delete-product (dp) <product_id>
+		list-all-orders (lao)
+		change-order-status (cos) <order_id> <status>
+			(status can be: 0 = "Invoiced", 1 = "Prepared", 2 = "Shipped", 3 = "Out for Delivery", 
+			                4 = "Delivered", 5 = "Cancelled")
 	"""
 
 def note_help() -> str:
-	return """	logout - Log out of the application.
-		help (h) - Show this help message.
-		quit (q, exit) - Exit the application.
+	return """	
+	Other Commands:
+		logout
+		help (h)
+		quit (q, exit)
 
 	Note:
 		<angle brackets> indicate required arguments.

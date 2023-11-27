@@ -14,8 +14,6 @@
 #  *              along with the "eshop - proyecto iso" project. 
 #  *              If not, see <http://www.gnu.org/licenses/>.
 #***************************************************************************************************
-from typing import Union
-
 from .. import PRIVILEGE_ADMIN, PRIVILEGE_NORMAL_USER, PRIVILEGE_NONE
 
 

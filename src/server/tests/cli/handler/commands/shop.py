@@ -69,10 +69,7 @@ def handle_list_tags(isresponse: bool, current_user: dict, args: list[str]) -> t
 #***************************************************************************************************
 shop_command_handlers = {
 	"list-products": handle_list_products,
-	"list": handle_list_products,
-	"products": handle_list_products,
 	"lp": handle_list_products,
-	"l": handle_list_products,
 
 	"product": handle_product,
 	"p": handle_product,

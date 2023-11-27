@@ -16,6 +16,7 @@
 #***************************************************************************************************
 import sqlite3
 from datetime import datetime
+from typing import Union
 
 
 #***************************************************************************************************
@@ -85,19 +86,19 @@ class Database:
 	@classmethod
 	def fetch_all_products(cls) -> dict:
 		query = """
-			SELECT p.id AS product_id,
+			SELECT p.ROWID AS product_id,
         p.nombre AS product_name,
         p.descripcion AS product_description,
         p.imagen AS product_image,
         p.precio AS product_price,
         GROUP_CONCAT(t.nombre) AS tags
 			FROM Producto p
-			JOIN Clasificacion c 
-					ON p.id = c.idProducto
+			LEFT JOIN Clasificacion c 
+					ON p.ROWID = c.idProducto
 			LEFT JOIN Tag t 
 					ON c.tag = t.nombre
-			GROUP BY p.id, p.nombre, p.descripcion, p.imagen, p.precio
-			ORDER BY p.id;
+			GROUP BY p.ROWID, p.nombre, p.descripcion, p.imagen, p.precio
+			ORDER BY p.ROWID;
 		"""
 		cls.cursor.execute(query)
 		results = cls.cursor.fetchall()
@@ -112,20 +113,20 @@ class Database:
 	@classmethod
 	def fetch_product_by_id(cls, product_id: int) -> dict:
 		query = """
-		SELECT 	p.id AS product_id,
+		SELECT 	p.ROWID AS product_id,
         		p.nombre AS product_name,
         		p.descripcion AS product_description,
         		p.imagen AS product_image,
         		p.precio AS product_price,
         		GROUP_CONCAT(t.nombre) AS tags
 		FROM Producto p
-		JOIN Clasificacion c 
-				ON p.id = c.idProducto
+		LEFT JOIN Clasificacion c 
+				ON p.ROWID = c.idProducto
 		LEFT JOIN Tag t 
 				ON c.tag = t.nombre
-		WHERE p.id = ?
-		GROUP BY p.id, p.nombre, p.descripcion, p.imagen, p.precio
-		ORDER BY p.id;
+		WHERE p.ROWID = ?
+		GROUP BY p.ROWID, p.nombre, p.descripcion, p.imagen, p.precio
+		ORDER BY p.ROWID;
 		"""
 		cls.cursor.execute(query, product_id)
 		results = cls.cursor.fetchall()
@@ -140,19 +141,19 @@ class Database:
 	@classmethod
 	def fetch_products_by_tags(cls, tags: list[str]) -> dict:
 		query = """
-		SELECT  p.id,
+		SELECT  p.ROWID,
 						p.nombre,
 						p.descripcion,
 						p.imagen,
 						p.precio,
 						GROUP_CONCAT(t.nombre) AS tags
 		FROM producto p
-		INNER JOIN Clasificacion c ON c.idProducto = p.id 
+		INNER JOIN Clasificacion c ON c.idProducto = p.ROWID 
 		LEFT JOIN Tag t ON c.tag = t.nombre
 		WHERE c.tag IN (
 		""" + ",".join("?" for i in range(len(tags))) + ")"
 
-		query += "GROUP BY p.id, p.nombre, p.descripcion, p.imagen, p.precio ORDER BY p.id"
+		query += "GROUP BY p.ROWID, p.nombre, p.descripcion, p.imagen, p.precio ORDER BY p.ROWID"
 		cls.cursor.execute(query, tags)
 		results = cls.cursor.fetchall()
 		products = []
@@ -191,6 +192,62 @@ class Database:
 		results = cls.cursor.fetchall()
 		results = [tag[0].capitalize() for tag in results]
 		return {"tags": results}
+
+
+#***************************************************************************************************
+	@classmethod
+	def new_product(cls, name: str, description: str, image: str, price: float) -> bool:
+		query = """
+		INSERT INTO Producto (nombre, descripcion, imagen, precio)
+	    VALUES (?, ?, ?, ?);
+		"""
+		try:
+			cls.cursor.execute(query, (name, description, image, price))
+			cls.connection.commit()
+			return True
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error ocurred while adding a new product: \n{e}")
+			return False
+
+
+#***************************************************************************************************
+	@classmethod
+	def edit_product(cls, productid: int, field: str, value: Union[str, int]) -> bool:
+		valid_columns = ["nombre", "descripcion", "imagen", "precio"]
+		if field in valid_columns:
+			query = f"""
+			UPDATE Producto
+			SET {field} = ?
+			WHERE ROWID = ?;
+			"""
+			try:
+				cls.cursor.execute(query, (value, productid))
+				cls.connection.commit()
+				return True
+			except Exception as e:
+				cls.connection.rollback()
+				print(f"(!) An error ocurred while editing a product: \n{e}")
+				return False
+		else:
+			return False
+
+
+#***************************************************************************************************
+	@classmethod
+	def delete_product(cls, productid: int) -> bool:
+		query = """
+		DELETE FROM Producto
+		WHERE ROWID = ?; 
+		"""
+		try:
+			cls.cursor.execute(query, (productid,))
+			cls.connection.commit()
+			return True
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error ocurred while deleting a product: \n{e}")
+			return False
 
 
 #***************************************************************************************************
@@ -321,10 +378,10 @@ class Database:
 						producto.precio, 
 						contiene.cantidad, 
 						GROUP_CONCAT(clasificacion.tag) AS tags
-		FROM producto, contiene, clasificacion
+		FROM producto, contiene
+		LEFT JOIN clasificacion ON producto.ROWID = clasificacion.idProducto
 		WHERE contiene.idProducto = producto.ROWID 
-				AND clasificacion.idProducto = producto.ROWID  
-				AND CONTIENE.idCarrito = ?
+				AND contiene.idCarrito = ?
 		GROUP BY producto.ROWID, producto.nombre, producto.descripcion, producto.imagen, 
 						producto.precio, contiene.cantidad;
 		"""
@@ -556,4 +613,39 @@ class Database:
 		except Exception as e:
 			cls.connection.rollback()
 			print(f"(!) An error ocurred while deleting order: \n{e}")
+			return False
+
+
+#***************************************************************************************************
+	@classmethod
+	def fetch_all_orders(cls) -> dict:
+		query = """
+		SELECT * 
+		FROM Pedido;
+		"""
+		cls.cursor.execute(query)
+		results = cls.cursor.fetchall()
+		orderlist = []
+		for order in results:
+			orderlist.append({"orderid": order[0], "email": order[1], "address": order[2],
+											"payment": order[3], "date": order[4], "total": order[5], "status": order[6]})
+		return {"amount": len(orderlist), "orders": orderlist}
+
+
+#***************************************************************************************************
+	@classmethod
+	def change_order_status(cls, orderid: int, status: int) -> bool:
+		statuses = ["Invoiced", "Prepared", "Shipped", "Out for Delivery", "Delivered", "Cancelled"]
+		query = """
+		UPDATE Pedido	
+		SET estado = ?
+		WHERE ROWID = ?;
+		"""
+		try:
+			cls.cursor.execute(query, (statuses[int(status)], orderid))
+			cls.connection.commit()
+			return True
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error ocurred while changing order status: \n{e}")
 			return False

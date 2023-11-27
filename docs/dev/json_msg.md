@@ -6,6 +6,7 @@
 		- [**1. User Access**](#1-user-access)
 			- [**1.1. Log in**](#11-log-in)
 			- [**1.2. Sign up**](#12-sign-up)
+			- [**1.3. Is user Admin**](#13-is-user-admin)
 		- [**2. Request Product(s)**](#2-request-products)
 			- [**2.1. Request all Products**](#21-request-all-products)
 			- [**2.2. Request product by ID**](#22-request-product-by-id)
@@ -38,7 +39,8 @@
 			- [**6.2. Request Order Details**](#62-request-order-details)
 			- [**6.3. Cancel Order**](#63-cancel-order)
 		- [**7. Orders (ADMIN)**](#7-orders-admin)
-			- [**7.1.**](#71)
+			- [**7.1. List All Orders**](#71-list-all-orders)
+			- [**7.2. Change Order Status**](#72-change-order-status)
 # **JSON Message Structure**
 ## **Main format**
 ```js
@@ -101,6 +103,25 @@ client = {
 server = {
 	type: 1,
 	code: 2,
+	content: {
+		success: "bool"
+	}
+}
+```
+#### **1.3. Is user Admin**
+```js
+client = {
+	type: 1,
+	code: 3,
+	content: {
+		email: "str",
+	}
+}
+```
+```js
+server = {
+	type: 1,
+	code: 3,
 	content: {
 		success: "bool"
 	}
@@ -245,7 +266,6 @@ client = {
 	code: 1,
 	content: {
 		email: "str",
-		id: "int", 
 		name: "str", 
 		description: "str", 
 		image: "@todo image",
@@ -270,6 +290,7 @@ client = {
 	code: 2,
 	content: {
 		email: "str",
+		productid: "int",
 		"str"(field): "str"(value),
 		"str"(field): "str"(value),
 		..
@@ -294,7 +315,7 @@ client = {
 	code: 3,
 	content: {
 		email: "str",
-		id: "int"
+		productid: "int"
 	}
 }
 ```
@@ -719,4 +740,55 @@ server = {
 &nbsp;
 ### **7. Orders (ADMIN)**
 @todo Orders (ADMIN)
-#### **7.1.**
+#### **7.1. List All Orders**
+```js
+client = {
+	type: 7,
+	code: 1,
+	content: {
+		email: "str",
+	}
+}
+```
+```js
+server = {
+	type: 7,
+	code: 1,
+	content: {
+		amount: "int",
+		orders: "list"[
+			"dict"{
+				orderid: "int",
+				email: "str",
+				adddress: "str",
+				payment: "str",
+				date: "date",
+				total: "float",
+				status: "str"
+			}
+		]
+	}
+}
+```
+#### **7.2. Change Order Status**
+```js
+client = {
+	type: 7,
+	code: 2,
+	content: {
+		email: "str",
+		orderid: "int",
+		status: "int" // 0 = "Invoiced", 1 = "Prepared", 2 = "Shipped", 3 = "Out for Delivery", 
+									// 4 = "Delivered", 5, "Cancelled"
+	}
+}
+```
+```js
+server = {
+	type: 7,
+	code: 2,
+	content: {
+		success: "bool"
+	}
+}
+```

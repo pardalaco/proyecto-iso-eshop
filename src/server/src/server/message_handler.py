@@ -24,10 +24,14 @@ class MessageHandler:
 		self.dispatcher = {
 			(1, 1): self.handle_user_login,
 			(1, 2): self.handle_user_signup,
+			(1, 3): self.handle_is_user_admin,
 			(2, 1): self.handle_request_all_products,
 			(2, 2): self.handle_request_product_by_id,
 			(2, 3): self.handle_request_products_by_tags,
 			(2, 5): self.handle_request_all_tags,
+			(3, 1): self.handle_new_product,
+			(3, 2): self.handle_edit_product,
+			(3, 3): self.handle_delete_product,
 			(4, 1): self.handle_new_cart,
 			(4, 2): self.handle_edit_cart,
 			(4, 3): self.handle_remove_cart,
@@ -42,7 +46,9 @@ class MessageHandler:
 			(5, 6): self.handle_user_info,
 			(6, 1): self.handle_list_orders,
 			(6, 2): self.handle_order_details,
-			(6, 3): self.handle_cancel_order
+			(6, 3): self.handle_cancel_order,
+			(7, 1): self.handle_list_all_orders,
+			(7, 2): self.handle_change_order_status
 		}
 
 
@@ -90,6 +96,11 @@ class MessageHandler:
 
 
 #***************************************************************************************************
+	def handle_is_user_admin(self, content: dict) -> dict:
+		return {"success": Database.is_admin(content["email"])}
+
+
+#***************************************************************************************************
 	def handle_request_all_products(self, content: dict) -> dict:
 		return Database.fetch_all_products()
 
@@ -109,6 +120,41 @@ class MessageHandler:
 #***************************************************************************************************
 	def handle_request_all_tags(self, content: dict) -> dict:
 		return Database.fetch_tags()
+
+
+#***************************************************************************************************
+	def handle_new_product(self, content: dict) -> dict:
+		email = content["email"]
+		if not Database.is_admin(email):
+			return {"success": False}
+		else:
+			name = content["name"]
+			description = content["description"]
+			image = content["image"]
+			price = content["price"]
+			return {"success": Database.new_product(name, description, image, price)}
+
+
+#***************************************************************************************************
+	def handle_edit_product(self, content: dict) -> dict:
+		email = content.pop("email", None)
+		if not Database.is_admin(email):
+			return {"success": False}
+		else:
+			productid = content.pop("productid", None)
+			for key in content:
+				if not Database.edit_product(productid, key, content[key]):
+					return {"success": False}
+			return {"success": True}
+
+
+#***************************************************************************************************
+	def handle_delete_product(self, content: dict) -> dict:
+		email = content["email"]
+		if not Database.is_admin(email):
+			return {"success": False}
+		else:
+			return {"success": Database.delete_product(content["productid"])}
 
 
 #***************************************************************************************************
@@ -200,7 +246,7 @@ class MessageHandler:
 			return {"success": False}
 		if not Database.cart_has_content(cartid):
 			return{"success": False}
-		
+			
 		orderid = Database.create_order(email, cartid)
 		if orderid == 0:
 			return {"success": False}
@@ -261,3 +307,23 @@ class MessageHandler:
 			if Database.fetch_order_status(orderid) == "Invoiced":
 				return {"success": Database.cancel_order(orderid)}
 		return {"success": False}
+
+
+#***************************************************************************************************
+	def handle_list_all_orders(self, content: dict) -> dict:
+		email = content["email"]
+		if not Database.is_admin(email):
+			return {}
+		else:
+			return Database.fetch_all_orders()
+
+
+#***************************************************************************************************
+	def handle_change_order_status(self, content: dict) -> dict:
+		email = content["email"]
+		if not Database.is_admin(email):
+			return {"success": False}
+		else:
+			orderid = content["orderid"]
+			status = content["status"]
+			return {"success": Database.change_order_status(orderid, status)}
