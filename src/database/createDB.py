@@ -46,6 +46,16 @@ cursor.execute(
         DROP TABLE IF EXISTS Tag;
     '''
 )
+cursor.execute(
+	'''
+        DROP TABLE IF EXISTS Feedback;
+    '''
+)
+cursor.execute(
+	'''
+        DROP TABLE IF EXISTS Marketing;
+    '''
+)
 
 #DB table structure definition
 cursor.execute(
@@ -103,6 +113,8 @@ cursor.execute(
             descripcion VARCHAR(100) NOT NULL,
             imagen VARCHAR(80) NOT NULL,
             precio DECIMAL(7,2) NOT NULL,
+            rating DECIMAL NOT NULL DEFAULT 0,
+            contRating INT NOT NULL DEFAULT 0,
             PRIMARY KEY (ROWID)
 	    );
     '''
@@ -165,6 +177,44 @@ cursor.execute(
             FOREIGN KEY (idProducto)
                 REFERENCES Producto (ROWID)
                     ON DELETE SET NULL
+                    ON UPDATE CASCADE
+	    ) WITHOUT ROWID;
+    '''
+)
+cursor.execute(
+    '''
+	    CREATE TABLE Feedback (
+            email VARCHAR(40) NOT NULL,
+            idProducto INT NOT NULL,
+            rating INT NOT NULL,
+            comentario VARCHAR(100) NULL,
+            PRIMARY KEY (email, idProducto),
+            FOREIGN KEY (email)
+                REFERENCES Cliente (email)
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE,
+            FOREIGN KEY (idProducto)
+                REFERENCES Producto (ROWID)
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE
+	    ) WITHOUT ROWID;
+    '''
+)
+cursor.execute(
+    '''
+	    CREATE TABLE Marketing (
+            email VARCHAR(40) NOT NULL,
+            tag VARCHAR(45) NOT NULL,
+            peso DECIMAL(7,2) NOT NULL DEFAULT 0.5,
+            contador INT NOT NULL,
+            PRIMARY KEY (email, tag),
+            FOREIGN KEY (email)
+                REFERENCES Cliente (email)
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE,
+            FOREIGN KEY (tag)
+                REFERENCES Tag (nombre)
+                    ON DELETE CASCADE
                     ON UPDATE CASCADE
 	    ) WITHOUT ROWID;
     '''
