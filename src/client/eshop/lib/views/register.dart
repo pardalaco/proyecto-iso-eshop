@@ -85,6 +85,7 @@ class _MyFormR extends State<_MyBodyR> {
                   filled: true,
                   fillColor: CustomColors.n2,
                 ),
+                cursorColor: CustomColors.n1,
                 validator: (value) {
                   if (value?.isEmpty ?? true) return 'Required';
                   return null;
@@ -114,6 +115,7 @@ class _MyFormR extends State<_MyBodyR> {
                   filled: true,
                   fillColor: CustomColors.n2,
                 ),
+                cursorColor: CustomColors.n1,
                 validator: (value) {
                   if (value?.isEmpty ?? true) return 'Required';
                   return null;
@@ -144,6 +146,7 @@ class _MyFormR extends State<_MyBodyR> {
                   filled: true,
                   fillColor: CustomColors.n2,
                 ),
+                cursorColor: CustomColors.n1,
                 validator: (value) {
                   if (value?.isEmpty ?? true) return 'Required';
                   return null;
