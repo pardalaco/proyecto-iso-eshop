@@ -281,21 +281,22 @@ print("\n")
 #Select Products
 cursor.execute(
     '''    
-        SELECT p.ROWID AS product_id,
-        p.nombre AS product_name,
-        p.descripcion AS product_description,
-        p.imagen AS product_image,
-        p.precio AS product_price,
-		p.rating,
-		p.contRating,
-        GROUP_CONCAT(t.nombre) AS tags
-			FROM Producto p
+        SELECT 
+			p.ROWID AS product_id,
+        	p.nombre AS product_name,
+        	p.descripcion AS product_description,
+        	p.imagen AS product_image,
+        	p.precio AS product_price,
+			p.rating,
+			p.contRating,
+        	GROUP_CONCAT(t.nombre) AS tags
+		FROM Producto p
 			LEFT JOIN Clasificacion c 
 					ON p.ROWID = c.idProducto
 			LEFT JOIN Tag t 
 					ON c.tag = t.nombre
-			GROUP BY p.ROWID, p.nombre, p.descripcion, p.imagen, p.precio
-			ORDER BY p.ROWID;
+		GROUP BY p.ROWID, p.nombre, p.descripcion, p.imagen, p.precio
+		ORDER BY p.ROWID;
     '''
 )
 data = cursor.fetchall()
