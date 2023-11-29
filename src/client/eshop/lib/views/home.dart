@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names, prefer_interpolation_to_compose_strings, prefer_const_constructors, no_leading_underscores_for_local_identifiers, no_logic_in_create_state, must_be_immutable, unused_element, sized_box_for_whitespace
 
+import 'package:eshop/views/productDetailsUser.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:eshop/sockets/connection.dart';
@@ -148,7 +149,7 @@ class _HomeBody extends State<_MyHomeBody> {
                   icon: Icon(
                     Icons.filter_list_alt,
                     color: CustomColors.n1,
-                    size: MediaQuery.of(context).size.width * 0.045,
+                    size: MediaQuery.of(context).size.width * 0.125,
                   ))
             ],
           ),
@@ -241,7 +242,7 @@ Widget _MyDrawer(
             "Edit profile",
             style: TextStyle(
               color: Colors.white,
-              fontSize: MediaQuery.of(context).size.height * 0.02,
+              fontSize: 25,
             ),
           ),
           leading: Icon(
@@ -261,7 +262,7 @@ Widget _MyDrawer(
             "My orders",
             style: TextStyle(
               color: Colors.white,
-              fontSize: MediaQuery.of(context).size.height * 0.02,
+              fontSize: 25,
             ),
           ),
           leading: Icon(
@@ -278,17 +279,17 @@ Widget _MyDrawer(
           Row(
             children: [
               SizedBox(
-                width: MediaQuery.of(context).size.width * 0.03,
+                width: MediaQuery.of(context).size.width * 0.05,
               ),
               Text(
                 "Admin",
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: MediaQuery.of(context).size.height * 0.02,
+                  fontSize: 25,
                 ),
               ),
               SizedBox(
-                width: MediaQuery.of(context).size.width * 0.015,
+                width: MediaQuery.of(context).size.width * 0.03,
               ),
               MySwitch(
                 updateState: updateState,
@@ -304,7 +305,7 @@ Widget _MyDrawer(
             "Log out",
             style: TextStyle(
               color: Colors.white,
-              fontSize: MediaQuery.of(context).size.height * 0.02,
+              fontSize: 25,
             ),
           ),
           leading: Icon(
@@ -314,6 +315,8 @@ Widget _MyDrawer(
           ),
           onTap: () {
             //_goToLogIn(context);
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
           },
         ),
         SizedBox(
@@ -398,6 +401,14 @@ Widget FuturaLista(BuildContext context, Connection connection) {
               Icons.arrow_forward_ios,
               color: Colors.white,
             ),
+            onTap: () {
+              var route = MaterialPageRoute(
+                builder: (context) => DetailPage(
+                  producto: product,
+                ),
+              );
+              Navigator.of(context).push(route);
+            },
           );
         }).toList();
         return ListView.separated(
@@ -430,10 +441,13 @@ List<Tuple2<String, bool>> items = [
   Tuple2<String, bool>('Item 4', false),
 ];
 Widget _MyAlert(context, final VoidCallback updateState2) => AlertDialog(
-        title: const Text("Select tags"),
+        title: const Text(
+          "Select tags",
+          textAlign: TextAlign.center,
+        ),
         content: Container(
             width: MediaQuery.of(context).size.width * 0.15,
-            height: MediaQuery.of(context).size.width * 0.15,
+            height: MediaQuery.of(context).size.height * 0.15,
             child: _TagsList()),
         actions: [
           Center(
