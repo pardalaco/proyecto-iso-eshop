@@ -56,7 +56,17 @@ async def main() -> None:
 		if communication:
 			message = json.dumps(message)
 			writer.write(message.encode())
-			data = await reader.read(1024)
+
+			data = b""
+			try:
+				while True:
+					chunk = await asyncio.wait_for(reader.read(1024), timeout = 0.2)
+					if not chunk:
+						break
+					data += chunk
+			except asyncio.TimeoutError:
+				# End of data chunks
+				pass
 			data = data.decode()
 			response = json.loads(data)
 			communication, message = execute_command(input_list, current_user, True, response)

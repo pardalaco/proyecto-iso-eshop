@@ -73,9 +73,11 @@ def admin_help() -> str:
 	return """
 	Admin Commands:
 		new-product (np) <name> <description> <image> <price>
-		edit-product (ep) <product_id> <field> <value> 
+		edit-product (ep) <product_id> <field> <value> [tagop = "0", "1"]
 			(field can be: "nombre", "descripcion", "imagen", "precio")
+			(tagop only if field == "tags")
 		delete-product (dp) <product_id>
+		new-tag (nt) <tag>
 		list-all-orders (lao)
 		change-order-status (cos) <order_id> <status>
 			(status can be: 0 = "Invoiced", 1 = "Prepared", 2 = "Shipped", 3 = "Out for Delivery", 

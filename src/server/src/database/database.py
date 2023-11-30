@@ -63,7 +63,7 @@ class Database:
 			return True
 		except Exception as e:
 			cls.connection.rollback()
-			print(f"(!) An error ocurred while adding new user: \n{e}")
+			print(f"(!) An error occurred while adding new user: \n{e}")
 			return False
 
 
@@ -128,9 +128,10 @@ class Database:
 		GROUP BY p.ROWID, p.nombre, p.descripcion, p.imagen, p.precio
 		ORDER BY p.ROWID;
 		"""
-		cls.cursor.execute(query, product_id)
+		cls.cursor.execute(query, (product_id,))
 		results = cls.cursor.fetchall()
 		results = results[0]
+		print(results)
 		products = {"product_id": results[0], "product_name": results[1], 
 								"product_description": results[2], "product_image": results[3], 
 								"product_price": results[4], "tags": results[5]}
@@ -207,7 +208,7 @@ class Database:
 			return True
 		except Exception as e:
 			cls.connection.rollback()
-			print(f"(!) An error ocurred while adding a new product: \n{e}")
+			print(f"(!) An error occurred while adding a new product: \n{e}")
 			return False
 
 
@@ -227,9 +228,57 @@ class Database:
 				return True
 			except Exception as e:
 				cls.connection.rollback()
-				print(f"(!) An error ocurred while editing a product: \n{e}")
+				print(f"(!) An error occurred while editing a product: \n{e}")
 				return False
 		else:
+			return False
+
+
+#***************************************************************************************************
+	@classmethod
+	def add_product_tags(cls, productid: int, tags: str) -> bool:
+		taglist = tags.split(",")
+		query = """
+		INSERT INTO Clasificacion 
+    	VALUES(?, ?);
+		"""
+		try:
+			for tag in taglist:
+				if cls.tag_exists(tag):
+					cls.cursor.execute(query, (productid, tag))
+				else:
+					cls.connection.commit()
+					print(f"(!) Tried to add a non existent Tag: {tag}")
+					return False
+				cls.connection.commit()
+			return True
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error occurred while adding product tags: \n{e}")
+			return False
+
+
+#***************************************************************************************************
+	@classmethod
+	def remove_product_tags(cls, productid: int, tags: str) -> bool:
+		taglist = tags.split(",")
+		query = """
+		DELETE FROM Clasificacion
+		WHERE idProducto = ? AND tag = ?;
+		"""
+		try:
+			for tag in taglist:
+				if cls.tag_exists(tag):
+					cls.cursor.execute(query, (productid, tag))
+				else:
+					cls.connection.commit()
+					print(f"(!) Tried to remove a non existent Tag: {tag}")
+					return False
+				cls.connection.commit()
+			return True
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error occurred while removing product tags: \n{e}")
 			return False
 
 
@@ -246,7 +295,36 @@ class Database:
 			return True
 		except Exception as e:
 			cls.connection.rollback()
-			print(f"(!) An error ocurred while deleting a product: \n{e}")
+			print(f"(!) An error occurred while deleting a product: \n{e}")
+			return False
+
+#***************************************************************************************************
+	@classmethod
+	def tag_exists(cls, tag: str) -> bool:
+		query = """
+		SELECT COUNT(*)
+		FROM Tag
+		WHERE nombre = ?
+		"""
+		cls.cursor.execute(query, (tag,))
+		results = cls.cursor.fetchall()
+		return results[0][0] == 1
+
+
+#***************************************************************************************************
+	@classmethod
+	def new_tag(cls, tag: str) -> bool:
+		query = """
+		INSERT INTO Tag
+    VALUES(?);
+		"""
+		try:
+			cls.cursor.execute(query, (tag,))
+			cls.connection.commit()
+			return True
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error occurred while adding a new tag: \n{e}")
 			return False
 
 
@@ -276,7 +354,7 @@ class Database:
 			return True
 		except Exception as e:
 			cls.connection.rollback()
-			print(f"(!) An error ocurred while adding new cart: \n{e}")
+			print(f"(!) An error occurred while adding new cart: \n{e}")
 			return False
 
 
@@ -294,7 +372,7 @@ class Database:
 			return True
 		except Exception as e:
 			cls.connection.rollback()
-			print(f"(!) An error ocurred while editing a cart: \n{e}")
+			print(f"(!) An error occurred while editing a cart: \n{e}")
 			return False
 
 
@@ -311,7 +389,7 @@ class Database:
 			return True
 		except Exception as e:
 			cls.connection.rollback()
-			print(f"(!) An error ocurred while removing a cart: \n{e}")
+			print(f"(!) An error occurred while removing a cart: \n{e}")
 			return False
 
 
@@ -328,7 +406,7 @@ class Database:
 			return True
 		except Exception as e:
 			cls.connection.rollback()
-			print(f"(!) An error ocurred while adding a product to a cart: \n{e}")
+			print(f"(!) An error occurred while adding a product to a cart: \n{e}")
 			return False
 
 
@@ -346,7 +424,7 @@ class Database:
 			return True
 		except Exception as e:
 			cls.connection.rollback()
-			print(f"(!) An error ocurred while editing product quantity on a cart: \n{e}")
+			print(f"(!) An error occurred while editing product quantity on a cart: \n{e}")
 			return False
 
 
@@ -363,7 +441,7 @@ class Database:
 			return True
 		except Exception as e:
 			cls.connection.rollback()
-			print(f"(!) An error ocurred while removing a product from a cart: \n{e}")
+			print(f"(!) An error occurred while removing a product from a cart: \n{e}")
 			return False
 
 
@@ -446,7 +524,7 @@ class Database:
 			return orderid
 		except Exception as e:
 			cls.connection.rollback()
-			print(f"(!) An error ocurred while creating order: \n{e}")
+			print(f"(!) An error occurred while creating order: \n{e}")
 			return 0
 
 
@@ -467,7 +545,7 @@ class Database:
 			return True
 		except Exception as e:
 			cls.connection.rollback()
-			print(f"(!) An error ocurred while filling order with cart contents: \n{e}")
+			print(f"(!) An error occurred while filling order with cart contents: \n{e}")
 			return False
 
 
@@ -484,7 +562,7 @@ class Database:
 			return True
 		except Exception as e:
 			cls.connection.rollback()
-			print(f"(!) An error ocurred while emptying cart: \n{e}")
+			print(f"(!) An error occurred while emptying cart: \n{e}")
 			return False
 
 
@@ -517,7 +595,7 @@ class Database:
 			return True
 		except Exception as e:
 			cls.connection.rollback()
-			print(f"(!) An error ocurred while editing payment: \n{e}")
+			print(f"(!) An error occurred while editing payment: \n{e}")
 			return False
 
 
@@ -535,7 +613,7 @@ class Database:
 			return True
 		except Exception as e:
 			cls.connection.rollback()
-			print(f"(!) An error ocurred while editing address: \n{e}")
+			print(f"(!) An error occurred while editing address: \n{e}")
 			return False
 
 
@@ -612,7 +690,7 @@ class Database:
 			return True
 		except Exception as e:
 			cls.connection.rollback()
-			print(f"(!) An error ocurred while deleting order: \n{e}")
+			print(f"(!) An error occurred while deleting order: \n{e}")
 			return False
 
 
@@ -647,5 +725,5 @@ class Database:
 			return True
 		except Exception as e:
 			cls.connection.rollback()
-			print(f"(!) An error ocurred while changing order status: \n{e}")
+			print(f"(!) An error occurred while changing order status: \n{e}")
 			return False

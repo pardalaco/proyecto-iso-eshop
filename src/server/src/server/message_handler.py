@@ -32,6 +32,7 @@ class MessageHandler:
 			(3, 1): self.handle_new_product,
 			(3, 2): self.handle_edit_product,
 			(3, 3): self.handle_delete_product,
+			(3, 4): self.handle_new_tag,
 			(4, 1): self.handle_new_cart,
 			(4, 2): self.handle_edit_cart,
 			(4, 3): self.handle_remove_cart,
@@ -138,13 +139,23 @@ class MessageHandler:
 #***************************************************************************************************
 	def handle_edit_product(self, content: dict) -> dict:
 		email = content.pop("email", None)
+		if "tagop" in content:
+			tagop = int(content.pop("tagop"))
 		if not Database.is_admin(email):
 			return {"success": False}
 		else:
 			productid = content.pop("productid", None)
 			for key in content:
-				if not Database.edit_product(productid, key, content[key]):
-					return {"success": False}
+				if key == "tags":
+					if tagop == 0:
+						if not Database.add_product_tags(productid, content[key]):
+							return {"success": False}
+					else:
+						if not Database.remove_product_tags(productid, content[key]):
+							return {"success": False}
+				else:	
+					if not Database.edit_product(productid, key, content[key]):
+						return {"success": False}
 			return {"success": True}
 
 
@@ -155,6 +166,15 @@ class MessageHandler:
 			return {"success": False}
 		else:
 			return {"success": Database.delete_product(content["productid"])}
+
+
+#***************************************************************************************************
+	def handle_new_tag(self, content: dict) -> dict:
+		email = content["email"]
+		if not Database.is_admin(email):
+			return {"success": False}
+		else:
+			return {"success": Database.new_tag(content["tag"])}
 
 
 #***************************************************************************************************
