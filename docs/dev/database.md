@@ -30,7 +30,8 @@ Table Producto {
   descripcion VARCHAR(100) [not null]
   imagen VARCHAR(80) [not null]
   precio DECIMAL(7,2) [not null]
-  
+  rating INT [not null, note: "default 0"]  
+  contRating INT [not null, note: "default 0"]
 }
 
 Table Tag {
@@ -57,7 +58,20 @@ Table LineaPedido {
   nombre VARCHAR(45) [pk] 
   idProducto INT
   cantidad INT [not null, default: 1]
+}
 
+Table Marketing {
+  email VARCHAR(40) [pk]
+  tag VARCHAR(45) [pk]
+  peso DECIMAL(7,2) [not null, note: "default 0.5"]
+  contador INT [not null]
+}
+
+Table Feedback {
+  email VARCHAR(45) [pk]
+  idProducto INT [pk]
+  rating INT [not null]
+  comentario VARCHAR(100)
 }
 
 Ref: Clasificacion.idProducto > Producto.ROWID
@@ -67,5 +81,9 @@ Ref: Contiene.idCarrito > Carrito.ROWID //ON DELETE CASCADE
 Ref: Contiene.idProducto > Producto.ROWID
 Ref: Pedido.email > Cliente.email  // ON DELETE nul
 Ref: LineaPedido.idPedido > Pedido.ROWID //ON DELETE CASCADE
-Ref: LineaPedido.idProducto > Producto.ROWID //on delete nul
+Ref: LineaPedido.idProducto > Producto.ROWID //ON DELETE SET NULL
+Ref: Marketing.email > Cliente.email //ON DELETE/UPDATE CASCADE
+Ref: Marketing.tag > Tag.nombre //ON DELETE/UPDATE CASCADE
+Ref: Feedback.email > Cliente.email //ON DELETE/UPDATE CASCADE
+Ref: Feedback.idProducto > Producto.ROWID //ON DELETE/UPDATE CASCADE
 ```

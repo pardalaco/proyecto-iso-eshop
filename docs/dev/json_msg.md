@@ -17,6 +17,7 @@
 			- [**3.1. Add new product**](#31-add-new-product)
 			- [**3.2. Edit product**](#32-edit-product)
 			- [**3.3. Remove product**](#33-remove-product)
+			- [**3.4. Add new tag**](#34-add-new-tag)
 		- [**4. Related to Cart**](#4-related-to-cart)
 			- [**4.1. Create Cart**](#41-create-cart)
 			- [**4.2. Edit Cart name**](#42-edit-cart-name)
@@ -291,6 +292,7 @@ client = {
 	content: {
 		email: "str",
 		productid: "int",
+		tagop: "int", // 0 = Add, 1 = Remove | Only if "field" == "tags"
 		"str"(field): "str"(value),
 		"str"(field): "str"(value),
 		..
@@ -299,6 +301,7 @@ client = {
 ```
 > *Content is a dictionary where the key is the field to edit, and the value is the value of what the new field value should be*
 > *Field must be an attribute of **Product***
+> *If field == "tags", value = "str,str,str,..."*
 ```js
 server = {
 	type: 3,
@@ -323,6 +326,26 @@ client = {
 server = {
 	type: 3,
 	code: 3,
+	content: {
+		success: "bool"
+	}
+}
+```
+#### **3.4. Add new tag**
+```js
+client = {
+	type: 3,
+	code: 4,
+	content: {
+		email: "str",
+		tag: "str"
+	}
+}
+```
+```js
+server = {
+	type: 3,
+	code: 4,
 	content: {
 		success: "bool"
 	}
