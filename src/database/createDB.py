@@ -188,6 +188,7 @@ cursor.execute(
             idProducto INT NOT NULL,
             rating INT NOT NULL,
             comentario VARCHAR(100) NULL,
+            fecha VARCHAR(20) NOT NULL,
             PRIMARY KEY (email, idProducto),
             FOREIGN KEY (email)
                 REFERENCES Cliente (email)

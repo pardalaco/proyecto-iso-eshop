@@ -199,6 +199,7 @@ cursor.execute(
 
 ###############################################################################
 #Adding Feedback to products
+"""
 cursor.execute(
     '''
 		INSERT INTO Feedback (email, idProducto, rating, comentario)
@@ -224,6 +225,7 @@ cursor.execute(
     				('usuario4@example.com', 7, 1, 'Decepcionado, no cumplió con mis necesidades.');
 	'''
 )
+"""
 ###############################################################################
 
 
