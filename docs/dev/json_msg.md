@@ -42,6 +42,9 @@
 		- [**7. Orders (ADMIN)**](#7-orders-admin)
 			- [**7.1. List All Orders**](#71-list-all-orders)
 			- [**7.2. Change Order Status**](#72-change-order-status)
+		- [**8. Recommendations and Product Rating**](#8-recommendations-and-product-rating)
+			- [**8.1. Rate Product**](#81-rate-product)
+			- [**8.2. View Product Ratings**](#82-view-product-ratings)
 # **JSON Message Structure**
 ## **Main format**
 ```js
@@ -812,6 +815,60 @@ server = {
 	code: 2,
 	content: {
 		success: "bool"
+	}
+}
+```
+---
+&nbsp;
+### **8. Recommendations and Product Rating**
+@todo Orders (ADMIN)
+#### **8.1. Rate Product**
+```js
+client = {
+	type: 8,
+	code: 1,
+	content: {
+		email: "str",
+		productid: "int",
+		rating: "float",
+		commentary: "str"(optional)
+	}
+}
+```
+```js
+server = {
+	type: 8,
+	code: 1,
+	content: {
+		success: "bool"
+	}
+}
+```
+#### **8.2. View Product Ratings**
+```js
+client = {
+	type: 8,
+	code: 2,
+	content: {
+		email: "str",
+		productid: "int",
+	}
+}
+```
+```js
+server = {
+	type: 8,
+	code: 2,
+	content: {
+		amount: "int",
+		ratings: "list"[
+			"dict"{
+				email: "str",
+				rating: "float",
+				commentary: "str",
+				date(?): "date"
+			}
+		]
 	}
 }
 ```
