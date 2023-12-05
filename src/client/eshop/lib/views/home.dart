@@ -360,23 +360,22 @@ Future<String> _getJson(Connection con) async {
     "type": 2,
     "code": 1,
     "content": {
-      "amount": 4,
+      "amount": 2,
       "products": [
         {
-          "product_id": 1,
-          "product_name": "iPhone 12",
-          "product_description":
-              "Movil que funciona de maravilla pero radioactivo",
-          "product_image": "/imagenes/iPhone12",
-          "product_price": 799.99,
+          "id": 1,
+          "name": "iPhone 12",
+          "description": "Movil que funciona de maravilla pero radioactivo",
+          "image": "/imagenes/iPhone12",
+          "price": 799.99,
           "tags": "tecnologia"
         },
         {
-          "product_id": 2,
-          "product_name": "Air Jordan Zoom",
-          "product_description": "Zapatillas para saltar mucho",
-          "product_image": "/imagenes/Jordan",
-          "product_price": 180,
+          "id": 2,
+          "name": "Air Jordan Zoom",
+          "description": "Zapatillas para saltar mucho",
+          "image": "/imagenes/Jordan",
+          "price": 180,
           "tags": "ropa"
         }
       ]
