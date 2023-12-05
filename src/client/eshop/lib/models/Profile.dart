@@ -2,21 +2,24 @@ class Profile {
   late String email;
   late String name;
   late String surname;
-  late List<String> payments;
-  late List<String> addresses;
+  late String password;
+  late String? payment;
+  late String? address;
 
   Profile(
       {required this.email,
+      required this.password,
       required this.name,
       required this.surname,
-      required this.payments,
-      required this.addresses});
+      this.payment,
+      this.address});
 
   Profile.fromJson(Map<String, dynamic> json) {
     email = json['email'];
+    password = json['password'];
     name = json['name'];
     surname = json['surname'];
-    payments = json['payments'];
-    addresses = json['addresses'];
+    payment = json['payment'];
+    address = json['address'];
   }
 }

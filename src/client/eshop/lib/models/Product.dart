@@ -17,21 +17,24 @@ class Products {
 }
 
 class Product {
+  late int id;
   late String name;
   late String description;
   late double price;
   late String tags;
 
   Product(
-      {required this.name,
+      {required this.id,
+      required this.name,
       required this.description,
       required this.price,
       required this.tags});
 
   Product.fromJson(Map<String, dynamic> json) {
-    name = json['product_name'];
-    price = json['product_price'].toDouble();
-    description = json['product_description'];
+    id = int.parse(json["id"]);
+    name = json['name'];
+    price = json['price'].toDouble();
+    description = json['description'];
     tags = json['tags'];
   }
 }
