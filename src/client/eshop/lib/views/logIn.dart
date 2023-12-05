@@ -186,10 +186,11 @@ class _MyForm extends State<_MyBody> {
                           admin: true,
                           profile: Profile(
                               email: "psegmar1@gmail.com",
+                              password: "1234",
                               name: "Pablo",
                               surname: "Segovia",
-                              payments: ["PayPal"],
-                              addresses: ["Calle Ave del paraiso"])),
+                              payment: null,
+                              address: null)),
                     );
                     Navigator.of(context).push(route);
                   } else {
