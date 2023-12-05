@@ -31,7 +31,7 @@ class Product {
       required this.tags});
 
   Product.fromJson(Map<String, dynamic> json) {
-    id = int.parse(json["id"]);
+    id = json["id"];
     name = json['name'];
     price = json['price'].toDouble();
     description = json['description'];
