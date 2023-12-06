@@ -25,8 +25,8 @@ def handle_list_products(isresponse: bool, current_user: dict, args: list[str]) 
 		if isresponse:
 			response = ""
 			for item in args[0]["content"]["products"]:
-				response += (f"{item['product_id']}: {item['product_name']} - {item['product_price']}€\n"
-										f"\t{item['product_description']}\n")
+				response += (f"*{item['rating']}({item['count']})* {item['id']}: {item['name']} - "
+											f"{item['price']}€\n")
 			return (False, response)
 		else:
 			if len(args) == 0:
@@ -34,10 +34,7 @@ def handle_list_products(isresponse: bool, current_user: dict, args: list[str]) 
 				return (True, {"type": 2, "code": 1, "content": {}})
 			elif args[0] == "-tags":
 				# Retrieve by tag(s)
-				return (True, {"type": 2, "code": 3, "content": {"tags": ",".join(args[1:]).lower()}})
-			else:
-				# Retrieve by keyword
-				return (True, {"type": 2, "code": 4, "content": {"keyword": " ".join(args[0:]).lower()}})
+				return (True, {"type": 2, "code": 3, "content": {"tags": ",".join(args[1:])}})
 
 
 #***************************************************************************************************
@@ -47,8 +44,9 @@ def handle_product(isresponse: bool, current_user: dict, args: list[str]) -> tup
 	else:
 		if isresponse:
 			item = args[0]["content"]["products"]
-			return (False, f"{item['product_id']}: {item['product_name']} - {item['product_price']}€\n"
-										 f"\t{item['product_description']}\n\tTAGS = {item['tags'].replace(',', ', ')}")
+			return (False, f"*{item['rating']}({item['count']})* {item['id']}: {item['name']} - "
+											f"{item['price']}€\n"
+										 f"\t{item['description']}\n\tTAGS = {item['tags'].replace(',', ', ')}")
 		else:
 			return (True, {"type": 2, "code": 2, "content": {"id": args[0]}})
 
@@ -62,7 +60,7 @@ def handle_list_tags(isresponse: bool, current_user: dict, args: list[str]) -> t
 			tags = args[0]["content"]["tags"]
 			return (False, ", ".join(tag for tag in tags))
 		else:
-			return (True, {"type": 2, "code": 5, "content": {}})
+			return (True, {"type": 2, "code": 4, "content": {}})
 
 
 #***************************************************************************************************

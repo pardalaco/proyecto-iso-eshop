@@ -28,7 +28,7 @@ class MessageHandler:
 			(2, 1): self.handle_request_all_products,
 			(2, 2): self.handle_request_product_by_id,
 			(2, 3): self.handle_request_products_by_tags,
-			(2, 5): self.handle_request_all_tags,
+			(2, 4): self.handle_request_all_tags,
 			(3, 1): self.handle_new_product,
 			(3, 2): self.handle_edit_product,
 			(3, 3): self.handle_delete_product,

@@ -11,8 +11,7 @@
 			- [**2.1. Request all Products**](#21-request-all-products)
 			- [**2.2. Request product by ID**](#22-request-product-by-id)
 			- [**2.3. Request product(s) by TAG(s)**](#23-request-products-by-tags)
-			- [**2.4. Request product(s) by Keyword**](#24-request-products-by-keyword)
-			- [**2.5. Request all Tags**](#25-request-all-tags)
+			- [**2.4. Request all Tags**](#24-request-all-tags)
 		- [**3. Manage Products (Admin)**](#3-manage-products-admin)
 			- [**3.1. Add new product**](#31-add-new-product)
 			- [**3.2. Edit product**](#32-edit-product)
@@ -155,6 +154,7 @@ server = {
 				description: "str", 
 				image: "@todo image",
 				price: "float",
+				rating: "float",
 				tags: "str,str,.."
 			}
 		]
@@ -181,6 +181,7 @@ server = {
 		description: "str", 
 		image: "@todo image",
 		price: "float",
+		rating: "float",
 		tags: "str,str,.."
 	}
 }
@@ -208,53 +209,25 @@ server = {
 				description: "str", 
 				image: "@todo image",
 				price: "float",
+				rating: "float",
 				tags: "str,str,.."
 			}
 		]
 	}
 }
 ```
-#### **2.4. Request product(s) by Keyword**
+#### **2.4. Request all Tags**
 ```js
 client = {
 	type: 2,
 	code: 4,
-	content: {
-		keyword: "str"
-	}
-}
-```
-```js
-server = {
-	type: 2,
-	code: 4,
-	content: {
-		amount: "int",
-		products: "list"[
-			"dict"{
-				id: "int", 
-				name: "str", 
-				description: "str", 
-				image: "@todo image",
-				price: "float",
-				tags: "str,str*,.."
-			}
-		]
-	}
-}
-```
-#### **2.5. Request all Tags**
-```js
-client = {
-	type: 2,
-	code: 5,
 	content: {}
 }
 ```
 ```js
 server = {
 	type: 2,
-	code: 5,
+	code: 4,
 	content: {
 		tags: "list"["str"]
 	}

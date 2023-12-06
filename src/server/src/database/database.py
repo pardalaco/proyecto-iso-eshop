@@ -85,27 +85,30 @@ class Database:
 #***************************************************************************************************
 	@classmethod
 	def fetch_all_products(cls) -> dict:
+		# @todo order by rating
 		query = """
-			SELECT p.ROWID AS product_id,
-        p.nombre AS product_name,
-        p.descripcion AS product_description,
-        p.imagen AS product_image,
-        p.precio AS product_price,
+			SELECT p.ROWID,
+        p.nombre,
+        p.descripcion,
+        p.imagen,
+        p.precio,
+				p.rating,
+				p.contRating,
         GROUP_CONCAT(t.nombre) AS tags
 			FROM Producto p
 			LEFT JOIN Clasificacion c 
 					ON p.ROWID = c.idProducto
 			LEFT JOIN Tag t 
 					ON c.tag = t.nombre
-			GROUP BY p.ROWID, p.nombre, p.descripcion, p.imagen, p.precio
-			ORDER BY p.ROWID;
+			GROUP BY p.ROWID, p.nombre, p.descripcion, p.imagen, p.precio, p.rating, p.contRating
+			ORDER BY p.rating DESC;
 		"""
 		cls.cursor.execute(query)
 		results = cls.cursor.fetchall()
 		products = []
 		for row in results:
-			products.append({"product_id": row[0], "product_name": row[1], "product_description": row[2], 
-											 "product_image": row[3], "product_price": row[4], "tags": row[5]})
+			products.append({"id": row[0], "name": row[1], "description": row[2], "image": row[3], 
+											"price": row[4], "rating": row[5], "count": row[6], "tags": row[7]})
 		return {"amount": len(products), "products": products}
 
 
@@ -113,11 +116,13 @@ class Database:
 	@classmethod
 	def fetch_product_by_id(cls, product_id: int) -> dict:
 		query = """
-		SELECT 	p.ROWID AS product_id,
-        		p.nombre AS product_name,
-        		p.descripcion AS product_description,
-        		p.imagen AS product_image,
-        		p.precio AS product_price,
+		SELECT 	p.ROWID,
+        		p.nombre,
+        		p.descripcion,
+        		p.imagen,
+        		p.precio,
+						p.rating,
+						p.contRating,
         		GROUP_CONCAT(t.nombre) AS tags
 		FROM Producto p
 		LEFT JOIN Clasificacion c 
@@ -125,60 +130,45 @@ class Database:
 		LEFT JOIN Tag t 
 				ON c.tag = t.nombre
 		WHERE p.ROWID = ?
-		GROUP BY p.ROWID, p.nombre, p.descripcion, p.imagen, p.precio
-		ORDER BY p.ROWID;
+		GROUP BY p.ROWID, p.nombre, p.descripcion, p.imagen, p.precio, p.rating, p.contRating
 		"""
 		cls.cursor.execute(query, (product_id,))
 		results = cls.cursor.fetchall()
 		results = results[0]
 		print(results)
-		products = {"product_id": results[0], "product_name": results[1], 
-								"product_description": results[2], "product_image": results[3], 
-								"product_price": results[4], "tags": results[5]}
+		products = {"id": row[0], "name": row[1], "description": row[2], "image": row[3], 
+								"price": row[4], "rating": row[5], "count": row[6], "tags": row[7]}
 		return {"amount": 1, "products": products}
 
 
 #***************************************************************************************************
 	@classmethod
 	def fetch_products_by_tags(cls, tags: list[str]) -> dict:
+		# @todo order by id
 		query = """
 		SELECT  p.ROWID,
 						p.nombre,
 						p.descripcion,
 						p.imagen,
 						p.precio,
+						p.rating,
+						p.contRating,
 						GROUP_CONCAT(t.nombre) AS tags
 		FROM producto p
 		INNER JOIN Clasificacion c ON c.idProducto = p.ROWID 
 		LEFT JOIN Tag t ON c.tag = t.nombre
 		WHERE c.tag IN (
 		""" + ",".join("?" for i in range(len(tags))) + ")"
-
-		query += "GROUP BY p.ROWID, p.nombre, p.descripcion, p.imagen, p.precio ORDER BY p.ROWID"
+		query += """GROUP BY p.ROWID, p.nombre, p.descripcion, p.imagen, 
+			p.precio, p.rating, p.contRating 
+		ORDER BY p.rating DESC
+		"""
 		cls.cursor.execute(query, tags)
 		results = cls.cursor.fetchall()
 		products = []
 		for row in results:
-			products.append({"product_id": row[0], "product_name": row[1], "product_description": row[2], 
-											 "product_image": row[3], "product_price": row[4], "tags": row[5]})
-		return {"amount": len(products), "products": products}
-
-
-#***************************************************************************************************
-	@classmethod
-	def fetch_products_by_keyword(cls, keyword: str) -> dict:
-		# @idea
-		return {"amount": 0, "products": {}}
-		
-		query = """
-			
-		"""
-		cls.cursor.execute(query)
-		results = cls.cursor.fetchall()
-		products = []
-		for row in results:
-			products.append({"product_id": row[0], "product_name": row[1], "product_description": row[2], 
-											 "product_image": row[3], "product_price": row[4], "tags": row[5]})
+			products.append({"id": row[0], "name": row[1], "description": row[2], "image": row[3], 
+											"price": row[4], "rating": row[5], "count": row[6], "tags": row[7]})
 		return {"amount": len(products), "products": products}
 
 
@@ -738,7 +728,6 @@ class Database:
 		WHERE Cliente.email = Pedido.email AND Pedido.ROWID = LineaPedido.idPedido 
 			AND Cliente.email = ? 
 			AND LineaPedido.idProducto = ?;
-
 		"""
 		cls.cursor.execute(query, (email, productid))
 		results = cls.cursor.fetchall()
@@ -762,6 +751,22 @@ class Database:
 				VALUES (?, ?, ?, ?);
 				"""
 				cls.cursor.execute(query, (email, productid, rating, current_date))
+			query = """
+			UPDATE Producto
+			SET rating = (
+					SELECT AVG(rating)
+					FROM Feedback
+					WHERE Feedback.idProducto = ?
+			)
+			WHERE ROWID = ?;
+			"""
+			cls.cursor.execute(query, (productid, productid))
+			query = """
+			UPDATE Producto
+			SET contRating = contRating + 1
+			WHERE ROWID = ?
+			"""
+			cls.cursor.execute(query, (productid,))
 			cls.connection.commit()
 			return True
 		except Exception as e:
