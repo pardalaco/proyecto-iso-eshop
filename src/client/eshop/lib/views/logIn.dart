@@ -54,6 +54,7 @@ String? password;
 
 class _MyForm extends State<_MyBody> {
   final _formKey = GlobalKey<FormState>();
+  bool mostrarContrasenya = false;
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +122,7 @@ class _MyForm extends State<_MyBody> {
               ),
               SizedBox(height: size.height * 0.01),
               TextFormField(
-                obscureText: true,
+                obscureText: !mostrarContrasenya,
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
                     borderSide:
@@ -141,6 +142,27 @@ class _MyForm extends State<_MyBody> {
                   return null;
                 },
                 onSaved: (value) => password = value,
+              ),
+              Row(
+                children: [
+                  Checkbox(
+                    value: mostrarContrasenya,
+                    activeColor: CustomColors.n1,
+                    side: BorderSide(color: Colors.white),
+                    onChanged: (value) {
+                      setState(() {
+                        mostrarContrasenya = value!;
+                      });
+                    },
+                  ),
+                  Text(
+                    'Show password',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 17,
+                    ),
+                  ),
+                ],
               ),
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.025,
@@ -197,6 +219,7 @@ class _MyForm extends State<_MyBody> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Invalid form'),
+                        backgroundColor: CustomColors.n1,
                       ),
                     );
                   }

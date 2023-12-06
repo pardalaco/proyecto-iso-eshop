@@ -34,12 +34,13 @@ class _MyBodyR extends StatefulWidget {
   State<_MyBodyR> createState() => _MyFormR();
 }
 
-String? name;
-String? email;
-String? password;
-
 class _MyFormR extends State<_MyBodyR> {
   final _formKey = GlobalKey<FormState>();
+  String? name;
+  String? email;
+  String? password;
+  String? password2;
+  bool mostrarContrasenya = false;
 
   @override
   Widget build(BuildContext context) {
@@ -63,36 +64,6 @@ class _MyFormR extends State<_MyBodyR> {
             key: _formKey,
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text(
-                'Name',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: size.height * 0.01),
-              TextFormField(
-                decoration: InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    borderSide:
-                        const BorderSide(width: 3, color: CustomColors.n1),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: CustomColors.n1),
-                  ),
-                  hintText: "Your name",
-                  filled: true,
-                  fillColor: CustomColors.n2,
-                ),
-                cursorColor: CustomColors.n1,
-                validator: (value) {
-                  if (value?.isEmpty ?? true) return 'Required';
-                  return null;
-                },
-                onSaved: (value) => name = value,
-              ),
-              SizedBox(height: size.height * 0.05),
               const Text(
                 'Email',
                 style: TextStyle(
@@ -122,7 +93,7 @@ class _MyFormR extends State<_MyBodyR> {
                 },
                 onSaved: (value) => email = value,
               ),
-              SizedBox(height: size.height * 0.05),
+              SizedBox(height: size.height * 0.025),
               const Text(
                 'Password',
                 style: TextStyle(
@@ -132,7 +103,7 @@ class _MyFormR extends State<_MyBodyR> {
               ),
               SizedBox(height: size.height * 0.01),
               TextFormField(
-                obscureText: true,
+                obscureText: !mostrarContrasenya,
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
                     borderSide:
@@ -153,6 +124,58 @@ class _MyFormR extends State<_MyBodyR> {
                 },
                 onSaved: (value) => password = value,
               ),
+              SizedBox(height: size.height * 0.025),
+              const Text(
+                'Confirm password',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: size.height * 0.01),
+              TextFormField(
+                obscureText: !mostrarContrasenya,
+                decoration: InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                    borderSide:
+                        const BorderSide(width: 3, color: CustomColors.n1),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: CustomColors.n1),
+                  ),
+                  hintText: "Your password",
+                  filled: true,
+                  fillColor: CustomColors.n2,
+                ),
+                cursorColor: CustomColors.n1,
+                validator: (value) {
+                  if (value?.isEmpty ?? true) return 'Required';
+                  return null;
+                },
+                onSaved: (value) => password2 = value,
+              ),
+              Row(
+                children: [
+                  Checkbox(
+                    value: mostrarContrasenya,
+                    activeColor: CustomColors.n1,
+                    side: BorderSide(color: Colors.white),
+                    onChanged: (value) {
+                      setState(() {
+                        mostrarContrasenya = value!;
+                      });
+                    },
+                  ),
+                  Text(
+                    'Show password',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 17,
+                    ),
+                  ),
+                ],
+              ),
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.025,
               ),
@@ -162,7 +185,15 @@ class _MyFormR extends State<_MyBodyR> {
 
                   if ((formState?.validate() ?? false)) {
                     formState!.save(); // Guarda valores en var. de estado
-                    /*Connection connection = Connection();
+                    if (password != password2) {
+                      showDialog(
+                        context: context,
+                        builder: (context) =>
+                            _MyAlert(context, "Passwords don't match"),
+                      );
+                    } else {
+                      Navigator.of(context).pop();
+                      /*Connection connection = Connection();
                     await connection.query({
                       "type": 1,
                       "code": 2,
@@ -187,11 +218,12 @@ class _MyFormR extends State<_MyBodyR> {
                             Home(connection: connection, admin: false),
                       );
                     }*/
-                    Navigator.of(context).pop();
+                    }
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Invalid form'),
+                        backgroundColor: CustomColors.n1,
                       ),
                     );
                   }
@@ -238,10 +270,10 @@ void _goToLogIn(BuildContext context) {
   Navigator.of(context).push(route);
 }
 
-Widget _MyAlert(context) => AlertDialog(
+Widget _MyAlert(context, String message) => AlertDialog(
         title: const Text("Error"),
-        content: const Text(
-          "Unsuccessful registration",
+        content: Text(
+          message,
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
         ),
