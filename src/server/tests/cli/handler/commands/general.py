@@ -51,6 +51,8 @@ def shop_help() -> str:
 		list-products (lp) [-tags <tag> <tag> ...]
 		product (p) <product_id>
 		tags (t)
+		rate (rt) <product_id> <rating> [comment]
+		view-ratings (vr) <product_id>
 
 	Cart Commands:
 		new-cart (nc) <cart_name>

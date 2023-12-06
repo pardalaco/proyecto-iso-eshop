@@ -727,3 +727,62 @@ class Database:
 			cls.connection.rollback()
 			print(f"(!) An error occurred while changing order status: \n{e}")
 			return False
+
+
+#***************************************************************************************************
+	@classmethod
+	def has_bought(cls, email: str, productid: int) -> bool:
+		query = """
+		SELECT COUNT(*)
+		FROM Cliente, Pedido, LineaPedido
+		WHERE Cliente.email = Pedido.email AND Pedido.ROWID = LineaPedido.idPedido 
+			AND Cliente.email = ? 
+			AND LineaPedido.idProducto = ?;
+
+		"""
+		cls.cursor.execute(query, (email, productid))
+		results = cls.cursor.fetchall()
+		return results[0][0] > 0
+
+#***************************************************************************************************
+	@classmethod
+	def rate_product(cls, email: str, productid: int, rating: float, comment: str = None ) -> bool:
+		current_date = datetime.now()
+		current_date = current_date.strftime("%d/%m/%Y")
+		try:
+			if comment:
+				query = """
+				INSERT INTO Feedback (email, idProducto, rating, fecha, comentario)
+				VALUES (?, ?, ?, ?,?);
+				"""
+				cls.cursor.execute(query, (email, productid, rating, current_date, comment))
+			else:
+				query = """
+				INSERT INTO Feedback (email, idProducto, rating, fecha)
+				VALUES (?, ?, ?, ?);
+				"""
+				cls.cursor.execute(query, (email, productid, rating, current_date))
+			cls.connection.commit()
+			return True
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error occurred while rating product: \n{e}")
+			return False
+
+
+#***************************************************************************************************
+	@classmethod
+	def fetch_product_ratings(cls, productid: int) -> bool:
+		query = """
+		SELECT email, rating, comentario, fecha
+		FROM Feedback
+		WHERE idProducto = ?;
+
+		"""
+		cls.cursor.execute(query, (productid,))
+		results = cls.cursor.fetchall()
+		ratings = []
+		for rating in results:
+			ratings.append({"email": rating[0], "rating": rating[1], "comment": rating[2] , 
+											"date": rating[3]})
+		return {"amount": len(ratings), "ratings": ratings}

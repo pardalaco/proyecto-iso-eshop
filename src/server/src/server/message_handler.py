@@ -49,7 +49,9 @@ class MessageHandler:
 			(6, 2): self.handle_order_details,
 			(6, 3): self.handle_cancel_order,
 			(7, 1): self.handle_list_all_orders,
-			(7, 2): self.handle_change_order_status
+			(7, 2): self.handle_change_order_status,
+			(8, 1): self.handle_rate_product,
+			(8, 2): self.handle_fetch_product_ratings,
 		}
 
 
@@ -347,3 +349,20 @@ class MessageHandler:
 			orderid = content["orderid"]
 			status = content["status"]
 			return {"success": Database.change_order_status(orderid, status)}
+
+
+#***************************************************************************************************
+	def handle_rate_product(self, content: dict) -> dict:
+		email = content["email"]
+		productid = content["productid"]
+		if Database.has_bought(email, productid):
+			rating = content["rating"]
+			comment = content["comment"] if content["comment"] else None
+			return {"success": Database.rate_product(email, productid, rating, comment)}
+		else:
+			return {"success": False}
+
+#***************************************************************************************************
+	def handle_fetch_product_ratings(self, content: dict) -> dict:
+		productid = content["productid"]
+		return Database.fetch_product_ratings(productid)

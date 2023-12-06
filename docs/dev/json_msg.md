@@ -765,7 +765,6 @@ server = {
 ---
 &nbsp;
 ### **7. Orders (ADMIN)**
-@todo Orders (ADMIN)
 #### **7.1. List All Orders**
 ```js
 client = {
@@ -821,7 +820,6 @@ server = {
 ---
 &nbsp;
 ### **8. Recommendations and Product Rating**
-@todo Orders (ADMIN)
 #### **8.1. Rate Product**
 ```js
 client = {
@@ -831,7 +829,7 @@ client = {
 		email: "str",
 		productid: "int",
 		rating: "float",
-		commentary: "str"(optional)
+		comment: "str"(optional)
 	}
 }
 ```
@@ -850,8 +848,7 @@ client = {
 	type: 8,
 	code: 2,
 	content: {
-		email: "str",
-		productid: "int",
+		productid: "int"
 	}
 }
 ```
@@ -865,8 +862,8 @@ server = {
 			"dict"{
 				email: "str",
 				rating: "float",
-				commentary: "str",
-				date(?): "date"
+				comment: "str",
+				date: "date"
 			}
 		]
 	}
