@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names, prefer_interpolation_to_compose_strings, prefer_const_constructors, no_leading_underscores_for_local_identifiers, no_logic_in_create_state, must_be_immutable, unused_element, sized_box_for_whitespace
 
+import 'package:eshop/models/Tag.dart';
 import 'package:eshop/views/productDetailsUser.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
@@ -144,7 +145,8 @@ class _HomeBody extends State<_MyHomeBody> {
                   onPressed: () {
                     showDialog(
                         context: context,
-                        builder: (context) => _MyAlert(context, updateState2));
+                        builder: (context) =>
+                            _MyAlert(context, updateState2, connection));
                   },
                   icon: Icon(
                     Icons.filter_list_alt,
@@ -171,7 +173,7 @@ class _HomeBody extends State<_MyHomeBody> {
             ]
           ] else if (searchByTag) ...[
             Text(
-              "Searching by tags: " + items.toString(),
+              "Searching by tags: " + tags.toString(),
               textAlign: TextAlign.center,
               style: TextStyle(
                   color: Colors.white,
@@ -352,41 +354,10 @@ class _MySwitchState extends State<MySwitch> {
   }
 }
 
-Future<String> _getJson(Connection con) async {
-  /*await con.query({"type": 2, "code": 1, "content": {}});
-  return json.encode(con.getData());*/
-  await Future.delayed(Duration(seconds: 2));
-  return json.encode({
-    "type": 2,
-    "code": 1,
-    "content": {
-      "amount": 2,
-      "products": [
-        {
-          "id": 1,
-          "name": "iPhone 12",
-          "description": "Movil que funciona de maravilla pero radioactivo",
-          "image": "/imagenes/iPhone12",
-          "price": 799.99,
-          "tags": "tecnologia"
-        },
-        {
-          "id": 2,
-          "name": "Air Jordan Zoom",
-          "description": "Zapatillas para saltar mucho",
-          "image": "/imagenes/Jordan",
-          "price": 180,
-          "tags": "ropa"
-        }
-      ]
-    }
-  });
-}
-
 //@toDo Manejar errores cuando el server este OK
 Widget FuturaLista(BuildContext context, Connection connection) {
   return FutureBuilder(
-    future: _getJson(connection),
+    future: connection.getProducts(),
     builder: (context, AsyncSnapshot<String> snapshot) {
       if (snapshot.hasData) {
         Map<String, dynamic> data = json.decode(snapshot.data!);
@@ -404,6 +375,7 @@ Widget FuturaLista(BuildContext context, Connection connection) {
               var route = MaterialPageRoute(
                 builder: (context) => DetailPage(
                   producto: product,
+                  connection: connection,
                 ),
               );
               Navigator.of(context).push(route);
@@ -432,14 +404,9 @@ Widget FuturaLista(BuildContext context, Connection connection) {
   );
 }
 
-//@todo Un metodo para generar una lista de tags con bool
-List<Tuple2<String, bool>> items = [
-  Tuple2<String, bool>('Item 1', false),
-  Tuple2<String, bool>('Item 2', false),
-  Tuple2<String, bool>('Item 3', false),
-  Tuple2<String, bool>('Item 4', false),
-];
-Widget _MyAlert(context, final VoidCallback updateState2) => AlertDialog(
+Widget _MyAlert(
+        context, final VoidCallback updateState2, Connection connection) =>
+    AlertDialog(
         title: const Text(
           "Select tags",
           textAlign: TextAlign.center,
@@ -447,15 +414,17 @@ Widget _MyAlert(context, final VoidCallback updateState2) => AlertDialog(
         content: Container(
             width: MediaQuery.of(context).size.width * 0.15,
             height: MediaQuery.of(context).size.height * 0.15,
-            child: _TagsList()),
+            child: _TagsList(
+              connection: connection,
+            )),
         actions: [
           Center(
             child: TextButton(
                 onPressed: () {
                   searchByName = false;
                   searchByTag = false;
-                  for (Tuple2<String, bool> t in items) {
-                    searchByTag = searchByTag || t.item2;
+                  for (Tag t in tags.tags) {
+                    searchByTag = searchByTag || t.choose;
                   }
                   updateState2();
                   Navigator.of(context).pop();
@@ -471,16 +440,56 @@ Widget _MyAlert(context, final VoidCallback updateState2) => AlertDialog(
         ]);
 
 class _TagsList extends StatefulWidget {
-  const _TagsList({super.key});
-
+  Connection connection;
+  _TagsList({super.key, required this.connection});
   @override
   State<_TagsList> createState() => _TagsListState();
 }
 
+late Tags tags;
+bool firstTime =
+    true; //Para evitar que al reconstruir el widget se me ponga a false "choose"
+
 class _TagsListState extends State<_TagsList> {
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return FutureBuilder(
+      future: widget.connection.getTags(),
+      builder: (context, AsyncSnapshot<String> snapshot) {
+        if (snapshot.hasData) {
+          Map<String, dynamic> data = json.decode(snapshot.data!);
+          if (firstTime) {
+            tags = Tags.fromJson(data);
+            firstTime = false;
+          }
+          final tagsList = tags.tags.map((t) {
+            return CheckboxListTile(
+              title: Text(t.name),
+              value: t.choose,
+              activeColor: CustomColors.n1,
+              onChanged: (bool? value) {
+                t.choose = value ?? false;
+                setState(() {});
+                print('Checkbox ${t.name}: ${t.choose}');
+              },
+            );
+          }).toList();
+          return ListView.builder(
+            itemCount: tagsList.length,
+            itemBuilder: (context, index) => tagsList[index],
+          );
+        }
+        return Center(
+            child: SizedBox(
+          height: MediaQuery.of(context).size.width * 0.25,
+          width: MediaQuery.of(context).size.width * 0.25,
+          child: CircularProgressIndicator(
+              strokeWidth: 10.0,
+              valueColor: AlwaysStoppedAnimation(CustomColors.n1)),
+        ));
+      },
+    );
+    /*return ListView.builder(
       itemCount: items.length,
       itemBuilder: (context, index) {
         return CheckboxListTile(
@@ -497,18 +506,6 @@ class _TagsListState extends State<_TagsList> {
           },
         );
       },
-    );
-  }
-}
-
-class Tuple2<T1, T2> {
-  final T1 item1;
-  final T2 item2;
-
-  Tuple2(this.item1, this.item2);
-
-  @override
-  String toString() {
-    return item1.toString() + " es " + item2.toString() + ", ";
+    );*/
   }
 }
