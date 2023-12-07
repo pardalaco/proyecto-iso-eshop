@@ -152,7 +152,7 @@ server = {
 				id: "int", 
 				name: "str", 
 				description: "str", 
-				image: "@todo image",
+				image: "image",
 				price: "float",
 				rating: "float",
 				tags: "str,str,.."
@@ -167,6 +167,7 @@ client = {
 	type: 2,
 	code: 2,
 	content: {
+		email: "str",
 		id: "int"
 	}
 }
@@ -179,7 +180,7 @@ server = {
 		id: "int", 
 		name: "str", 
 		description: "str", 
-		image: "@todo image",
+		image: "image",
 		price: "float",
 		rating: "float",
 		tags: "str,str,.."
@@ -192,7 +193,8 @@ client = {
 	type: 2,
 	code: 3,
 	content: {
-		tags: "str,str,.."
+		email: "str",
+		tags: "str,str,.." 
 	}
 }
 ```
@@ -207,7 +209,7 @@ server = {
 				id: "int", 
 				name: "str", 
 				description: "str", 
-				image: "@todo image",
+				image: "image",
 				price: "float",
 				rating: "float",
 				tags: "str,str,.."
@@ -245,7 +247,7 @@ client = {
 		email: "str",
 		name: "str", 
 		description: "str", 
-		image: "@todo image",
+		image: "image",
 		price: "float",
 		tags: "str,str,.."
 	}
@@ -479,7 +481,7 @@ server = {
 				id: "int", 
 				name: "str", 
 				description: "str", 
-				image: "@todo image",
+				image: "image",
 				price: "float",
 				tags: "str,str,..",
 				quantity: "int"
