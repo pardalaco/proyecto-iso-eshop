@@ -24,6 +24,5 @@ class Tags {
 class Tag {
   late String name;
   late bool choose;
-
   Tag.fromJson(this.name, this.choose);
 }
