@@ -15,7 +15,6 @@
 #  *              If not, see <http://www.gnu.org/licenses/>.
 #***************************************************************************************************
 import asyncio
-import logging
 import time
 import json
 
