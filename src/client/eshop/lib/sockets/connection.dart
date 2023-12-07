@@ -54,4 +54,61 @@ class Connection {
       await _otherTime(js);
     }
   }
+
+//Devolver json.encode() para poder recibirlo en el future: del futureBuilder
+  Future<String> getComments() async {
+    return json.encode({
+      "amount": 1,
+      "ratings": [
+        {
+          "email": "Pablo@gmail.com",
+          "rating": 4.5,
+          "comment": "Buen producto",
+          "date": "ayer"
+        },
+        {
+          "email": "Joan@gmail.com",
+          "rating": 3.5,
+          "comment": "Mal producto",
+          "date": "ayer"
+        }
+      ]
+    });
+    //@todo Decir lo de la fecha
+  }
+
+//Devolver json.encode() para poder recibirlo en el future: del futureBuilder
+  Future<String> getProducts() async {
+    await Future.delayed(const Duration(seconds: 1));
+    return json.encode({
+      "amount": 2,
+      "products": [
+        {
+          "id": 1,
+          "name": "iPhone 12",
+          "description": "Movil que funciona de maravilla pero radioactivo",
+          "image": "/imagenes/iPhone12",
+          "price": 799.99,
+          "rating": 5,
+          "tags": "tecnologia"
+        },
+        {
+          "id": 2,
+          "name": "Air Jordan Zoom",
+          "description": "Zapatillas para saltar mucho",
+          "image": "/imagenes/Jordan",
+          "price": 180,
+          "rating": 4.5,
+          "tags": "ropa"
+        }
+      ]
+    });
+    //@todo
+  }
+
+  Future<String> getTags() async {
+    return json.encode({
+      "tags": ["Tag 1", "Tag 2", "Tag 3", "Tag 4"]
+    });
+  }
 }
