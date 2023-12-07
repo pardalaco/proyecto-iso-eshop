@@ -52,10 +52,45 @@ def handle_view_ratings(isresponse: bool, current_user: dict, args: list[str]) -
 
 
 #***************************************************************************************************
+def handle_list_recommended(isresponse: bool, current_user: dict, args: list[str]) -> tuple[bool, dict]:
+	if current_user["privilege"] == PRIVILEGE_NONE:
+		return (False, "You need to Log in to use this command")
+	else:
+		if isresponse:
+			products = "Your Recommended Products:"
+			for item in args[0]["content"]["products"]:
+				products += (f"*{item['rating']}({item['count']})* {item['id']}: {item['name']} - "
+											f"{item['price']}€\n")
+			return (False, products)
+		else:
+			return (True, {"type": 8, "code": 3, "content": {"email": current_user["email"]}})
+
+
+#***************************************************************************************************
+def handle_my_marketing(isresponse: bool, current_user: dict, args: list[str]) -> tuple[bool, dict]:
+	if current_user["privilege"] == PRIVILEGE_NONE:
+		return (False, "You need to Log in to use this command")
+	else:
+		if isresponse:
+			user_tags = ""
+			for i, tag in enumerate(args[0]["content"]["tags"]):
+				user_tags += f"\n{tag['tag']}, {tag['weight']}, ({tag['count']} since last interaction)"
+			return (False, user_tags)
+		else:
+			return (True, {"type": 8, "code": 4, "content": {"email": current_user["email"]}})
+
+
+#***************************************************************************************************
 recommendation_command_handlers = {
     "rate": handle_rate_product,
 		"rt": handle_rate_product,
 
 		"view-ratings": handle_view_ratings,
-		"vr": handle_view_ratings
+		"vr": handle_view_ratings,
+
+		"list-recommended": handle_list_recommended,
+		"lr": handle_list_recommended,
+
+		"my_marketing": handle_my_marketing,
+		"mm": handle_my_marketing,
 }

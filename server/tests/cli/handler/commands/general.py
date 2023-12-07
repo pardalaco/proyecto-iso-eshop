@@ -45,11 +45,13 @@ def shop_help() -> str:
 	User Commands:
 		edit-payment (epy) <payment>
 		edit-address (ead) <address>
+		my-marketing (mm)
 		user-info (ui)
 
 	Shop Commands:
 		list-products (lp) [-tags <tag> <tag> ...]
 		product (p) <product_id>
+		list-recommended (lr)
 		tags (t)
 		rate (rt) <product_id> <rating> [comment]
 		view-ratings (vr) <product_id>

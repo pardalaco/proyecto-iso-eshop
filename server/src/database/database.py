@@ -803,7 +803,6 @@ class Database:
 		SELECT email, rating, comentario, fecha
 		FROM Feedback
 		WHERE idProducto = ?;
-
 		"""
 		cls.cursor.execute(query, (productid,))
 		results = cls.cursor.fetchall()
@@ -812,3 +811,48 @@ class Database:
 			ratings.append({"email": rating[0], "rating": rating[1], "comment": rating[2] , 
 											"date": rating[3]})
 		return {"amount": len(ratings), "ratings": ratings}
+
+
+#***************************************************************************************************
+	@classmethod
+	def fetch_recommended_products(cls, email: str) -> dict:
+		query = """
+		SELECT p.ROWID,
+        p.nombre,
+        p.descripcion,
+        p.imagen,
+        p.precio,
+				p.rating,
+				p.contRating,
+        GROUP_CONCAT(c.tag) AS tags
+		FROM Producto p
+		LEFT JOIN Clasificacion c ON p.ROWID = c.idProducto
+		LEFT JOIN Marketing m ON m.tag = c.tag
+		WHERE m.email = ?
+		GROUP BY p.ROWID, p.nombre, p.descripcion, p.imagen, p.precio, p.rating, p.contRating
+		ORDER BY COALESCE(SUM(m.peso), 0) DESC;
+		"""
+		cls.cursor.execute(query, (email,))
+		results = cls.cursor.fetchall()
+		products = []
+		print(results)
+		for row in results:
+			products.append({"id": row[0], "name": row[1], "description": row[2], "image": row[3], 
+											"price": row[4], "rating": row[5], "count": row[6], "tags": row[7]})
+		return {"amount": len(products), "products": products}
+
+
+#***************************************************************************************************
+	@classmethod
+	def fetch_marketing_profile(cls, email: str) -> dict:
+		query = """
+		SELECT tag, peso, contador
+		FROM Marketing
+		WHERE email = ?;
+		"""
+		cls.cursor.execute(query, (email,))
+		results = cls.cursor.fetchall()
+		tags = []
+		for tag in results:
+			tags.append({"tag": tag[0], "weight": tag[1], "count": tag[2]})
+		return {"amount": len(tags), "tags": tags}

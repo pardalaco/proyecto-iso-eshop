@@ -30,7 +30,7 @@ PRIVILEGE_NORMAL_USER = 1
 PRIVILEGE_ADMIN = 2
 
 current_user = {"privilege": PRIVILEGE_NONE, "email": None}
-input_type = [": ", ">> ", "# "]
+input_type = ["\n: ", "\n>> ", "\n# "]
 
 
 #***************************************************************************************************

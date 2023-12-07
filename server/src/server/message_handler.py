@@ -52,6 +52,8 @@ class MessageHandler:
 			(7, 2): self.handle_change_order_status,
 			(8, 1): self.handle_rate_product,
 			(8, 2): self.handle_fetch_product_ratings,
+			(8, 3): self.handle_fetch_recommended_products,
+			(8, 4): self.handle_fetch_marketing_profile,
 		}
 
 
@@ -366,3 +368,14 @@ class MessageHandler:
 	def handle_fetch_product_ratings(self, content: dict) -> dict:
 		productid = content["productid"]
 		return Database.fetch_product_ratings(productid)
+
+#***************************************************************************************************
+	def handle_fetch_recommended_products(self, content: dict) -> dict:
+		email = content["email"]
+		return Database.fetch_recommended_products(email)
+
+
+#***************************************************************************************************
+	def handle_fetch_marketing_profile(self, content: dict) -> dict:
+		email = content["email"]
+		return Database.fetch_marketing_profile(email)
