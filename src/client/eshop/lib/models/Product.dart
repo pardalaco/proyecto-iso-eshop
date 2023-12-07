@@ -6,13 +6,11 @@ class Products {
   Products({required this.products});
 
   Products.fromJson(Map<String, dynamic> json) {
-    if (json['content'] != null) {
-      products = <Product>[];
-      var a = json['content'];
-      a['products'].forEach((v) {
-        products.add(Product.fromJson(v));
-      });
-    }
+    products = <Product>[];
+    var a = json['products'];
+    a.forEach((v) {
+      products.add(Product.fromJson(v));
+    });
   }
 }
 
@@ -21,6 +19,7 @@ class Product {
   late String name;
   late String description;
   late double price;
+  late double rating;
   late String tags;
 
   Product(
@@ -34,6 +33,7 @@ class Product {
     id = json["id"];
     name = json['name'];
     price = json['price'].toDouble();
+    rating = json['rating'].toDouble();
     description = json['description'];
     tags = json['tags'];
   }
