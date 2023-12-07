@@ -19,8 +19,6 @@ import logging
 import time
 import json
 
-# @idea import schedule
-
 from src.database.database import Database
 from src.server.message_handler import MessageHandler
 
@@ -32,43 +30,6 @@ class Server:
 		self.port = port
 		self.buffer_size = buffer_size
 		self.database = Database()
-
-		#@idea self.schedule_daily_task()
-
-
-#***************************************************************************************************
-	def schedule_daily_task(self) -> None:
-		self.set_up_logger()
-		schedule.every().day.at("00:00").do(self.set_up_logger)
-		self.run_daily_tasks()
-
-
-#***************************************************************************************************
-	def run_daily_tasks(self):
-		while True:
-			schedule.run_pending()
-			time.sleep(1)
-
-
-#***************************************************************************************************
-	def set_up_logger(self) -> None: 
-		# @idea Apply the logger
-		now = time.datetime.now()
-
-		# Configure and set loggers
-		logger_formatter_stream = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-		logger_formatter_file = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-		logger_stream_handler = logging.StreamHandler()
-		logger_stream_handler.setFormatter(logger_formatter_stream)
-
-		# Set up main logger
-		self.logger = logging.getLogger("Logger")
-		self.logger.setLevel(logging.INFO)
-		self.logger.addHandler(logger_stream_handler)
-		main_file_handler = logging.FileHandler(f"../../logs/{now.day}_{now.month}_{now.year}.log")
-		main_file_handler.setFormatter(logger_formatter_file)
-		self.logger.addHandler(main_file_handler)
-		
 
 
 #***************************************************************************************************
