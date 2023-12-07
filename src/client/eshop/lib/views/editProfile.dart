@@ -1,10 +1,7 @@
-import 'package:eshop/views/productDetailsUser.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:eshop/sockets/connection.dart';
-import 'package:eshop/models/Product.dart';
-import 'package:eshop/models/Profile.dart';
 import 'package:eshop/style/ColorsUsed.dart';
+import 'package:eshop/sockets/connection.dart';
+import 'package:eshop/models/Profile.dart';
 
 class EditProfile extends StatefulWidget {
   Connection connection;
@@ -30,7 +27,6 @@ class _EditProfile extends State<EditProfile> {
       {required this.connection, required this.admin, required this.profile});
 
   @override
-  @override
   Widget build(BuildContext context) {
     final _MyAppBar = AppBar(
       toolbarHeight: MediaQuery.of(context).size.height * 0.1,
@@ -43,8 +39,23 @@ class _EditProfile extends State<EditProfile> {
           fontSize: MediaQuery.of(context).size.height * 0.05,
         ),
       ),
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back),
+        onPressed: () {
+          // Agrega aquí la lógica para volver a la pestaña anterior
+          Navigator.of(context).pop();
+        },
+      ),
+      actions: [
+        IconButton(
+          icon: Icon(Icons.save),
+          onPressed: () {
+            // Agrega aquí la lógica para guardar los cambios
+          },
+        ),
+      ],
     );
 
-    return Scaffold(appBar: _MyAppBar, body: Text("editProfile"));
+    return Scaffold(appBar: _MyAppBar, body: Text("hola"));
   }
 }
