@@ -1,12 +1,18 @@
 // ignore_for_file: non_constant_identifier_names, no_leading_underscores_for_local_identifiers, must_be_immutable, duplicate_ignore
 
+import 'dart:convert';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:eshop/models/Comment.dart';
+import 'package:eshop/sockets/connection.dart';
 import 'package:flutter/material.dart';
 import 'package:eshop/models/Product.dart';
 import 'package:eshop/style/ColorsUsed.dart';
 
 class DetailPage extends StatelessWidget {
   Product producto;
-  DetailPage({Key? key, required this.producto}) : super(key: key);
+  Connection connection;
+  DetailPage({Key? key, required this.producto, required this.connection})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +37,29 @@ class DetailPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               myImage(context, producto),
-              myDescription(context, producto),
+              myDescription(context, producto, connection),
+              Container(
+                padding: EdgeInsetsDirectional.symmetric(
+                    horizontal: MediaQuery.of(context).size.width * 0.05,
+                    vertical: MediaQuery.of(context).size.height * 0.02),
+                width: double.infinity,
+                color: Colors.white,
+                child: ElevatedButton(
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) => _MyAlert(context));
+                  },
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(CustomColors.n1)),
+                  child: Icon(
+                    Icons.add_shopping_cart,
+                    color: Colors.white,
+                    size: MediaQuery.of(context).size.height * 0.04,
+                  ),
+                ),
+              )
             ],
           ),
         ));
@@ -41,56 +69,32 @@ class DetailPage extends StatelessWidget {
 Widget myImage(context, Product producto) {
   final Size size = MediaQuery.of(context).size;
   final double altura = size.height;
-  return Container(
-      margin: EdgeInsetsDirectional.symmetric(vertical: altura * 0.05),
-      padding: EdgeInsetsDirectional.symmetric(
-          horizontal: size.width * 0.025, vertical: altura * 0.05),
-      height: altura * 0.35,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: const [
-          BoxShadow(
-            color: Color.fromARGB(255, 80, 79, 79),
-            blurRadius: 10.0,
-            spreadRadius: 1,
-            offset: Offset(0.0, 0.0),
-          )
-        ],
-      ),
-      child: Hero(
-        tag: producto.name,
-        child: Image(
-          image: const AssetImage("assets/img/User.jpg"),
-          width: size.width * 0.15,
-          height: altura * 0.2,
-        ),
-      ));
+  return SizedBox(
+    height: altura * 0.25,
+    width: double.infinity,
+    child: const Image(
+      image: AssetImage("assets/img/gatitos.jpg"),
+      fit: BoxFit.cover,
+    ),
+  );
 }
 
-Widget myDescription(context, Product producto) {
+Widget myDescription(context, Product producto, Connection connection) {
   final Size size = MediaQuery.of(context).size;
   final double altura = size.height;
   return Expanded(
       child: Container(
           width: double.infinity,
-          padding: EdgeInsetsDirectional.symmetric(
-              horizontal: size.width * 0.05, vertical: altura * 0.05),
+          padding: EdgeInsetsDirectional.only(
+              start: size.width * 0.05,
+              end: size.width * 0.05,
+              top: altura * 0.05),
           decoration: const BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30),
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Color.fromARGB(255, 80, 79, 79),
-                blurRadius: 8.0,
-                spreadRadius: 0.5,
-                offset: Offset(0.0, 0.0),
-              )
-            ],
           ),
           child: SizedBox(
             height: altura * 0.5,
@@ -118,6 +122,16 @@ Widget myDescription(context, Product producto) {
                     SizedBox(
                       height: altura * 0.025,
                     ),
+                    const Text(
+                      "Description",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 30,
+                      ),
+                    ),
+                    SizedBox(
+                      height: altura * 0.025,
+                    ),
                     Text(
                       producto.description,
                       style: const TextStyle(
@@ -128,20 +142,9 @@ Widget myDescription(context, Product producto) {
                     SizedBox(
                       height: altura * 0.025,
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        showDialog(
-                            context: context,
-                            builder: (context) => _MyAlert(context));
-                      },
-                      style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              CustomColors.n1)),
-                      child: Icon(
-                        Icons.add_shopping_cart,
-                        color: Colors.white,
-                        size: MediaQuery.of(context).size.height * 0.04,
-                      ),
+                    ComAndRat(
+                      connection: connection,
+                      avgRate: producto.rating,
                     )
                   ]),
             ),
@@ -184,8 +187,6 @@ Widget _MyAlert(context) => AlertDialog(
         )));
 
 class _ListCart extends StatefulWidget {
-  //const _ListCart({super.key});
-
   @override
   State<_ListCart> createState() => _ListCartState();
 }
@@ -205,7 +206,10 @@ class _ListCartState extends State<_ListCart> {
             //@todo Llamar al server para añadir al carrito
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Add to ${items[index]}'),
+                content: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.05,
+                  child: Text('Add to ${items[index]}'),
+                ),
                 backgroundColor: CustomColors.n1,
               ),
             );
@@ -267,4 +271,164 @@ Widget _MyAlertAddCart(context) {
                   fontSize: 15),
             )),
       ]);
+}
+
+class ComAndRat extends StatefulWidget {
+  Connection connection;
+  double avgRate;
+  ComAndRat({super.key, required this.connection, required this.avgRate});
+
+  @override
+  State<ComAndRat> createState() => _ComAndRatState();
+}
+
+class _ComAndRatState extends State<ComAndRat> {
+  late String text;
+  double rate = 1;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const Divider(
+          color: CustomColors.n2,
+          thickness: 2,
+        ),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.01,
+        ),
+        Text(
+          "Average rating: ${widget.avgRate}",
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 23,
+          ),
+        ),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.01,
+        ),
+        RatingBar.builder(
+          itemSize: 25,
+          initialRating: 1,
+          minRating: 1,
+          direction: Axis.horizontal,
+          allowHalfRating: true,
+          itemCount: 5,
+          itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+          itemBuilder: (context, _) => const Icon(
+            Icons.star,
+            color: Colors.amber,
+          ),
+          onRatingUpdate: (_rating) {
+            rate = _rating;
+            print(rate);
+          },
+        ),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.01,
+        ),
+        TextField(
+          decoration: const InputDecoration(
+            hintText: "Comment",
+            filled: true,
+            suffixIcon: Icon(
+              Icons.send,
+              color: CustomColors.n2,
+            ),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: CustomColors.n1),
+            ),
+          ),
+          cursorColor: CustomColors.n1,
+          onSubmitted: (value) => {setState(() {})},
+        ),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.025,
+        ),
+        FutureBuilder(
+          future: widget.connection.getComments(),
+          builder: (context, AsyncSnapshot<String> snapshot) {
+            if (snapshot.hasData) {
+              Map<String, dynamic> data = json.decode(snapshot.data!);
+              var comments = Comments.fromJson(data);
+              final commentsList = comments.comments.map((c) {
+                return Container(
+                  padding: const EdgeInsetsDirectional.all(20),
+                  margin: const EdgeInsetsDirectional.only(bottom: 10),
+                  decoration: BoxDecoration(
+                      color: CustomColors.n2.withOpacity(0.3),
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(30),
+                      )),
+                  width: double.infinity,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        c.email,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                        ),
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.01,
+                      ),
+                      Row(
+                        children: [
+                          RatingBar.builder(
+                            itemSize: 25,
+                            initialRating: c.rating,
+                            minRating: 1,
+                            direction: Axis.horizontal,
+                            allowHalfRating: true,
+                            itemCount: 5,
+                            itemPadding:
+                                const EdgeInsets.symmetric(horizontal: 4.0),
+                            itemBuilder: (context, _) => const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                            ),
+                            ignoreGestures: true,
+                            onRatingUpdate: (_rating) {},
+                          ),
+                          Text(
+                            c.date,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.01,
+                      ),
+                      Text(
+                        c.com,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList();
+              return Column(
+                children: commentsList,
+              );
+            }
+            return Center(
+                child: SizedBox(
+              height: MediaQuery.of(context).size.width * 0.05,
+              width: MediaQuery.of(context).size.width * 0.05,
+              child: const CircularProgressIndicator(
+                  strokeWidth: 10.0,
+                  valueColor: AlwaysStoppedAnimation(CustomColors.n1)),
+            ));
+          },
+        )
+      ],
+    );
+  }
 }
