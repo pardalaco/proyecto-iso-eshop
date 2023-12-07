@@ -19,7 +19,7 @@ import logging
 import time
 import json
 
-import schedule
+# @idea import schedule
 
 from src.database.database import Database
 from src.server.message_handler import MessageHandler
@@ -52,7 +52,7 @@ class Server:
 
 #***************************************************************************************************
 	def set_up_logger(self) -> None: 
-		# @todo (If there is time) Apply the logger
+		# @idea Apply the logger
 		now = time.datetime.now()
 
 		# Configure and set loggers

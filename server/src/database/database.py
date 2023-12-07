@@ -17,11 +17,12 @@
 import sqlite3
 from datetime import datetime
 from typing import Union
+import random
 
 
 #***************************************************************************************************
 class Database:
-	connection = sqlite3.connect("../../../src/database/isoDB.db")
+	connection = sqlite3.connect("../../database/isoDB.db")
 	cursor = connection.cursor()
 	cursor.execute("PRAGMA foreign_keys = ON;")
 
@@ -57,8 +58,18 @@ class Database:
 	@classmethod
 	def user_signup(cls, email: str, password: str) -> bool:
 		query = "INSERT INTO cliente (email, pwd) VALUES (?, ?)"
+		query2 = """
+		INSERT INTO Marketing (email, tag, peso, contador)
+		VALUES (?, ?, ?, ?);
+		"""
 		try:
 			cls.cursor.execute(query, (email, password))
+			tags = cls.fetch_tags()["tags"]
+			while len(tags) > 3:
+				random_index = random.randint(0, len(tags) - 1)
+				tags.pop(random_index)
+			for tag in tags: 
+				cls.cursor.execute(query2, (email, tag, 0.5, 0))
 			cls.connection.commit()
 			return True
 		except Exception as e:
@@ -84,8 +95,19 @@ class Database:
 
 #***************************************************************************************************
 	@classmethod
+	def update_user_marketing(cls, email: str, tag: str, operation: int) -> dict:
+		# @todo User Marketing Weight
+		# if tag does not exist, insert it and continue
+		# based on op, modify tag value by multiplying by op factor
+		# after updating all tags, increase tag counter of tags not updated by 1
+		#       and set counter of updated tags to 0
+		# if any coutner > x, set tag weight to -factor
+		pass
+
+
+#***************************************************************************************************
+	@classmethod
 	def fetch_all_products(cls) -> dict:
-		# @todo order by rating
 		query = """
 			SELECT p.ROWID,
         p.nombre,
@@ -144,7 +166,6 @@ class Database:
 #***************************************************************************************************
 	@classmethod
 	def fetch_products_by_tags(cls, tags: list[str]) -> dict:
-		# @todo order by id
 		query = """
 		SELECT  p.ROWID,
 						p.nombre,
