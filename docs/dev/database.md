@@ -72,6 +72,7 @@ Table Feedback {
   idProducto INT [pk]
   rating INT [not null]
   comentario VARCHAR(100)
+  fecha date [not null]
 }
 
 Ref: Clasificacion.idProducto > Producto.ROWID
