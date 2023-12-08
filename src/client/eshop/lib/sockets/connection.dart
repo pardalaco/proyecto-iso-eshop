@@ -1,6 +1,10 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
+
+import 'package:eshop/models/Comment.dart';
 
 class Connection {
   late Socket client;
@@ -32,7 +36,7 @@ class Connection {
     client.write(send);
     subscription.resume();
     while (debeEsperar) {
-      await Future.delayed(Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 500));
     }
     debeEsperar = true;
     subscription.pause();
@@ -43,7 +47,7 @@ class Connection {
   }
 
   Future<void> closeConnection() async {
-    client.close();
+    client.destroy();
   }
 
   Future<void> query(Map<String, dynamic> js) async {
@@ -55,8 +59,12 @@ class Connection {
     }
   }
 
+//METODOS A UTILIZAR
+//METODOS GET
+
 //Devolver json.encode() para poder recibirlo en el future: del futureBuilder
-  Future<String> getComments() async {
+  Future<String> getComments(int p_id) async {
+    await Future.delayed(const Duration(seconds: 1));
     return json.encode({
       "amount": 1,
       "ratings": [
@@ -78,7 +86,7 @@ class Connection {
   }
 
 //Devolver json.encode() para poder recibirlo en el future: del futureBuilder
-  Future<String> getProducts() async {
+  Future<String> getProducts(String email) async {
     await Future.delayed(const Duration(seconds: 1));
     return json.encode({
       "amount": 2,
@@ -106,9 +114,54 @@ class Connection {
     //@todo
   }
 
+  //Devolver json.encode() para poder recibirlo en el future: del futureBuilder
   Future<String> getTags() async {
+    await Future.delayed(const Duration(seconds: 1));
     return json.encode({
       "tags": ["Tag 1", "Tag 2", "Tag 3", "Tag 4"]
     });
+    //@todo
+  }
+
+  //Devolver json.encode() para poder recibirlo en el future: del futureBuilder.
+  int count = 0; //Probar una cosa, esto luego borrar
+  Future<String> getAllCarts(String email) async {
+    await Future.delayed(const Duration(seconds: 1));
+    if (count == 0) {
+      count++;
+      return json.encode({
+        "carts": [
+          {"cartid": 1, "cartname": "Cart 1", "total": 50.45},
+          {"cartid": 2, "cartname": "Cart 2", "total": 20}
+        ]
+      });
+    } else {
+      return json.encode({
+        "carts": [
+          {"cartid": 1, "cartname": "Cart 1", "total": 50.45},
+          {"cartid": 2, "cartname": "Cart 2", "total": 20},
+          {"cartid": 3, "cartname": "Cart 3", "total": 20}
+        ]
+      });
+    }
+    //@todo
+  }
+
+  //METODOS POST
+
+  Future<bool> sendComment(String email, int p_id, Comment t) async {
+    await Future.delayed(const Duration(seconds: 1));
+    return true;
+    //@todo
+  }
+
+  Future<bool> createCart(String email, String cartname) async {
+    return true;
+    //@todo
+  }
+
+  Future<bool> addToCart(String email, int card_id, int p_id) async {
+    return true;
+    //@todo
   }
 }
