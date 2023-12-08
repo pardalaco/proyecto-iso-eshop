@@ -1,7 +1,7 @@
 // ignore_for_file: non_constant_identifier_names, prefer_interpolation_to_compose_strings, prefer_const_constructors, no_leading_underscores_for_local_identifiers, no_logic_in_create_state, must_be_immutable, unused_element, sized_box_for_whitespace
 
 import 'package:eshop/models/Tag.dart';
-import 'package:eshop/views/productDetailsUser.dart';
+import 'package:eshop/views/productDetails.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:eshop/sockets/connection.dart';
@@ -57,7 +57,11 @@ class _MyPage extends State<Home> {
         child: Scaffold(
           appBar: _MyAppBar,
           drawer: _MyDrawer(context, profile, admin, updateState),
-          body: _MyHomeBody(connection: connection, admin: admin),
+          body: _MyHomeBody(
+            connection: connection,
+            admin: admin,
+            profile: profile,
+          ),
           floatingActionButton: adminMode
               ? FloatingActionButton(
                   onPressed: () {
@@ -74,11 +78,15 @@ class _MyPage extends State<Home> {
 class _MyHomeBody extends StatefulWidget {
   Connection connection;
   bool admin;
-  _MyHomeBody({Key? key, required this.connection, required this.admin});
+  Profile profile;
+  _MyHomeBody(
+      {Key? key,
+      required this.connection,
+      required this.admin,
+      required this.profile});
 
   @override
-  State<_MyHomeBody> createState() =>
-      _HomeBody(connection: connection, admin: admin);
+  State<_MyHomeBody> createState() => _HomeBody();
 }
 
 bool adminMode = false;
@@ -86,9 +94,6 @@ bool searchByTag = false;
 bool searchByName = false;
 
 class _HomeBody extends State<_MyHomeBody> {
-  Connection connection;
-  bool admin;
-  _HomeBody({required this.connection, required this.admin});
   final FocusNode _focusNode = FocusNode();
   String? textoIngresado;
 
@@ -146,7 +151,7 @@ class _HomeBody extends State<_MyHomeBody> {
                     showDialog(
                         context: context,
                         builder: (context) =>
-                            _MyAlert(context, updateState2, connection));
+                            _MyAlert(context, updateState2, widget.connection));
                   },
                   icon: Icon(
                     Icons.filter_list_alt,
@@ -169,7 +174,9 @@ class _HomeBody extends State<_MyHomeBody> {
                     fontWeight: FontWeight.bold),
               )
             ] else ...[
-              Expanded(child: FuturaLista(context, connection))
+              Expanded(
+                  child:
+                      FuturaLista(context, widget.connection, widget.profile))
             ]
           ] else if (searchByTag) ...[
             Text(
@@ -355,9 +362,10 @@ class _MySwitchState extends State<MySwitch> {
 }
 
 //@toDo Manejar errores cuando el server este OK
-Widget FuturaLista(BuildContext context, Connection connection) {
+Widget FuturaLista(
+    BuildContext context, Connection connection, Profile profile) {
   return FutureBuilder(
-    future: connection.getProducts(),
+    future: connection.getProducts(profile.email),
     builder: (context, AsyncSnapshot<String> snapshot) {
       if (snapshot.hasData) {
         Map<String, dynamic> data = json.decode(snapshot.data!);
@@ -376,21 +384,31 @@ Widget FuturaLista(BuildContext context, Connection connection) {
                 builder: (context) => DetailPage(
                   producto: product,
                   connection: connection,
+                  profile: profile,
                 ),
               );
               Navigator.of(context).push(route);
             },
           );
         }).toList();
-        return ListView.separated(
-          padding: const EdgeInsets.all(10.0),
-          itemBuilder: (context, index) => productList[index],
-          separatorBuilder: (context, index) => const Divider(
-            thickness: 1,
-            color: Colors.white,
-          ),
-          itemCount: productList.length,
-        );
+        if (productList.isEmpty) {
+          return const Text(
+            "No products found",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+          );
+        } else {
+          return ListView.separated(
+            padding: const EdgeInsets.all(10.0),
+            itemBuilder: (context, index) => productList[index],
+            separatorBuilder: (context, index) => const Divider(
+              thickness: 1,
+              color: Colors.white,
+            ),
+            itemCount: productList.length,
+          );
+        }
       }
       return Center(
           child: SizedBox(
@@ -481,31 +499,13 @@ class _TagsListState extends State<_TagsList> {
         }
         return Center(
             child: SizedBox(
-          height: MediaQuery.of(context).size.width * 0.25,
-          width: MediaQuery.of(context).size.width * 0.25,
+          height: MediaQuery.of(context).size.width * 0.1,
+          width: MediaQuery.of(context).size.width * 0.1,
           child: CircularProgressIndicator(
-              strokeWidth: 10.0,
+              strokeWidth: 5,
               valueColor: AlwaysStoppedAnimation(CustomColors.n1)),
         ));
       },
     );
-    /*return ListView.builder(
-      itemCount: items.length,
-      itemBuilder: (context, index) {
-        return CheckboxListTile(
-          title: Text(items[index].item1),
-          value: items[index].item2,
-          onChanged: (bool? value) {
-            setState(() {
-              items[index] = Tuple2<String, bool>(
-                items[index].item1,
-                value ?? false,
-              );
-            });
-            print('Checkbox ${items[index].item1}: $value');
-          },
-        );
-      },
-    );*/
   }
 }
