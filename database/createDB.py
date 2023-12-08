@@ -206,7 +206,7 @@ cursor.execute(
 	    CREATE TABLE Marketing (
             email VARCHAR(40) NOT NULL,
             tag VARCHAR(45) NOT NULL,
-            peso DECIMAL(7,2) NOT NULL DEFAULT 0.5,
+            peso DECIMAL(7,2) NOT NULL DEFAULT 0.5 CHECK(peso >= 0 AND peso <= 1),
             contador INT NOT NULL,
             PRIMARY KEY (email, tag),
             FOREIGN KEY (email)
