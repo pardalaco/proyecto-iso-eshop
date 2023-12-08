@@ -112,14 +112,16 @@ class MessageHandler:
 
 #***************************************************************************************************
 	def handle_request_product_by_id(self, content: dict) -> dict:
+		email = content["email"]
 		product_id = content["id"]
-		return Database.fetch_product_by_id(product_id)
+		return Database.fetch_product_by_id(email, product_id)
 
 
 #***************************************************************************************************
 	def handle_request_products_by_tags(self, content: dict) -> dict:
+		email = content["email"]
 		tags = content["tags"].split(",")
-		return Database.fetch_products_by_tags(tags)
+		return Database.fetch_products_by_tags(email, tags)
 
 
 #***************************************************************************************************
@@ -364,10 +366,12 @@ class MessageHandler:
 		else:
 			return {"success": False}
 
+
 #***************************************************************************************************
 	def handle_fetch_product_ratings(self, content: dict) -> dict:
 		productid = content["productid"]
 		return Database.fetch_product_ratings(productid)
+
 
 #***************************************************************************************************
 	def handle_fetch_recommended_products(self, content: dict) -> dict:

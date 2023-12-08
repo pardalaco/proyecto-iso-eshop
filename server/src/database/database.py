@@ -35,13 +35,13 @@ class Database:
 		count = cls.cursor.fetchone()
 		return count[0] > 0
 
+
 #***************************************************************************************************
 	@classmethod
 	def password_matches(cls, email: str, password: str) -> bool:
 		query = "SELECT pwd FROM cliente WHERE email = ?"
 		cls.cursor.execute(query, (email,))
 		user_pwd = cls.cursor.fetchone()[0]
-
 		return True if user_pwd == password else False
 
 
@@ -95,14 +95,96 @@ class Database:
 
 #***************************************************************************************************
 	@classmethod
-	def update_user_marketing(cls, email: str, tag: str, operation: int) -> dict:
-		# @todo User Marketing Weight
-		# if tag does not exist, insert it and continue
-		# based on op, modify tag value by multiplying by op factor
-		# after updating all tags, increase tag counter of tags not updated by 1
-		#       and set counter of updated tags to 0
-		# if any coutner > x, set tag weight to -factor
-		pass
+	def tag_in_user_marketing(cls, email: str, tag: str) -> bool:
+		query = """
+		SELECT COUNT(*)
+		FROM Marketing
+		WHERE email = ? AND tag = ?;
+		"""
+		cls.cursor.execute(query, (email, tag))
+		results = cls.cursor.fetchall()
+		return results[0][0] > 0
+
+
+#***************************************************************************************************
+	@classmethod
+	def add_tag_to_user_marketing(cls, email: str, tag: str) -> bool:
+		query = """
+		INSERT INTO Marketing (email, tag, peso, contador)
+		VALUES (?, ?, ?, ?);
+		"""
+		try:
+			cls.cursor.execute(query, (email, tag, 0.5, 1))
+			cls.connection.commit()
+			return True
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error occurred while adding a tag to user marketing: \n{e}")
+			return False
+
+
+#***************************************************************************************************
+	@classmethod
+	def increase_marketing_tag_counters(cls, email: str) -> bool:
+		query = """
+		UPDATE Marketing
+		SET contador = CASE
+			WHEN contador = 60 THEN 1
+			ELSE contador + 1
+		END,
+		peso = CASE
+			WHEN contador = 50 THEN 0.4
+			WHEN contador % 10 = 0 THEN peso - 0.05
+			ELSE peso
+		END
+		WHERE email = ?;
+		"""
+		try:
+			cls.cursor.execute(query, (email,))
+			cls.connection.commit()
+			return True
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error occurred while increasing user marketing tags counter: \n{e}")
+			return False
+
+
+#***************************************************************************************************
+	@classmethod
+	def update_user_marketing(cls, email: str, tag: str, operation: int, var: float = None) -> None:
+		if not cls.tag_in_user_marketing(email, tag):
+			if not cls.add_tag_to_user_marketing(email, tag):
+				return
+		query = """
+		UPDATE Marketing 
+		SET peso = peso + ?, contador = 1
+		WHERE email = ? AND tag = ?;
+		"""
+		if operation == 0: # Search specific product with <tags>
+			variance = 0.01
+		elif operation == 1: # Search products by <tag>
+			variance = 0.03
+		elif operation == 2: # Add product to cart with <tags>
+			variance = 0.02
+		elif operation == 3: # Buy product with <tags>
+			variance = 0.05
+		elif operation == 4: # Rate product with <tags> and <rating>
+			if var is not None:
+				variance = 0.05 * (var - 2.5)
+			else:
+				return
+		elif operation == 5: # Remove product from cart with <tags>
+			variance = -0.02
+		else:
+			variance = 0
+		try:
+			cls.cursor.execute(query, (variance, email, tag))
+			cls.connection.commit()
+			return
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error occurred while updating tag in user marketing profile: \n{e}")
+			return
 
 
 #***************************************************************************************************
@@ -136,7 +218,7 @@ class Database:
 
 #***************************************************************************************************
 	@classmethod
-	def fetch_product_by_id(cls, product_id: int) -> dict:
+	def fetch_product_by_id(cls, email: str, product_id: int) -> dict:
 		query = """
 		SELECT 	p.ROWID,
         		p.nombre,
@@ -156,16 +238,21 @@ class Database:
 		"""
 		cls.cursor.execute(query, (product_id,))
 		results = cls.cursor.fetchall()
-		results = results[0]
-		print(results)
-		products = {"id": row[0], "name": row[1], "description": row[2], "image": row[3], 
-								"price": row[4], "rating": row[5], "count": row[6], "tags": row[7]}
-		return {"amount": 1, "products": products}
+		item = results[0]
+		product = {"id": item[0], "name": item[1], "description": item[2], "image": item[3], 
+								"price": item[4], "rating": item[5], "count": item[6], "tags": item[7]}
+
+		tags = item[7].split(",")
+		cls.increase_marketing_tag_counters(email)
+		for tag in tags:
+			cls.update_user_marketing(email, tag, 0)
+
+		return product
 
 
 #***************************************************************************************************
 	@classmethod
-	def fetch_products_by_tags(cls, tags: list[str]) -> dict:
+	def fetch_products_by_tags(cls, email: str, tags: list[str]) -> dict:
 		query = """
 		SELECT  p.ROWID,
 						p.nombre,
@@ -190,6 +277,11 @@ class Database:
 		for row in results:
 			products.append({"id": row[0], "name": row[1], "description": row[2], "image": row[3], 
 											"price": row[4], "rating": row[5], "count": row[6], "tags": row[7]})
+
+		cls.increase_marketing_tag_counters(email)
+		for tag in tags:
+			cls.update_user_marketing(email, tag, 1)
+
 		return {"amount": len(products), "products": products}
 
 
@@ -204,6 +296,19 @@ class Database:
 		results = cls.cursor.fetchall()
 		results = [tag[0].capitalize() for tag in results]
 		return {"tags": results}
+
+
+#***************************************************************************************************
+	@classmethod
+	def fetch_product_tags(cls, productid: int) -> list[str]:
+		query = """
+		SELECT tag
+		FROM Clasificacion
+		WHERE idProducto = ?
+		"""
+		cls.cursor.execute(query, (productid,))
+		results = cls.cursor.fetchall()
+		return [tag[0].capitalize() for tag in results]
 
 
 #***************************************************************************************************
@@ -309,6 +414,7 @@ class Database:
 			print(f"(!) An error occurred while deleting a product: \n{e}")
 			return False
 
+
 #***************************************************************************************************
 	@classmethod
 	def tag_exists(cls, tag: str) -> bool:
@@ -350,6 +456,19 @@ class Database:
 		cls.cursor.execute(query, (cartid, email))
 		results = cls.cursor.fetchall()
 		return results[0][0] > 0
+
+
+#***************************************************************************************************
+	@classmethod
+	def get_cart_user(cls, cartid: str) -> str:
+		query = """
+		SELECT email
+		FROM Carrito
+		WHERE ROWID = ?
+		"""
+		cls.cursor.execute(query, (cartid,))
+		results = cls.cursor.fetchall()
+		return results[0][0]
 
 
 #***************************************************************************************************
@@ -414,6 +533,13 @@ class Database:
 		try:
 			cls.cursor.execute(query, (cartid, productid, 1))
 			cls.connection.commit()
+
+			email = cls.get_cart_user(cartid)
+			tags = cls.fetch_product_tags(productid)
+			cls.increase_marketing_tag_counters(email)
+			for tag in tags:
+				cls.update_user_marketing(email, tag, 2)
+
 			return True
 		except Exception as e:
 			cls.connection.rollback()
@@ -449,6 +575,13 @@ class Database:
 		try:
 			cls.cursor.execute(query, (cartid, productid))
 			cls.connection.commit()
+
+			email = cls.get_cart_user(cartid)
+			tags = cls.fetch_product_tags(productid)
+			cls.increase_marketing_tag_counters(email)
+			for tag in tags:
+				cls.update_user_marketing(email, tag, 5)
+
 			return True
 		except Exception as e:
 			cls.connection.rollback()
@@ -541,6 +674,21 @@ class Database:
 
 #***************************************************************************************************
 	@classmethod
+	def get_total_cart_tags(cls, cartid: int) -> list[str]:
+		query = """
+		SELECT c2.tag
+		FROM Contiene c
+		INNER JOIN Producto p ON P.ROWID = c.idProducto 
+		INNER JOIN Clasificacion c2 ON c2.idProducto = p.ROWID 
+		WHERE idCarrito = ?;
+		"""
+		cls.cursor.execute(query, (cartid,))
+		results = cls.cursor.fetchall()
+		return [tag[0].capitalize() for tag in results]
+
+
+#***************************************************************************************************
+	@classmethod
 	def fill_order(cls, cartid: int, orderid: int) -> bool:
 		query = """
 		INSERT INTO LineaPedido 
@@ -553,6 +701,13 @@ class Database:
 		try:
 			cls.cursor.execute(query, (orderid, cartid))
 			cls.connection.commit()
+
+			email = cls.get_cart_user(cartid)
+			tags = cls.get_total_cart_tags(cartid)
+			cls.increase_marketing_tag_counters(email)
+			for tag in tags:
+				cls.update_user_marketing(email, tag, 3)
+
 			return True
 		except Exception as e:
 			cls.connection.rollback()
@@ -698,6 +853,7 @@ class Database:
 		try:
 			cls.cursor.execute(query, (orderid,))
 			cls.connection.commit()
+
 			return True
 		except Exception as e:
 			cls.connection.rollback()
@@ -759,36 +915,41 @@ class Database:
 	def rate_product(cls, email: str, productid: int, rating: float, comment: str = None ) -> bool:
 		current_date = datetime.now()
 		current_date = current_date.strftime("%d/%m/%Y")
+		query1 = """
+		INSERT INTO Feedback (email, idProducto, rating, fecha, comentario)
+		VALUES (?, ?, ?, ?,?);
+		"""
+		query2 = """
+		INSERT INTO Feedback (email, idProducto, rating, fecha)
+		VALUES (?, ?, ?, ?);
+		"""
+		query3 = """
+		UPDATE Producto
+		SET rating = (
+				SELECT AVG(rating)
+				FROM Feedback
+				WHERE Feedback.idProducto = ?
+		)
+		WHERE ROWID = ?;
+		"""
+		query4 = """
+		UPDATE Producto
+		SET contRating = contRating + 1
+		WHERE ROWID = ?
+		"""
 		try:
 			if comment:
-				query = """
-				INSERT INTO Feedback (email, idProducto, rating, fecha, comentario)
-				VALUES (?, ?, ?, ?,?);
-				"""
-				cls.cursor.execute(query, (email, productid, rating, current_date, comment))
+				cls.cursor.execute(query1, (email, productid, rating, current_date, comment))
 			else:
-				query = """
-				INSERT INTO Feedback (email, idProducto, rating, fecha)
-				VALUES (?, ?, ?, ?);
-				"""
-				cls.cursor.execute(query, (email, productid, rating, current_date))
-			query = """
-			UPDATE Producto
-			SET rating = (
-					SELECT AVG(rating)
-					FROM Feedback
-					WHERE Feedback.idProducto = ?
-			)
-			WHERE ROWID = ?;
-			"""
-			cls.cursor.execute(query, (productid, productid))
-			query = """
-			UPDATE Producto
-			SET contRating = contRating + 1
-			WHERE ROWID = ?
-			"""
-			cls.cursor.execute(query, (productid,))
+				cls.cursor.execute(query2, (email, productid, rating, current_date))
+			cls.cursor.execute(query3, (productid, productid))
+			cls.cursor.execute(query4, (productid,))
 			cls.connection.commit()
+
+			tags = cls.fetch_product_tags(productid)
+			cls.increase_marketing_tag_counters(email)
+			for tag in tags:
+				cls.update_user_marketing(email, tag, 4, float(rating))
 			return True
 		except Exception as e:
 			cls.connection.rollback()
@@ -818,13 +979,13 @@ class Database:
 	def fetch_recommended_products(cls, email: str) -> dict:
 		query = """
 		SELECT p.ROWID,
-        p.nombre,
-        p.descripcion,
-        p.imagen,
-        p.precio,
+				p.nombre,
+				p.descripcion,
+				p.imagen,
+				p.precio,
 				p.rating,
 				p.contRating,
-        GROUP_CONCAT(c.tag) AS tags
+				GROUP_CONCAT(c.tag) AS tags
 		FROM Producto p
 		LEFT JOIN Clasificacion c ON p.ROWID = c.idProducto
 		LEFT JOIN Marketing m ON m.tag = c.tag

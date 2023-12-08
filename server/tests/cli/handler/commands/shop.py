@@ -34,7 +34,8 @@ def handle_list_products(isresponse: bool, current_user: dict, args: list[str]) 
 				return (True, {"type": 2, "code": 1, "content": {}})
 			elif args[0] == "-tags":
 				# Retrieve by tag(s)
-				return (True, {"type": 2, "code": 3, "content": {"tags": ",".join(args[1:])}})
+				return (True, {"type": 2, "code": 3, "content": {"email": current_user["email"],
+																													"tags": ",".join(args[1:])}})
 
 
 #***************************************************************************************************
@@ -43,12 +44,13 @@ def handle_product(isresponse: bool, current_user: dict, args: list[str]) -> tup
 		return (False, "You need to Log in to use this command")
 	else:
 		if isresponse:
-			item = args[0]["content"]["products"]
+			item = args[0]["content"]
 			return (False, f"*{item['rating']}({item['count']})* {item['id']}: {item['name']} - "
 											f"{item['price']}€\n"
 										 f"\t{item['description']}\n\tTAGS = {item['tags'].replace(',', ', ')}")
 		else:
-			return (True, {"type": 2, "code": 2, "content": {"id": args[0]}})
+			return (True, {"type": 2, "code": 2, "content": {"email": current_user["email"], 
+																											"id": args[0]}})
 
 
 #***************************************************************************************************
