@@ -11,14 +11,14 @@ Este documento detalla la revisión del segundo sprint del proyecto, abarcando l
 - Finalizar lo pendiente del Sprint 1.
 - Crear la CLI.
 - Actualizar la documentación de los mensajes Json.
-- Añadir la funcionalidad de Carrito y de Pedidos.
+- Añadir la funcionalidad de Carrito y de Orders.
 - Modificar la base de datos en función de las nuevas necesidades.
 
 ---
 
 ## Resultados Alcanzados
 
-- Se alcanzaron todos los resultados, dentro de el Periodo de tiempo que abarca el Sprint 2, pero con un mayor coste de lo esperado que resultó en el cumplimiento de los objetivos en una fecha tardía con respecto a la esperada.
+- Se alcanzaron todos los resultados, dentro de el Periodo de tiempo que abarca el Sprint 2, pero con un mayor coste de lo esperado que resultó en el cumplimiento de los objetivos en una date tardía con respecto a la esperada.
 
 ---
 

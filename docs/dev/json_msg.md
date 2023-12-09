@@ -11,12 +11,12 @@
 			- [**2.1. Request all Products**](#21-request-all-products)
 			- [**2.2. Request product by ID**](#22-request-product-by-id)
 			- [**2.3. Request product(s) by TAG(s)**](#23-request-products-by-tags)
-			- [**2.4. Request product(s) by Keyword**](#24-request-products-by-keyword)
-			- [**2.5. Request all Tags**](#25-request-all-tags)
+			- [**2.4. Request all Tags**](#24-request-all-tags)
 		- [**3. Manage Products (Admin)**](#3-manage-products-admin)
 			- [**3.1. Add new product**](#31-add-new-product)
 			- [**3.2. Edit product**](#32-edit-product)
 			- [**3.3. Remove product**](#33-remove-product)
+			- [**3.4. Add new tag**](#34-add-new-tag)
 		- [**4. Related to Cart**](#4-related-to-cart)
 			- [**4.1. Create Cart**](#41-create-cart)
 			- [**4.2. Edit Cart name**](#42-edit-cart-name)
@@ -41,6 +41,12 @@
 		- [**7. Orders (ADMIN)**](#7-orders-admin)
 			- [**7.1. List All Orders**](#71-list-all-orders)
 			- [**7.2. Change Order Status**](#72-change-order-status)
+		- [**8. Recommendations and Product Rating**](#8-recommendations-and-product-rating)
+			- [**8.1. Rate Product**](#81-rate-product)
+			- [**8.2. View Product Ratings**](#82-view-product-ratings)
+			- [**8.3. Request Recommended Products**](#83-request-recommended-products)
+			- [**8.4. Request Recommended Products by Tag**](#84-request-recommended-products-by-tag)
+			- [\*\*8.4. Request User Marketing Profile \*\*](#84-request-user-marketing-profile-)
 # **JSON Message Structure**
 ## **Main format**
 ```js
@@ -149,8 +155,10 @@ server = {
 				id: "int", 
 				name: "str", 
 				description: "str", 
-				image: "@todo image",
+				image: "image",
 				price: "float",
+				rating: "float",
+				count: "int",
 				tags: "str,str,.."
 			}
 		]
@@ -163,6 +171,7 @@ client = {
 	type: 2,
 	code: 2,
 	content: {
+		email: "str",
 		id: "int"
 	}
 }
@@ -175,8 +184,10 @@ server = {
 		id: "int", 
 		name: "str", 
 		description: "str", 
-		image: "@todo image",
+		image: "image",
 		price: "float",
+		rating: "float",
+		count: "int",
 		tags: "str,str,.."
 	}
 }
@@ -187,7 +198,8 @@ client = {
 	type: 2,
 	code: 3,
 	content: {
-		tags: "str,str,.."
+		email: "str",
+		tags: "str,str,.." 
 	}
 }
 ```
@@ -202,55 +214,28 @@ server = {
 				id: "int", 
 				name: "str", 
 				description: "str", 
-				image: "@todo image",
+				image: "image",
 				price: "float",
+				rating: "float",
+				count: "int",
 				tags: "str,str,.."
 			}
 		]
 	}
 }
 ```
-#### **2.4. Request product(s) by Keyword**
+#### **2.4. Request all Tags**
 ```js
 client = {
 	type: 2,
 	code: 4,
-	content: {
-		keyword: "str"
-	}
-}
-```
-```js
-server = {
-	type: 2,
-	code: 4,
-	content: {
-		amount: "int",
-		products: "list"[
-			"dict"{
-				id: "int", 
-				name: "str", 
-				description: "str", 
-				image: "@todo image",
-				price: "float",
-				tags: "str,str*,.."
-			}
-		]
-	}
-}
-```
-#### **2.5. Request all Tags**
-```js
-client = {
-	type: 2,
-	code: 5,
 	content: {}
 }
 ```
 ```js
 server = {
 	type: 2,
-	code: 5,
+	code: 4,
 	content: {
 		tags: "list"["str"]
 	}
@@ -268,7 +253,7 @@ client = {
 		email: "str",
 		name: "str", 
 		description: "str", 
-		image: "@todo image",
+		image: "image",
 		price: "float",
 		tags: "str,str,.."
 	}
@@ -291,6 +276,7 @@ client = {
 	content: {
 		email: "str",
 		productid: "int",
+		tagop: "int", // 0 = Add, 1 = Remove | Only if "field" == "tags"
 		"str"(field): "str"(value),
 		"str"(field): "str"(value),
 		..
@@ -299,6 +285,7 @@ client = {
 ```
 > *Content is a dictionary where the key is the field to edit, and the value is the value of what the new field value should be*
 > *Field must be an attribute of **Product***
+> *If field == "tags", value = "str,str,str,..."*
 ```js
 server = {
 	type: 3,
@@ -323,6 +310,26 @@ client = {
 server = {
 	type: 3,
 	code: 3,
+	content: {
+		success: "bool"
+	}
+}
+```
+#### **3.4. Add new tag**
+```js
+client = {
+	type: 3,
+	code: 4,
+	content: {
+		email: "str",
+		tag: "str"
+	}
+}
+```
+```js
+server = {
+	type: 3,
+	code: 4,
 	content: {
 		success: "bool"
 	}
@@ -480,7 +487,7 @@ server = {
 				id: "int", 
 				name: "str", 
 				description: "str", 
-				image: "@todo image",
+				image: "image",
 				price: "float",
 				tags: "str,str,..",
 				quantity: "int"
@@ -654,7 +661,6 @@ server = {
 		email: "str",
 		password: "str",
 		name: "str",
-		surname: "str",
 		payment: "str",
 		address: "str"
 	}
@@ -739,7 +745,6 @@ server = {
 ---
 &nbsp;
 ### **7. Orders (ADMIN)**
-@todo Orders (ADMIN)
 #### **7.1. List All Orders**
 ```js
 client = {
@@ -789,6 +794,147 @@ server = {
 	code: 2,
 	content: {
 		success: "bool"
+	}
+}
+```
+---
+&nbsp;
+### **8. Recommendations and Product Rating**
+#### **8.1. Rate Product**
+```js
+client = {
+	type: 8,
+	code: 1,
+	content: {
+		email: "str",
+		productid: "int",
+		rating: "float",
+		comment: "str"(optional)
+	}
+}
+```
+```js
+server = {
+	type: 8,
+	code: 1,
+	content: {
+		success: "bool"
+	}
+}
+```
+#### **8.2. View Product Ratings**
+```js
+client = {
+	type: 8,
+	code: 2,
+	content: {
+		productid: "int"
+	}
+}
+```
+```js
+server = {
+	type: 8,
+	code: 2,
+	content: {
+		amount: "int",
+		ratings: "list"[
+			"dict"{
+				email: "str",
+				rating: "float",
+				comment: "str",
+				date: "date"
+			}
+		]
+	}
+}
+```
+#### **8.3. Request Recommended Products**
+```js
+client = {
+	type: 8,
+	code: 3,
+	content: {
+		email: "str"
+	}
+}
+```
+```js
+server = {
+	type: 8,
+	code: 3,
+	content: {
+		amount: "int",
+		products: "list"[
+			"dict"{
+				id: "int", 
+				name: "str", 
+				description: "str", 
+				image: "image",
+				price: "float",
+				rating: "float",
+				count: "int",
+				tags: "str,str,.."
+			}
+		]
+	}
+}
+```
+#### **8.4. Request Recommended Products by Tag**
+```js
+client = {
+	type: 8,
+	code: 3,
+	content: {
+		email: "str",
+		tags: "str,str,.." 
+	}
+}
+```
+```js
+server = {
+	type: 8,
+	code: 3,
+	content: {
+		amount: "int",
+		products: "list"[
+			"dict"{
+				id: "int", 
+				name: "str", 
+				description: "str", 
+				image: "image",
+				price: "float",
+				rating: "float",
+				count: "int",
+				tags: "str,str,.."
+			}
+		]
+	}
+}
+```
+#### **8.4. Request User Marketing Profile **
+```js
+client = {
+	type: 8,
+	code: 5,
+	content: {
+		email: "str"
+	}
+}
+```
+```js
+server = {
+	type: 8,
+	code: 5,
+	content: {
+		amount: "int",
+		tags: "list"[
+			"dict"{
+				tag: "str",
+				weight: "float",
+				count: "int"
+			}
+		]
 	}
 }
 ```

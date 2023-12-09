@@ -45,12 +45,16 @@ def shop_help() -> str:
 	User Commands:
 		edit-payment (epy) <payment>
 		edit-address (ead) <address>
+		my-marketing (mm)
 		user-info (ui)
 
 	Shop Commands:
 		list-products (lp) [-tags <tag> <tag> ...]
 		product (p) <product_id>
+		list-recommended (lr) [-tags <tag> <tag> ...]
 		tags (t)
+		rate (rt) <product_id> <rating> [comment]
+		view-ratings (vr) <product_id>
 
 	Cart Commands:
 		new-cart (nc) <cart_name>
@@ -73,9 +77,11 @@ def admin_help() -> str:
 	return """
 	Admin Commands:
 		new-product (np) <name> <description> <image> <price>
-		edit-product (ep) <product_id> <field> <value> 
-			(field can be: "nombre", "descripcion", "imagen", "precio")
+		edit-product (ep) <product_id> <field> <value> [tagop = "0", "1"]
+			(field can be: "name", "description", "image", "price")
+			(tagop only if field == "tags")
 		delete-product (dp) <product_id>
+		new-tag (nt) <tag>
 		list-all-orders (lao)
 		change-order-status (cos) <order_id> <status>
 			(status can be: 0 = "Invoiced", 1 = "Prepared", 2 = "Shipped", 3 = "Out for Delivery", 

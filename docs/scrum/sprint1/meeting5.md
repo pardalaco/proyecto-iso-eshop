@@ -1,5 +1,5 @@
 # Resumen de la Reunión Scrum
-**Fecha:** 		10/11/2023  
+**date:** 		10/11/2023  
 **Equipo:** 	Los Niños de Adolfo  
 **Sprint:** 	1 
 
@@ -28,9 +28,9 @@ Revisión final del sprint
 - Inicio carga el json.
 
 #### **Joan:** 
-- Actualización e información del estado actual de la base de datos.
+- Actualización e información del status actual de la base de datos.
 - Información de la documentación relevante existente.
-- Sugerencia posible necesidad de “Pedido”.
+- Sugerencia posible necesidad de “Order”.
 
 ---
 

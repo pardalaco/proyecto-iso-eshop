@@ -11,12 +11,12 @@ Este documento detalla la revisión del primer sprint del proyecto, abarcando lo
 - Investigar y definir la infraestructura de la aplicación:
   - Servidor en Python.
   - Base de datos SQLite.
-  - Cliente en Flutter.
+  - User en Flutter.
   - Comunicación mediante sockets TCP.
 - Servidor:
   - Capacidad de recibir y enviar mensajes (singlethreading).
   - Interacción con la base de datos.
-- Cliente:
+- User:
   - Capacidad de recibir y enviar mensajes con el servidor.
   - Interfaz básica para testing y verificación de funcionamiento.
 - Base de datos:

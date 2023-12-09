@@ -1,5 +1,5 @@
 # Resumen de la Reunión Scrum
-**Fecha:**      22/11/2023  
+**date:**      22/11/2023  
 **Equipo:**     Los Niños de Adolfo 
 **Sprint:**     2  
 
@@ -24,7 +24,7 @@ Review de progreso y planificación
 - Muchas vistas únicas se deciden cambiar a pop-up.
 - Se decide sobre los widgets y componentes a usar.
 - Se decide inglés como idioma de la app.
-- Se ha decidido en los identificadores de producto, carrito y pedido en la base de datos.
+- Se ha decidido en los identificadores de Product, carrito y Order en la base de datos.
 
 ---
 
@@ -33,6 +33,6 @@ Review de progreso y planificación
 - Cambio de vistas únicas a pop-up según lo decidido.
 - Selección e implementación de widgets y componentes específicos.
 - Adaptación de la app al idioma inglés.
-- Actualización de la base de datos con los nuevos identificadores de producto, carrito y pedido.
+- Actualización de la base de datos con los nuevos identificadores de Product, carrito y Order.
 
 ---

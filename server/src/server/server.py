@@ -15,61 +15,58 @@
 #  *              If not, see <http://www.gnu.org/licenses/>.
 #***************************************************************************************************
 import asyncio
-import subprocess
-import os
-import sys
-
+import time
 import json
 
-from handler.handler import execute_command
+from src.database.database import Database
+from src.server.message_handler import MessageHandler
 
 
 #***************************************************************************************************
-PRIVILEGE_NONE = 0
-PRIVILEGE_NORMAL_USER = 1
-PRIVILEGE_ADMIN = 2
-
-current_user = {"privilege": PRIVILEGE_NONE, "email": None}
-input_type = [": ", ">> ", "# "]
-
-
-#***************************************************************************************************
-def get_user_input() -> list[str]:
-	user_input = input(input_type[current_user["privilege"]])
-	return user_input.split()
+class Server:
+	def __init__(self, host: str, port: int, buffer_size: int) -> None:
+		self.host = host
+		self.port = port
+		self.buffer_size = buffer_size
+		self.database = Database()
 
 
 #***************************************************************************************************
-async def main() -> None:
-	host = "127.0.0.1"
-	port = 32768
-	try:
-		reader, writer = await asyncio.open_connection(host, port)
-	except Exception as e:
-		print(e)
-		sys.exit(1)
+	async def handle_client(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
+		handler = MessageHandler()
+		address = writer.get_extra_info('peername')
 
-	print("Welcome to eShop!\nType [help, h] to see what you can do at any time!")
-	while True:
-		input_list = get_user_input()
-		communication, message = execute_command(input_list, current_user)
-		if communication:
-			message = json.dumps(message)
-			writer.write(message.encode())
-			data = await reader.read(1024)
-			data = data.decode()
-			response = json.loads(data)
-			communication, message = execute_command(input_list, current_user, True, response)
-		else:
-			if message is None:
-				print("Exiting the application")
-				sys.exit(0)
-		print(message)
+		while True:
+			data = await reader.read(self.buffer_size)
+			if not data:
+				# Client disconnected
+				break
 
-	writer.close()
-	await writer.wait_closed()
+			message = data.decode('utf-8')
+			print(f"Received from {address}: {message}")
+			
+			try:
+				message_json = json.loads(message)
+				response = handler.handle_message(message_json)
+			except json.JSONDecodeError:
+				print(f"Received malformed JSON from {address}")
+				response = "ERROR"
+
+			print(f"Responded to {address}: {response}")
+			writer.write(response.encode('utf-8'))
+			await writer.drain()
+
+		writer.close()
 
 
 #***************************************************************************************************
-if __name__ == "__main__":
-	asyncio.run(main())
+	async def start(self) -> bool:
+		server = await asyncio.start_server(
+			self.handle_client,
+			self.host,
+			self.port
+		)
+		print(f"Server started on {self.host}:{self.port}")
+		
+		async with server:
+			await server.serve_forever()

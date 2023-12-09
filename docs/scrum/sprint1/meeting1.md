@@ -1,5 +1,5 @@
 # Resumen de la Reunión Scrum
-**Fecha:** 		28/10/2023  
+**date:** 		28/10/2023  
 **Equipo:** 	Los Niños de Adolfo  
 **Sprint:** 	1  
 
@@ -24,15 +24,15 @@ Revisión del sprint
 
 #### **Daniel:** 
 - Progreso con el networking entre aplicaciones Python (en concreto, sockets).
-- La implementación actual solo permite conexión de servidor con 1 cliente.
+- La implementación actual solo permite conexión de servidor con 1 User.
 - Se plantea la posibilidad de usar la librería de Python `asyncio` para multithreading.
 
 #### **Joan:** 
 - Presenta el primer esquema de la base de datos.
-- Se sugiere extraer la columna “tag” de la tabla “Producto” a su propia tabla n:n.
+- Se sugiere extraer la columna “tag” de la tabla “Product” a su propia tabla n:n.
 - Posibles ampliaciones:
-  - Múltiples direcciones con tabla 1:n.
-  - Múltiples tarjetas con tabla 1:n.
+  - Múltiples addresses con tabla 1:n.
+  - Múltiples payments con tabla 1:n.
 
 #### **Hiram:** 
 - Conexión exitosa a la base de datos SQLite desde Python utilizando `import sqlite3`.

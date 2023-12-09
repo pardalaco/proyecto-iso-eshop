@@ -28,10 +28,11 @@ class MessageHandler:
 			(2, 1): self.handle_request_all_products,
 			(2, 2): self.handle_request_product_by_id,
 			(2, 3): self.handle_request_products_by_tags,
-			(2, 5): self.handle_request_all_tags,
+			(2, 4): self.handle_request_all_tags,
 			(3, 1): self.handle_new_product,
 			(3, 2): self.handle_edit_product,
 			(3, 3): self.handle_delete_product,
+			(3, 4): self.handle_new_tag,
 			(4, 1): self.handle_new_cart,
 			(4, 2): self.handle_edit_cart,
 			(4, 3): self.handle_remove_cart,
@@ -48,7 +49,12 @@ class MessageHandler:
 			(6, 2): self.handle_order_details,
 			(6, 3): self.handle_cancel_order,
 			(7, 1): self.handle_list_all_orders,
-			(7, 2): self.handle_change_order_status
+			(7, 2): self.handle_change_order_status,
+			(8, 1): self.handle_rate_product,
+			(8, 2): self.handle_fetch_product_ratings,
+			(8, 3): self.handle_fetch_recommended_products,
+			(8, 4): self.handle_fetch_recommended_products_by_tags,
+			(8, 5): self.handle_fetch_marketing_profile,
 		}
 
 
@@ -107,14 +113,16 @@ class MessageHandler:
 
 #***************************************************************************************************
 	def handle_request_product_by_id(self, content: dict) -> dict:
+		email = content["email"]
 		product_id = content["id"]
-		return Database.fetch_product_by_id(product_id)
+		return Database.fetch_product_by_id(email, product_id)
 
 
 #***************************************************************************************************
 	def handle_request_products_by_tags(self, content: dict) -> dict:
+		email = content["email"]
 		tags = content["tags"].split(",")
-		return Database.fetch_products_by_tags(tags)
+		return Database.fetch_products_by_tags(email, tags)
 
 
 #***************************************************************************************************
@@ -138,13 +146,23 @@ class MessageHandler:
 #***************************************************************************************************
 	def handle_edit_product(self, content: dict) -> dict:
 		email = content.pop("email", None)
+		if "tagop" in content:
+			tagop = int(content.pop("tagop"))
 		if not Database.is_admin(email):
 			return {"success": False}
 		else:
 			productid = content.pop("productid", None)
 			for key in content:
-				if not Database.edit_product(productid, key, content[key]):
-					return {"success": False}
+				if key == "tags":
+					if tagop == 0:
+						if not Database.add_product_tags(productid, content[key]):
+							return {"success": False}
+					else:
+						if not Database.remove_product_tags(productid, content[key]):
+							return {"success": False}
+				else:	
+					if not Database.edit_product(productid, key, content[key]):
+						return {"success": False}
 			return {"success": True}
 
 
@@ -155,6 +173,15 @@ class MessageHandler:
 			return {"success": False}
 		else:
 			return {"success": Database.delete_product(content["productid"])}
+
+
+#***************************************************************************************************
+	def handle_new_tag(self, content: dict) -> dict:
+		email = content["email"]
+		if not Database.is_admin(email):
+			return {"success": False}
+		else:
+			return {"success": Database.new_tag(content["tag"])}
 
 
 #***************************************************************************************************
@@ -327,3 +354,40 @@ class MessageHandler:
 			orderid = content["orderid"]
 			status = content["status"]
 			return {"success": Database.change_order_status(orderid, status)}
+
+
+#***************************************************************************************************
+	def handle_rate_product(self, content: dict) -> dict:
+		email = content["email"]
+		productid = content["productid"]
+		if Database.has_bought(email, productid):
+			rating = content["rating"]
+			comment = content["comment"] if content["comment"] else None
+			return {"success": Database.rate_product(email, productid, rating, comment)}
+		else:
+			return {"success": False}
+
+
+#***************************************************************************************************
+	def handle_fetch_product_ratings(self, content: dict) -> dict:
+		productid = content["productid"]
+		return Database.fetch_product_ratings(productid)
+
+
+#***************************************************************************************************
+	def handle_fetch_recommended_products(self, content: dict) -> dict:
+		email = content["email"]
+		return Database.fetch_recommended_products(email)
+
+
+#***************************************************************************************************
+	def handle_fetch_recommended_products_by_tags(self, content: dict) -> dict:
+		email = content["email"]
+		tags = content["tags"].split(",")
+		return Database.fetch_recommended_products_by_tags(email, tags)
+
+
+#***************************************************************************************************
+	def handle_fetch_marketing_profile(self, content: dict) -> dict:
+		email = content["email"]
+		return Database.fetch_marketing_profile(email)
