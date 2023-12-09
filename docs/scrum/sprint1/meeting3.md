@@ -1,5 +1,5 @@
 # Resumen de la Reunión Scrum
-**date:** 		04/11/2023  
+**Fecha:** 		04/11/2023  
 **Equipo:** 	Los Niños de Adolfo  
 **Sprint:** 	1  
 

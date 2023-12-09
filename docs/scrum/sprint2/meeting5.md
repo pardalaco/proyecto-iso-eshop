@@ -1,5 +1,5 @@
 # Resumen de la Reunión Scrum
-**date:**      28/11/2023  
+**Fecha:**      28/11/2023  
 **Equipo:**     Los Niños de Adolfo 
 **Sprint:**     2  
 
@@ -13,7 +13,6 @@
 ---
 
 ## 2. Tipo de Reunión:
-
 Review del Sprint 2 y preparación de la Presentación.
 
 ---
