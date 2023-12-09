@@ -661,7 +661,6 @@ server = {
 		email: "str",
 		password: "str",
 		name: "str",
-		surname: "str",
 		payment: "str",
 		address: "str"
 	}
