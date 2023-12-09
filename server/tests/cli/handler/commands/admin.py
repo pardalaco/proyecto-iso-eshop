@@ -63,6 +63,7 @@ def handle_edit_product(isresponse: bool, current_user: dict, args: list[str]) -
 		else:
 			return (True, {"type": 3, "code": 2, "content": {"email": current_user["email"], 
 																												"productid": args[0],
+																												"tagop": args[-1],
 																												args[1]: args[2]}})
 
 
@@ -83,13 +84,28 @@ def handle_delete_product(isresponse: bool, current_user: dict,
 
 
 #***************************************************************************************************
+def handle_new_tag(isresponse: bool, current_user: dict, args: list[str]) -> tuple[bool, dict]:
+	if current_user["privilege"] != PRIVILEGE_ADMIN:
+		return (False, "You need to be an Admin to use this command")
+	else:
+		if isresponse:
+			if args[0]["content"]["success"]:
+				return (False, "Tag added")
+			else:
+				return (False, "There was a problem adding the tag")
+		else:
+			return (True, {"type": 3, "code": 4, "content": {"email": current_user["email"], 
+																											"tag": args[0]}})
+
+
+#***************************************************************************************************
 def handle_list_all_orders(isresponse: bool, current_user: dict, 
 													args: list[str]) -> tuple[bool, dict]:
 	if current_user["privilege"] != PRIVILEGE_ADMIN:
 		return (False, "You need to be an Admin to use this command")
 	else:
 		if isresponse:
-			orderlist = "Orders: "
+			orderlist = "ShopOrders: "
 			for order in args[0]["content"]["orders"]:
 				orderlist += f"\n\t{order['orderid']} {order['date']} {order['email']} {order['status']}"
 			return (False, orderlist)
@@ -105,7 +121,7 @@ def handle_change_order_status(isresponse: bool, current_user: dict,
 	else:
 		if isresponse:
 			if args[0]["content"]["success"]:
-				return (False, "Order status changed")
+				return (False, "ShopOrder status changed")
 			else:
 				return (False, "There was a problem changing the order status")
 		else:
@@ -125,6 +141,9 @@ admin_command_handlers = {
 
 	"delete-product": handle_delete_product,
 	"dp": handle_delete_product,
+
+	"new-tag": handle_new_tag,
+	"nt": handle_new_tag,
 
 	"list-all-orders": handle_list_all_orders,
 	"lao": handle_list_all_orders,
