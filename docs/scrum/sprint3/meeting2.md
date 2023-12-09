@@ -1,5 +1,5 @@
 # Resumen de la Reunión Scrum
-**Fecha:**      05/12/2023  
+**date:**      05/12/2023  
 **Equipo:**     Los Niños de Adolfo 
 **Sprint:**     3  
 
@@ -15,7 +15,7 @@
 
 ## 2. Tipo de Reunión:
 
-Planificación del Desarrollo de la GUI de la Aplicación de Cliente
+Planificación del Desarrollo de la GUI de la Aplicación de User
 
 ---
 
