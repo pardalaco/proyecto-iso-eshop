@@ -101,7 +101,7 @@ def handle_user_info(isresponse: bool, current_user: dict, args: list[str]) -> t
 		if isresponse:
 			user_info = args[0]["content"]
 			return (False, f"Email: {user_info['email']}\nPassword: {user_info['password']}"
-											f"\nName: {user_info['name']} {user_info['surname']}"
+											f"\nName: {user_info['name']}"
 											f"\nPayment: {user_info['payment']}\nAddress: {user_info['address']}")
 		else:
 			return (True, {"type": 5, "code": 6, "content": {"email": current_user["email"]}})

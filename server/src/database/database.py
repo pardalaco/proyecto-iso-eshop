@@ -88,9 +88,8 @@ class Database:
 		"""
 		cls.cursor.execute(query, (email,))
 		user_info = cls.cursor.fetchall()[0]
-		return {"email": user_info[0], "name": user_info[1], "surname": user_info[2], 
-						"payment": user_info[3], "address": user_info[4], "password": user_info[5], 
-						"admin": user_info[6] }
+		return {"email": user_info[0], "name": user_info[1],"payment": user_info[3], 
+						"address": user_info[4], "password": user_info[5], "admin": user_info[6] }
 
 
 #***************************************************************************************************
