@@ -1,5 +1,5 @@
 # Resumen de la Reunión Scrum
-**Fecha:**      26/11/2023  
+**date:**      26/11/2023  
 **Equipo:**     Los Niños de Adolfo 
 **Sprint:**     2  
 
@@ -18,9 +18,9 @@
 ## 3. Puntos Destacados
 
 - Modificaciones implementadas
-- Elegir unidades de producto al añadirlo al carrito
+- Elegir unidades de Product al añadirlo al carrito
 - Deslizar un carrito izquierda/derecha para eliminar/comprar carrito
-- Admin cambia estado de cualquier pedido
+- Admin cambia status de cualquier Order
 
 
 ## 4. Acciones a Seguir/Próximos Pasos:

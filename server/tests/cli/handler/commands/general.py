@@ -51,7 +51,7 @@ def shop_help() -> str:
 	Shop Commands:
 		list-products (lp) [-tags <tag> <tag> ...]
 		product (p) <product_id>
-		list-recommended (lr)
+		list-recommended (lr) [-tags <tag> <tag> ...]
 		tags (t)
 		rate (rt) <product_id> <rating> [comment]
 		view-ratings (vr) <product_id>
@@ -78,7 +78,7 @@ def admin_help() -> str:
 	Admin Commands:
 		new-product (np) <name> <description> <image> <price>
 		edit-product (ep) <product_id> <field> <value> [tagop = "0", "1"]
-			(field can be: "nombre", "descripcion", "imagen", "precio")
+			(field can be: "name", "description", "image", "price")
 			(tagop only if field == "tags")
 		delete-product (dp) <product_id>
 		new-tag (nt) <tag>

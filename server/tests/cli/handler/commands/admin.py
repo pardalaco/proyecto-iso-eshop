@@ -105,7 +105,7 @@ def handle_list_all_orders(isresponse: bool, current_user: dict,
 		return (False, "You need to be an Admin to use this command")
 	else:
 		if isresponse:
-			orderlist = "Orders: "
+			orderlist = "ShopOrders: "
 			for order in args[0]["content"]["orders"]:
 				orderlist += f"\n\t{order['orderid']} {order['date']} {order['email']} {order['status']}"
 			return (False, orderlist)
@@ -121,7 +121,7 @@ def handle_change_order_status(isresponse: bool, current_user: dict,
 	else:
 		if isresponse:
 			if args[0]["content"]["success"]:
-				return (False, "Order status changed")
+				return (False, "ShopOrder status changed")
 			else:
 				return (False, "There was a problem changing the order status")
 		else:

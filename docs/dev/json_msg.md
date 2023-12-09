@@ -45,6 +45,7 @@
 			- [**8.1. Rate Product**](#81-rate-product)
 			- [**8.2. View Product Ratings**](#82-view-product-ratings)
 			- [**8.3. Request Recommended Products**](#83-request-recommended-products)
+			- [**8.4. Request Recommended Products by Tag**](#84-request-recommended-products-by-tag)
 			- [\*\*8.4. Request User Marketing Profile \*\*](#84-request-user-marketing-profile-)
 # **JSON Message Structure**
 ## **Main format**
@@ -880,11 +881,43 @@ server = {
 	}
 }
 ```
+#### **8.4. Request Recommended Products by Tag**
+```js
+client = {
+	type: 8,
+	code: 3,
+	content: {
+		email: "str",
+		tags: "str,str,.." 
+	}
+}
+```
+```js
+server = {
+	type: 8,
+	code: 3,
+	content: {
+		amount: "int",
+		products: "list"[
+			"dict"{
+				id: "int", 
+				name: "str", 
+				description: "str", 
+				image: "image",
+				price: "float",
+				rating: "float",
+				count: "int",
+				tags: "str,str,.."
+			}
+		]
+	}
+}
+```
 #### **8.4. Request User Marketing Profile **
 ```js
 client = {
 	type: 8,
-	code: 4,
+	code: 5,
 	content: {
 		email: "str"
 	}
@@ -893,7 +926,7 @@ client = {
 ```js
 server = {
 	type: 8,
-	code: 4,
+	code: 5,
 	content: {
 		amount: "int",
 		tags: "list"[

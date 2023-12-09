@@ -1,5 +1,5 @@
 # Resumen de la Reunión Scrum
-**Fecha:**      18/11/2023  
+**date:**      18/11/2023  
 **Equipo:**     Los Niños de Adolfo 
 **Sprint:**     2  
 
@@ -29,7 +29,7 @@ Planificación del Sprint 2
 - Finalizar lo pendiente del Sprint 1.
 - Crear la CLI.
 - Actualizar la documentación de los mensajes Json.
-- Añadir la funcionalidad de Carrito y de Pedidos.
+- Añadir la funcionalidad de Carrito y de Orders.
 - Modificar la base de datos para las nuevas necesidades.
 - Diagrama de flujo para la Interfaz Gráfica.
 

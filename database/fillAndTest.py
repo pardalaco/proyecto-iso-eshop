@@ -16,7 +16,7 @@ cursor.execute('''PRAGMA foreign_keys = ON;''')
 #Adding Clients
 cursor.execute(
 	'''
-	    INSERT INTO Cliente (email, nombre, apellidos, tarjeta, direccion, pwd, admin) 
+	    INSERT INTO User (email, name, apellidos, payment, address, password, admin) 
 			VALUES ('admin', 'Admin', 'Admin2', 'adminCard', 'AdminAddress', 'admin', 1);
 	'''
 )
@@ -27,11 +27,11 @@ cursor.execute(
 #Adding Products
 cursor.execute(
 	'''
-		INSERT INTO Producto (nombre, descripcion, imagen, precio) 
+		INSERT INTO Product (name, description, image, price) 
 			VALUES 	('Smartphone Samsung Galaxy S21', 'Teléfono inteligente con cámara de alta resolución y pantalla AMOLED.', 'samsung-galaxy-s21.jpg', 899.99),
     				('Portátil HP Pavilion', 'Ordenador portátil con procesador Intel Core i5 y pantalla Full HD de 15.6 pulgadas.', 'hp-pavilion-laptop.jpg', 799.00),
     				('Zapatillas Adidas Ultraboost', 'Zapatillas deportivas con tecnología de amortiguación Boost para mayor comodidad.', 'adidas-ultraboost.jpg', 149.99),
-    				('Libro: "El Nombre del Viento" - Patrick Rothfuss', 'Famosa novela de fantasía sobre las aventuras de Kvothe.', 'el-nombre-del-viento.jpg', 17.50),
+    				('Libro: "El name del Viento" - Patrick Rothfuss', 'Famosa novela de fantasía sobre las aventuras de Kvothe.', 'el-name-del-viento.jpg', 17.50),
     				('Cámara Canon EOS Rebel T7', 'Cámara réflex digital con sensor CMOS de 24.1 megapíxeles y video Full HD.', 'canon-eos-rebel-t7.jpg', 549.00),
     				('Smart TV LG OLED C1', 'Televisor inteligente con tecnología OLED y resolución 4K.', 'lg-oled-c1-tv.jpg', 1499.99),
     				('Silla de Oficina Ergonómica', 'Silla ajustable con soporte lumbar para mayor comodidad durante largas horas de trabajo.', 'silla-ergonomica.jpg', 199.00),
@@ -53,7 +53,7 @@ cursor.execute(
 #Adding Tags
 cursor.execute(
 	'''
-		INSERT INTO Tag (nombre) 
+		INSERT INTO Tag (name) 
 			VALUES	('Tecnología'),
 					('Electrónica'),
     				('Moda'),
@@ -75,7 +75,7 @@ cursor.execute(
 #Adding Product-Tag Clasifications
 cursor.execute(
 	'''
-		INSERT INTO Clasificacion (idProducto, tag) 
+		INSERT INTO Classification (product_id, tag) 
 			VALUES	(1, 'Tecnología'), (1, 'Electrónica'),
     				(2, 'Tecnología'), (2, 'Electrónica'),
     				(3, 'Deportes'), (3, 'Moda'),
@@ -94,6 +94,22 @@ cursor.execute(
     				(16, 'Tecnología'), (16, 'Electrónica'), (16, 'Entretenimiento');
 	'''
 )
+
+###############################################################################
+
+
+###############################################################################
+#Adding Default admin Marketing Tags
+cursor.execute(
+	'''
+		INSERT INTO Marketing (email, tag, weight, counter)
+			VALUES 	('admin', 'Libros', 0.5, 1),
+							('admin', 'Hogar', 0.5, 1),
+							('admin', 'Decoración', 0.5, 1);
+	'''
+)
+###############################################################################
+connection.commit()
 ###############################################################################
 
 #SELECTS
@@ -103,11 +119,11 @@ cursor.execute(
 cursor.execute(
     '''    
         SELECT *
-        FROM Cliente;
+        FROM User;
     '''
 )
 data = cursor.fetchall()
-print("Contenido de los Clientes del sistema:")
+print("Contenido de los Users del sistema:")
 for row in data:
 	print(row)
 print("\n")
@@ -120,24 +136,24 @@ cursor.execute(
     '''    
         SELECT 
 			p.ROWID AS product_id,
-        	p.nombre AS product_name,
-        	p.descripcion AS product_description,
-        	p.imagen AS product_image,
-        	p.precio AS product_price,
+        	p.name AS product_name,
+        	p.description AS product_description,
+        	p.image AS product_image,
+        	p.price AS product_price,
 			p.rating,
-			p.contRating,
-        	GROUP_CONCAT(t.nombre) AS tags
-		FROM Producto p
-			LEFT JOIN Clasificacion c 
-					ON p.ROWID = c.idProducto
+			p.rating_count,
+        	GROUP_CONCAT(t.name) AS tags
+		FROM Product p
+			LEFT JOIN Classification c 
+					ON p.ROWID = c.product_id
 			LEFT JOIN Tag t 
-					ON c.tag = t.nombre
-		GROUP BY p.ROWID, p.nombre, p.descripcion, p.imagen, p.precio
+					ON c.tag = t.name
+		GROUP BY p.ROWID, p.name, p.description, p.image, p.price
 		ORDER BY p.ROWID;
     '''
 )
 data = cursor.fetchall()
-print("Contenido de los Productos del sistema con sus tags:")
+print("Contenido de los Products del sistema con sus tags:")
 for row in data:
 	print(row)
 print("\n")
@@ -148,7 +164,7 @@ print("\n")
 #Select Tags
 cursor.execute(
     '''    
-        SELECT nombre
+        SELECT name
         FROM Tag;
     '''
 )

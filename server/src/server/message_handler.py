@@ -53,7 +53,8 @@ class MessageHandler:
 			(8, 1): self.handle_rate_product,
 			(8, 2): self.handle_fetch_product_ratings,
 			(8, 3): self.handle_fetch_recommended_products,
-			(8, 4): self.handle_fetch_marketing_profile,
+			(8, 4): self.handle_fetch_recommended_products_by_tags,
+			(8, 5): self.handle_fetch_marketing_profile,
 		}
 
 
@@ -377,6 +378,13 @@ class MessageHandler:
 	def handle_fetch_recommended_products(self, content: dict) -> dict:
 		email = content["email"]
 		return Database.fetch_recommended_products(email)
+
+
+#***************************************************************************************************
+	def handle_fetch_recommended_products_by_tags(self, content: dict) -> dict:
+		email = content["email"]
+		tags = content["tags"].split(",")
+		return Database.fetch_recommended_products_by_tags(email, tags)
 
 
 #***************************************************************************************************

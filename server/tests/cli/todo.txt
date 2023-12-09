@@ -13,7 +13,7 @@ Cart:
 	[] insert product into cart ID by product ID
 	[] remove product from cart ID by product ID
 ----------------------------------------------------------------------------------------------------
-Order:
+ShopOrder:
 	[] add new order from cart ID and empty cart by cart ID
 	[] list order STATUS by order ID
 	[] cancel order if STATUS = "invoiced" else nah
@@ -26,7 +26,7 @@ Admin Products:
 	[] delete product by product ID
 	[] insert new product with all fields
 ----------------------------------------------------------------------------------------------------
-Admin Order:
+Admin ShopOrder:
 	[] list all orders
 	[] change order STATUS on order ID
 ----------------------------------------------------------------------------------------------------

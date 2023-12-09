@@ -57,13 +57,17 @@ def handle_list_recommended(isresponse: bool, current_user: dict, args: list[str
 		return (False, "You need to Log in to use this command")
 	else:
 		if isresponse:
-			products = "Your Recommended Products:"
+			products = ""
 			for item in args[0]["content"]["products"]:
-				products += (f"*{item['rating']}({item['count']})* {item['id']}: {item['name']} - "
-											f"{item['price']}€\n")
+				products += (f"\n*{item['rating']}({item['count']})* {item['id']}: {item['name']} - "
+											f"{item['price']}€")
 			return (False, products)
 		else:
-			return (True, {"type": 8, "code": 3, "content": {"email": current_user["email"]}})
+			if len(args) == 0:
+				return (True, {"type": 8, "code": 3, "content": {"email": current_user["email"]}})
+			elif args[0] == "-tags":
+				return (True, {"type": 8, "code": 4, "content": {"email": current_user["email"],
+																													"tags": ",".join(args[1:])}})
 
 
 #***************************************************************************************************
@@ -77,7 +81,7 @@ def handle_my_marketing(isresponse: bool, current_user: dict, args: list[str]) -
 				user_tags += f"\n{tag['tag']}, {tag['weight']}, ({tag['count']} since last interaction)"
 			return (False, user_tags)
 		else:
-			return (True, {"type": 8, "code": 4, "content": {"email": current_user["email"]}})
+			return (True, {"type": 8, "code": 5, "content": {"email": current_user["email"]}})
 
 
 #***************************************************************************************************

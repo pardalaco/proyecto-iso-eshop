@@ -30,7 +30,7 @@ class Database:
 #***************************************************************************************************
 	@classmethod
 	def email_exists(cls, email: str) -> bool:
-		query = "SELECT COUNT(*) FROM cliente WHERE email = ?"
+		query = "SELECT COUNT(*) FROM User WHERE email = ?"
 		cls.cursor.execute(query, (email,))
 		count = cls.cursor.fetchone()
 		return count[0] > 0
@@ -39,16 +39,16 @@ class Database:
 #***************************************************************************************************
 	@classmethod
 	def password_matches(cls, email: str, password: str) -> bool:
-		query = "SELECT pwd FROM cliente WHERE email = ?"
+		query = "SELECT password FROM User WHERE email = ?"
 		cls.cursor.execute(query, (email,))
-		user_pwd = cls.cursor.fetchone()[0]
-		return True if user_pwd == password else False
+		user_password = cls.cursor.fetchone()[0]
+		return True if user_password == password else False
 
 
 #***************************************************************************************************
 	@classmethod
 	def is_admin(cls, email: str) -> bool:
-		query = "SELECT admin FROM Cliente WHERE email = ?"
+		query = "SELECT admin FROM User WHERE email = ?"
 		cls.cursor.execute(query, (email,))
 		result = cls.cursor.fetchone()[0]
 		return bool(result)
@@ -57,9 +57,9 @@ class Database:
 #***************************************************************************************************
 	@classmethod
 	def user_signup(cls, email: str, password: str) -> bool:
-		query = "INSERT INTO cliente (email, pwd) VALUES (?, ?)"
+		query = "INSERT INTO User (email, password) VALUES (?, ?)"
 		query2 = """
-		INSERT INTO Marketing (email, tag, peso, contador)
+		INSERT INTO Marketing (email, tag, weight, counter)
 		VALUES (?, ?, ?, ?);
 		"""
 		try:
@@ -83,7 +83,7 @@ class Database:
 	def fetch_user_info(cls, email: str) -> tuple:
 		query = """
 		SELECT *
-		FROM Cliente
+		FROM User
 		WHERE email = ?;
 		"""
 		cls.cursor.execute(query, (email,))
@@ -110,7 +110,7 @@ class Database:
 	@classmethod
 	def add_tag_to_user_marketing(cls, email: str, tag: str) -> bool:
 		query = """
-		INSERT INTO Marketing (email, tag, peso, contador)
+		INSERT INTO Marketing (email, tag, weight, counter)
 		VALUES (?, ?, ?, ?);
 		"""
 		try:
@@ -128,14 +128,14 @@ class Database:
 	def increase_marketing_tag_counters(cls, email: str) -> bool:
 		query = """
 		UPDATE Marketing
-		SET contador = CASE
-			WHEN contador = 60 THEN 1
-			ELSE contador + 1
+		SET counter = CASE
+			WHEN counter = 60 THEN 1
+			ELSE counter + 1
 		END,
-		peso = CASE
-			WHEN contador = 50 THEN 0.4
-			WHEN contador % 10 = 0 THEN peso - 0.05
-			ELSE peso
+		weight = CASE
+			WHEN counter = 50 THEN 0.4
+			WHEN counter % 10 = 0 THEN weight - 0.05
+			ELSE weight
 		END
 		WHERE email = ?;
 		"""
@@ -157,7 +157,7 @@ class Database:
 				return
 		query = """
 		UPDATE Marketing 
-		SET peso = peso + ?, contador = 1
+		SET weight = weight + ?, counter = 1
 		WHERE email = ? AND tag = ?;
 		"""
 		if operation == 0: # Search specific product with <tags>
@@ -192,19 +192,19 @@ class Database:
 	def fetch_all_products(cls) -> dict:
 		query = """
 			SELECT p.ROWID,
-        p.nombre,
-        p.descripcion,
-        p.imagen,
-        p.precio,
+        p.name,
+        p.description,
+        p.image,
+        p.price,
 				p.rating,
-				p.contRating,
-        GROUP_CONCAT(t.nombre) AS tags
-			FROM Producto p
-			LEFT JOIN Clasificacion c 
-					ON p.ROWID = c.idProducto
+				p.rating_count,
+        GROUP_CONCAT(t.name) AS tags
+			FROM Product p
+			LEFT JOIN Classification c 
+					ON p.ROWID = c.product_id
 			LEFT JOIN Tag t 
-					ON c.tag = t.nombre
-			GROUP BY p.ROWID, p.nombre, p.descripcion, p.imagen, p.precio, p.rating, p.contRating
+					ON c.tag = t.name
+			GROUP BY p.ROWID, p.name, p.description, p.image, p.price, p.rating, p.rating_count
 			ORDER BY p.rating DESC;
 		"""
 		cls.cursor.execute(query)
@@ -221,20 +221,20 @@ class Database:
 	def fetch_product_by_id(cls, email: str, product_id: int) -> dict:
 		query = """
 		SELECT 	p.ROWID,
-        		p.nombre,
-        		p.descripcion,
-        		p.imagen,
-        		p.precio,
+        		p.name,
+        		p.description,
+        		p.image,
+        		p.price,
 						p.rating,
-						p.contRating,
-        		GROUP_CONCAT(t.nombre) AS tags
-		FROM Producto p
-		LEFT JOIN Clasificacion c 
-				ON p.ROWID = c.idProducto
+						p.rating_count,
+        		GROUP_CONCAT(t.name) AS tags
+		FROM Product p
+		LEFT JOIN Classification c 
+				ON p.ROWID = c.product_id
 		LEFT JOIN Tag t 
-				ON c.tag = t.nombre
+				ON c.tag = t.name
 		WHERE p.ROWID = ?
-		GROUP BY p.ROWID, p.nombre, p.descripcion, p.imagen, p.precio, p.rating, p.contRating
+		GROUP BY p.ROWID, p.name, p.description, p.image, p.price, p.rating, p.rating_count
 		"""
 		cls.cursor.execute(query, (product_id,))
 		results = cls.cursor.fetchall()
@@ -255,29 +255,28 @@ class Database:
 	def fetch_products_by_tags(cls, email: str, tags: list[str]) -> dict:
 		query = """
 		SELECT  p.ROWID,
-						p.nombre,
-						p.descripcion,
-						p.imagen,
-						p.precio,
+						p.name,
+						p.description,
+						p.image,
+						p.price,
 						p.rating,
-						p.contRating,
-						GROUP_CONCAT(t.nombre) AS tags
-		FROM producto p
-		INNER JOIN Clasificacion c ON c.idProducto = p.ROWID 
-		LEFT JOIN Tag t ON c.tag = t.nombre
+						p.rating_count
+		FROM Product p
+		LEFT JOIN Classification c ON c.product_id = p.ROWID 
 		WHERE c.tag IN (
 		""" + ",".join("?" for i in range(len(tags))) + ")"
-		query += """GROUP BY p.ROWID, p.nombre, p.descripcion, p.imagen, 
-			p.precio, p.rating, p.contRating 
+		query += """GROUP BY p.ROWID, p.name, p.description, p.image, 
+			p.price, p.rating, p.rating_count 
 		ORDER BY p.rating DESC
 		"""
 		cls.cursor.execute(query, tags)
 		results = cls.cursor.fetchall()
 		products = []
 		for row in results:
-			products.append({"id": row[0], "name": row[1], "description": row[2], "image": row[3], 
-											"price": row[4], "rating": row[5], "count": row[6], "tags": row[7]})
+			tags = cls.fetch_product_tags(row[0])
 
+			products.append({"id": row[0], "name": row[1], "description": row[2], "image": row[3], 
+											"price": row[4], "rating": row[5], "count": row[6], "tags": ", ".join(tags)})
 		cls.increase_marketing_tag_counters(email)
 		for tag in tags:
 			cls.update_user_marketing(email, tag, 1)
@@ -289,7 +288,7 @@ class Database:
 	@classmethod
 	def fetch_tags(cls) -> dict:
 		query = """
-		SELECT nombre
+		SELECT name
 		FROM Tag;
 		"""
 		cls.cursor.execute(query)
@@ -303,8 +302,8 @@ class Database:
 	def fetch_product_tags(cls, productid: int) -> list[str]:
 		query = """
 		SELECT tag
-		FROM Clasificacion
-		WHERE idProducto = ?
+		FROM Classification
+		WHERE product_id = ?
 		"""
 		cls.cursor.execute(query, (productid,))
 		results = cls.cursor.fetchall()
@@ -315,7 +314,7 @@ class Database:
 	@classmethod
 	def new_product(cls, name: str, description: str, image: str, price: float) -> bool:
 		query = """
-		INSERT INTO Producto (nombre, descripcion, imagen, precio)
+		INSERT INTO Product (name, description, image, price)
 	    VALUES (?, ?, ?, ?);
 		"""
 		try:
@@ -331,10 +330,10 @@ class Database:
 #***************************************************************************************************
 	@classmethod
 	def edit_product(cls, productid: int, field: str, value: Union[str, int]) -> bool:
-		valid_columns = ["nombre", "descripcion", "imagen", "precio"]
+		valid_columns = ["name", "description", "image", "price"]
 		if field in valid_columns:
 			query = f"""
-			UPDATE Producto
+			UPDATE Product
 			SET {field} = ?
 			WHERE ROWID = ?;
 			"""
@@ -355,7 +354,7 @@ class Database:
 	def add_product_tags(cls, productid: int, tags: str) -> bool:
 		taglist = tags.split(",")
 		query = """
-		INSERT INTO Clasificacion 
+		INSERT INTO Classification 
     	VALUES(?, ?);
 		"""
 		try:
@@ -379,8 +378,8 @@ class Database:
 	def remove_product_tags(cls, productid: int, tags: str) -> bool:
 		taglist = tags.split(",")
 		query = """
-		DELETE FROM Clasificacion
-		WHERE idProducto = ? AND tag = ?;
+		DELETE FROM Classification
+		WHERE product_id = ? AND tag = ?;
 		"""
 		try:
 			for tag in taglist:
@@ -402,7 +401,7 @@ class Database:
 	@classmethod
 	def delete_product(cls, productid: int) -> bool:
 		query = """
-		DELETE FROM Producto
+		DELETE FROM Product
 		WHERE ROWID = ?; 
 		"""
 		try:
@@ -421,7 +420,7 @@ class Database:
 		query = """
 		SELECT COUNT(*)
 		FROM Tag
-		WHERE nombre = ?
+		WHERE name = ?
 		"""
 		cls.cursor.execute(query, (tag,))
 		results = cls.cursor.fetchall()
@@ -475,7 +474,7 @@ class Database:
 	@classmethod
 	def new_cart(cls, email: str, cartname: str) -> bool:
 		query = """
-		INSERT INTO Carrito (email, nombre)
+		INSERT INTO Carrito (email, name)
 			VALUES (?, ?);
 		"""
 		try:
@@ -493,7 +492,7 @@ class Database:
 	def edit_cart(cls, email: str, cartid: int, newname: str) -> bool:
 		query = """
 		UPDATE Carrito 
-		SET nombre = ?
+		SET name = ?
 		WHERE ROWID = ? AND email = ?;
 		"""
 		try:
@@ -527,7 +526,7 @@ class Database:
 	@classmethod
 	def add_product_to_cart(cls, cartid: int, productid: int) -> bool:
 		query = """
-			INSERT INTO Contiene 
+			INSERT INTO Contains 
 				VALUES(?, ?, ?);
 		"""
 		try:
@@ -551,9 +550,9 @@ class Database:
 	@classmethod
 	def edit_product_quantity(cls, cartid: int, productid: int, quantity: int) -> bool:
 		query = """
-		UPDATE Contiene
-		SET cantidad = ?
-		WHERE idCarrito = ? AND idProducto = ?;
+		UPDATE Contains
+		SET quantity = ?
+		WHERE cart_id = ? AND product_id = ?;
 		"""
 		try:
 			cls.cursor.execute(query, (quantity, cartid, productid))
@@ -569,8 +568,8 @@ class Database:
 	@classmethod
 	def remove_product_from_cart(cls, cartid: int, productid: int) -> bool:
 		query = """
-		DELETE FROM Contiene 
-		WHERE idCarrito = ? AND idProducto = ?;
+		DELETE FROM Contains 
+		WHERE cart_id = ? AND product_id = ?;
 		"""
 		try:
 			cls.cursor.execute(query, (cartid, productid))
@@ -593,19 +592,19 @@ class Database:
 	@classmethod
 	def request_cart_products(cls, cartid: int) -> dict:
 		query = """
-		SELECT	producto.ROWID,
-        		producto.nombre,
-						producto.descripcion,
-						producto.imagen,
-						producto.precio, 
-						contiene.cantidad, 
-						GROUP_CONCAT(clasificacion.tag) AS tags
-		FROM producto, contiene
-		LEFT JOIN clasificacion ON producto.ROWID = clasificacion.idProducto
-		WHERE contiene.idProducto = producto.ROWID 
-				AND contiene.idCarrito = ?
-		GROUP BY producto.ROWID, producto.nombre, producto.descripcion, producto.imagen, 
-						producto.precio, contiene.cantidad;
+		SELECT	Product.ROWID,
+        		Product.name,
+						Product.description,
+						Product.image,
+						Product.price, 
+						Contains.quantity, 
+						GROUP_CONCAT(Classification.tag) AS tags
+		FROM Product, Contains
+		LEFT JOIN Classification ON Product.ROWID = Classification.product_id
+		WHERE Contains.product_id = Product.ROWID 
+				AND Contains.cart_id = ?
+		GROUP BY Product.ROWID, Product.name, Product.description, Product.image, 
+						Product.price, Contains.quantity;
 		"""
 		cls.cursor.execute(query, (cartid,))
 		results = cls.cursor.fetchall()
@@ -622,7 +621,7 @@ class Database:
 	@classmethod
 	def fetch_carts(cls, email: str) -> dict:
 		query = """
-		SELECT ROWID, nombre 
+		SELECT ROWID, name 
 		FROM Carrito
 		WHERE email = ?;
 		"""
@@ -641,8 +640,8 @@ class Database:
 	def cart_has_content(cls, cartid: int) -> bool:
 		query = """
 		SELECT COUNT(*)
-		FROM Contiene
-		WHERE idCarrito = ?;
+		FROM Contains
+		WHERE cart_id = ?;
 		"""
 		cls.cursor.execute(query, (cartid,))
 		contents = cls.cursor.fetchall()[0]
@@ -657,7 +656,7 @@ class Database:
 		current_date = datetime.now()
 		current_date = current_date.strftime("%d/%m/%Y")
 		query = """
-		INSERT INTO Pedido (email, direccion, tarjeta, fecha, total, estado) 
+		INSERT INTO ShopOrder (email, address, payment, date, total, status) 
 		VALUES (?, ?, ?, ?, ?, 'Invoiced');
 		"""
 		try:
@@ -677,10 +676,10 @@ class Database:
 	def get_total_cart_tags(cls, cartid: int) -> list[str]:
 		query = """
 		SELECT c2.tag
-		FROM Contiene c
-		INNER JOIN Producto p ON P.ROWID = c.idProducto 
-		INNER JOIN Clasificacion c2 ON c2.idProducto = p.ROWID 
-		WHERE idCarrito = ?;
+		FROM Contains c
+		INNER JOIN Product p ON P.ROWID = c.product_id 
+		INNER JOIN Classification c2 ON c2.product_id = p.ROWID 
+		WHERE cart_id = ?;
 		"""
 		cls.cursor.execute(query, (cartid,))
 		results = cls.cursor.fetchall()
@@ -691,12 +690,12 @@ class Database:
 	@classmethod
 	def fill_order(cls, cartid: int, orderid: int) -> bool:
 		query = """
-		INSERT INTO LineaPedido 
-		SELECT pedido.ROWID, producto.nombre, Contiene.idProducto, Contiene.cantidad
-		FROM Pedido, producto, Contiene 
-		WHERE Pedido.ROWID = ?  
-			AND Contiene.idCarrito = ? 
-			AND Contiene.idProducto = producto.ROWID;
+		INSERT INTO ShopOrderLine 
+		SELECT ShopOrder.ROWID, Product.name, Contains.product_id, Contains.quantity
+		FROM ShopOrder, Product, Contains 
+		WHERE ShopOrder.ROWID = ?  
+			AND Contains.cart_id = ? 
+			AND Contains.product_id = Product.ROWID;
 		"""
 		try:
 			cls.cursor.execute(query, (orderid, cartid))
@@ -719,8 +718,8 @@ class Database:
 	@classmethod
 	def empty_cart(cls, cartid: int) -> bool:
 		query = """
-		DELETE FROM Contiene
-		WHERE idCarrito = ?;
+		DELETE FROM Contains
+		WHERE cart_id = ?;
 		"""
 		try:
 			cls.cursor.execute(query, (cartid,))
@@ -736,9 +735,9 @@ class Database:
 	@classmethod
 	def get_cart_total(cls, cartid: int) -> float:
 		query = """
-		SELECT Contiene.cantidad, Producto.precio 
-		FROM Contiene, Producto 
-		WHERE Contiene.idProducto = Producto.ROWID AND Contiene.idCarrito = ?;
+		SELECT Contains.quantity, Product.price 
+		FROM Contains, Product 
+		WHERE Contains.product_id = Product.ROWID AND Contains.cart_id = ?;
 		"""
 		cls.cursor.execute(query, (cartid,))
 		productlist = cls.cursor.fetchall()
@@ -751,8 +750,8 @@ class Database:
 	@classmethod
 	def edit_payment(cls, email: str, payment: str) -> bool:
 		query = """
-		UPDATE Cliente
-		SET tarjeta = ?
+		UPDATE User
+		SET payment = ?
 		WHERE email = ?
 		"""
 		try:
@@ -769,8 +768,8 @@ class Database:
 	@classmethod
 	def edit_address(cls, email: str, address: str) -> bool:
 		query = """
-		UPDATE Cliente
-		SET direccion = ?
+		UPDATE User
+		SET address = ?
 		WHERE email = ?
 		"""
 		try:
@@ -788,7 +787,7 @@ class Database:
 	def is_user_order(cls, email: str, orderid: int) -> bool:
 		query = """
 		SELECT COUNT(*)
-		FROM Pedido
+		FROM ShopOrder
 		WHERE ROWID = ? AND email = ?;
 		"""
 		cls.cursor.execute(query, (orderid, email))
@@ -800,8 +799,8 @@ class Database:
 	@classmethod
 	def fetch_order_status(cls, orderid: int) -> str:
 		query = """
-		SELECT estado
-		FROM Pedido
+		SELECT status
+		FROM ShopOrder
 		WHERE ROWID = ?;
 		"""
 		cls.cursor.execute(query, (orderid,))
@@ -815,7 +814,7 @@ class Database:
 	def fetch_orders(cls, email: str) -> dict:
 		query = """
 		SELECT *
-		FROM Pedido
+		FROM ShopOrder
 		WHERE email = ?
 		"""
 		cls.cursor.execute(query, (email,))
@@ -833,7 +832,7 @@ class Database:
 	def fetch_order_details(cls, orderid: int) -> dict:
 		query = """
 		SELECT *
-		FROM Pedido
+		FROM ShopOrder
 		WHERE ROWID = ?;
 		"""
 		cls.cursor.execute(query, (orderid,))
@@ -846,8 +845,8 @@ class Database:
 	@classmethod
 	def cancel_order(cls, orderid: int) -> bool:
 		query = """
-		UPDATE Pedido
-		SET estado = 'Cancelled'
+		UPDATE ShopOrder
+		SET status = 'Cancelled'
 		WHERE ROWID = ?;
 		"""
 		try:
@@ -866,7 +865,7 @@ class Database:
 	def fetch_all_orders(cls) -> dict:
 		query = """
 		SELECT * 
-		FROM Pedido;
+		FROM ShopOrder;
 		"""
 		cls.cursor.execute(query)
 		results = cls.cursor.fetchall()
@@ -882,8 +881,8 @@ class Database:
 	def change_order_status(cls, orderid: int, status: int) -> bool:
 		statuses = ["Invoiced", "Prepared", "Shipped", "Out for Delivery", "Delivered", "Cancelled"]
 		query = """
-		UPDATE Pedido	
-		SET estado = ?
+		UPDATE ShopOrder	
+		SET status = ?
 		WHERE ROWID = ?;
 		"""
 		try:
@@ -901,10 +900,10 @@ class Database:
 	def has_bought(cls, email: str, productid: int) -> bool:
 		query = """
 		SELECT COUNT(*)
-		FROM Cliente, Pedido, LineaPedido
-		WHERE Cliente.email = Pedido.email AND Pedido.ROWID = LineaPedido.idPedido 
-			AND Cliente.email = ? 
-			AND LineaPedido.idProducto = ?;
+		FROM User, ShopOrder, ShopOrderLine
+		WHERE User.email = ShopOrder.email AND ShopOrder.ROWID = ShopOrderLine.order_id 
+			AND User.email = ? 
+			AND ShopOrderLine.product_id = ?;
 		"""
 		cls.cursor.execute(query, (email, productid))
 		results = cls.cursor.fetchall()
@@ -916,25 +915,25 @@ class Database:
 		current_date = datetime.now()
 		current_date = current_date.strftime("%d/%m/%Y")
 		query1 = """
-		INSERT INTO Feedback (email, idProducto, rating, fecha, comentario)
+		INSERT INTO Feedback (email, product_id, rating, date, comment)
 		VALUES (?, ?, ?, ?,?);
 		"""
 		query2 = """
-		INSERT INTO Feedback (email, idProducto, rating, fecha)
+		INSERT INTO Feedback (email, product_id, rating, date)
 		VALUES (?, ?, ?, ?);
 		"""
 		query3 = """
-		UPDATE Producto
+		UPDATE Product
 		SET rating = (
 				SELECT AVG(rating)
 				FROM Feedback
-				WHERE Feedback.idProducto = ?
+				WHERE Feedback.product_id = ?
 		)
 		WHERE ROWID = ?;
 		"""
 		query4 = """
-		UPDATE Producto
-		SET contRating = contRating + 1
+		UPDATE Product
+		SET rating_count = rating_count + 1
 		WHERE ROWID = ?
 		"""
 		try:
@@ -961,9 +960,9 @@ class Database:
 	@classmethod
 	def fetch_product_ratings(cls, productid: int) -> bool:
 		query = """
-		SELECT email, rating, comentario, fecha
+		SELECT email, rating, comment, date
 		FROM Feedback
-		WHERE idProducto = ?;
+		WHERE product_id = ?;
 		"""
 		cls.cursor.execute(query, (productid,))
 		results = cls.cursor.fetchall()
@@ -979,35 +978,79 @@ class Database:
 	def fetch_recommended_products(cls, email: str) -> dict:
 		query = """
 		SELECT p.ROWID,
-				p.nombre,
-				p.descripcion,
-				p.imagen,
-				p.precio,
-				p.rating,
-				p.contRating,
-				GROUP_CONCAT(c.tag) AS tags
-		FROM Producto p
-		LEFT JOIN Clasificacion c ON p.ROWID = c.idProducto
+			p.name,
+			p.description,
+			p.image,
+			p.price,
+			p.rating,
+			p.rating_count,
+			COALESCE(SUM(m.weight), 0) / (SELECT COUNT(*) 
+				FROM Classification c2 
+				WHERE c2.product_id = p.ROWID
+					AND c2.tag IN (SELECT m2.tag
+						FROM Marketing m2
+						WHERE m2.email = ?))
+		FROM Product p
+		LEFT JOIN Classification c ON p.ROWID = c.product_id
 		LEFT JOIN Marketing m ON m.tag = c.tag
 		WHERE m.email = ?
-		GROUP BY p.ROWID, p.nombre, p.descripcion, p.imagen, p.precio, p.rating, p.contRating
-		ORDER BY COALESCE(SUM(m.peso), 0) DESC;
+		GROUP BY p.ROWID, p.name, p.description, p.image, p.price, p.rating, p.rating_count
+		ORDER BY COALESCE(SUM(m.weight), 0) / (SELECT COUNT(*) 
+			FROM Classification c2 WHERE c2.product_id = p.ROWID) DESC;
 		"""
-		cls.cursor.execute(query, (email,))
+		cls.cursor.execute(query, (email, email))
 		results = cls.cursor.fetchall()
 		products = []
-		print(results)
 		for row in results:
-			products.append({"id": row[0], "name": row[1], "description": row[2], "image": row[3], 
-											"price": row[4], "rating": row[5], "count": row[6], "tags": row[7]})
+			tags = cls.fetch_product_tags(row[0])
+			if row[7] > 0.45:
+				products.append({"id": row[0], "name": row[1], "description": row[2], "image": row[3], 
+												"price": row[4], "rating": row[5], "count": row[6], 
+												"tags": ", ".join(tags)})
 		return {"amount": len(products), "products": products}
+
+
+#***************************************************************************************************
+	@classmethod
+	def product_is_recommended(cls, email: str, product_id: int) -> tuple:
+		query = """
+		SELECT m.weight
+		FROM Classification c 
+		INNER JOIN Marketing m ON m.tag=c.tag 
+		WHERE email = ? AND c.product_id = ?;
+		"""
+		cls.cursor.execute(query, (email, product_id))
+		results = cls.cursor.fetchall()
+		print(f"Product is recommended: {results}")
+		if len(results) == 0:
+			return (False, None)
+		mean = 0
+		for tag in results:
+			mean += tag[0]
+		mean = mean / len(results)
+		return (True, mean)
+
+
+#***************************************************************************************************
+	@classmethod
+	def fetch_recommended_products_by_tags(cls, email: str, tags: list[str]) -> dict:
+		unfiltered_products = cls.fetch_products_by_tags(email, tags)["products"]
+		print(f"\n\n{unfiltered_products}\n\n")
+		recommended_products = []
+		for product in unfiltered_products:
+			recommended, value = cls.product_is_recommended(email, product["id"])
+			if recommended:
+				if value > 0.45:
+					recommended_products.append(product)
+		print(f"\n\n{recommended_products}\n\n")
+		return {"amount": len(recommended_products), "products": recommended_products}
 
 
 #***************************************************************************************************
 	@classmethod
 	def fetch_marketing_profile(cls, email: str) -> dict:
 		query = """
-		SELECT tag, peso, contador
+		SELECT tag, weight, counter
 		FROM Marketing
 		WHERE email = ?;
 		"""
