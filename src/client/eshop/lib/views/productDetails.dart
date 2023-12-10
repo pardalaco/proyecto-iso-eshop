@@ -3,7 +3,6 @@
 import 'dart:convert';
 import 'package:eshop/models/Cart.dart';
 import 'package:eshop/models/Profile.dart';
-import 'package:eshop/models/Tag.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:eshop/models/Comment.dart';
 import 'package:eshop/sockets/connection.dart';
@@ -227,8 +226,9 @@ class _ListCartState extends State<_ListCart> {
             return ListTile(
               title: Text(c.cartname),
               onTap: () async {
-                bool success = await widget.connection
+                var data = await widget.connection
                     .addToCart(widget.email, c.cartid, widget.p_id);
+                bool success = json.decode(data)['content']['success'];
                 if (success) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -313,8 +313,9 @@ Widget _MyAlertAddCart(context, Connection connection, String email) {
         TextButton(
             onPressed: () async {
               if (_controller.text.isNotEmpty) {
-                //@todo crear carrito en servidor
-                if (!(await connection.createCart(email, _controller.text))) {
+                var data = await connection.createCart(email, _controller.text);
+                bool success = json.decode(data)['content']['success'];
+                if (!success) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: SizedBox(
@@ -409,7 +410,7 @@ class _ComAndRatState extends State<ComAndRat> {
           height: MediaQuery.of(context).size.height * 0.025,
         ),
         FutureBuilder(
-          future: widget.connection.getComments(10),
+          future: widget.connection.viewProductRating(10),
           builder: (context, AsyncSnapshot<String> snapshot) {
             if (snapshot.hasData) {
               Map<String, dynamic> data = json.decode(snapshot.data!);
