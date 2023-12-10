@@ -5,7 +5,7 @@ class Tags {
 
   Tags.fromJson(Map<String, dynamic> json) {
     tags = <Tag>[];
-    var a = json['tags'];
+    var a = json['content']['tags'];
     a.forEach((v) {
       tags.add(Tag.fromJson(v, false));
     });
