@@ -23,10 +23,12 @@ class _EditProfile extends State<EditProfile> {
   Connection connection;
   bool admin;
   Profile profile;
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _cardController = TextEditingController();
-  TextEditingController _addressController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _cardController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
 
   _EditProfile(
       {required this.connection, required this.admin, required this.profile}) {
@@ -50,14 +52,14 @@ class _EditProfile extends State<EditProfile> {
         ),
       ),
       leading: IconButton(
-        icon: Icon(Icons.arrow_back),
+        icon: const Icon(Icons.arrow_back),
         onPressed: () {
           Navigator.of(context).pop();
         },
       ),
       actions: [
         IconButton(
-          icon: Icon(Icons.save),
+          icon: const Icon(Icons.save),
           onPressed: () {
             _saveChanges(context);
           },
@@ -67,72 +69,95 @@ class _EditProfile extends State<EditProfile> {
 
     return Scaffold(
       appBar: _MyAppBar,
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 16.0),
-            child: Container(
-              alignment: Alignment.center,
-              child: ClipOval(
-                child: Image.asset(
-                  'assets/img/User.jpg',
-                  width: 120.0,
-                  height: 120.0,
-                  fit: BoxFit.cover,
+      body: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 16.0),
+              child: Container(
+                alignment: Alignment.center,
+                child: ClipOval(
+                  child: Image.asset(
+                    'assets/img/User.jpg',
+                    width: 120.0,
+                    height: 120.0,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
-          ),
-          SizedBox(height: 16.0),
-          _buildTextFieldWithIcon("Nombre", Icons.person, _nameController),
-          _buildTextFieldWithIcon("Email", Icons.email, _emailController),
-          _buildTextFieldWithIcon(
-              "Tarjeta", Icons.credit_card, _cardController),
-          _buildTextFieldWithIcon(
-              "Dirección", Icons.location_on, _addressController),
-        ],
+            SizedBox(height: 16.0),
+            _buildTextFieldWithIcon(
+                "Nombre", Icons.person, _nameController, true),
+            _buildTextFieldWithIcon(
+                "Email", Icons.email, _emailController, true),
+            _buildTextFieldWithIcon(
+                "Tarjeta", Icons.credit_card, _cardController, false),
+            _buildTextFieldWithIcon(
+                "Dirección", Icons.location_on, _addressController, false),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildTextFieldWithIcon(
-      String labelText, IconData icon, TextEditingController controller) {
+  Widget _buildTextFieldWithIcon(String labelText, IconData icon,
+      TextEditingController controller, bool isRequired) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: TextField(
+      child: TextFormField(
         controller: controller,
         decoration: InputDecoration(
           labelText: labelText,
           prefixIcon: Icon(icon),
           border: OutlineInputBorder(),
         ),
+        validator: (value) {
+          if (isRequired && (value == null || value.isEmpty)) {
+            return 'Este campo es necesario';
+          }
+          return null;
+        },
       ),
     );
   }
 
   Future<void> _saveChanges(BuildContext context) async {
-    // Verificar si ha habido cambios
-    if (_nameController.text != profile.name ||
-        _emailController.text != profile.email ||
-        _cardController.text != profile.payment ||
-        _addressController.text != profile.address) {
-      // Guardar cambios
-      profile.name = _nameController.text;
-      profile.email = _emailController.text;
-      profile.payment = _cardController.text;
-      profile.address = _addressController.text;
+    if (_formKey.currentState!.validate()) {
+      if (_nameController.text != profile.name ||
+          _emailController.text != profile.email ||
+          _cardController.text != profile.payment ||
+          _addressController.text != profile.address) {
+        profile.name = _nameController.text;
+        profile.email = _emailController.text;
+        profile.payment = _cardController.text;
+        profile.address = _addressController.text;
 
-      // Mostrar un mensaje informativo
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Los cambios se han guardado'),
-      ));
-    } else {
-      // Si no hay cambios, mostrar un mensaje informativo
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('No se realizaron cambios.'),
-        ),
-      );
+        await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Cambios Guardados'),
+              content: const Text('Los cambios se han guardado correctamente.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No se realizaron cambios.'),
+          ),
+        );
+      }
     }
   }
 }
