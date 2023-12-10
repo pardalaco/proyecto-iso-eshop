@@ -221,8 +221,7 @@ class _ListCartState extends State<_ListCart> {
       future: widget.connection.getAllCarts(widget.email),
       builder: (context, AsyncSnapshot<String> snapshot) {
         if (snapshot.hasData) {
-          Map<String, dynamic> data = json.decode(snapshot.data!);
-          Response response = Response.fromJson(data);
+          Response response = Response.fromJson(snapshot.data!);
           var carts = Carts.fromJson(response.content);
           final cartsList = carts.carts.map((c) {
             return ListTile(
@@ -417,8 +416,7 @@ class _ComAndRatState extends State<ComAndRat> {
           future: widget.connection.viewProductRating(10),
           builder: (context, AsyncSnapshot<String> snapshot) {
             if (snapshot.hasData) {
-              Map<String, dynamic> data = json.decode(snapshot.data!);
-              Response response = Response.fromJson(data);
+              Response response = Response.fromJson(snapshot.data!);
               var comments = Comments.fromJson(response.content);
               final commentsList = comments.comments.map((c) {
                 return Container(

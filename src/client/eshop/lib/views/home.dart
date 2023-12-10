@@ -369,8 +369,7 @@ Widget FuturaLista(
     future: connection.getProducts(profile.email),
     builder: (context, AsyncSnapshot<String> snapshot) {
       if (snapshot.hasData) {
-        Map<String, dynamic> data = json.decode(snapshot.data!);
-        Response response = Response.fromJson(data);
+        Response response = Response.fromJson(snapshot.data!);
         var products = Products.fromJson(response.content, false);
         final productList = products.products.map((product) {
           return ListTile(
@@ -477,8 +476,7 @@ class _TagsListState extends State<_TagsList> {
       future: widget.connection.getTags(),
       builder: (context, AsyncSnapshot<String> snapshot) {
         if (snapshot.hasData) {
-          Map<String, dynamic> data = json.decode(snapshot.data!);
-          Response response = Response.fromJson(data);
+          Response response = Response.fromJson(snapshot.data!);
           if (firstTime) {
             tags = Tags.fromJson(response.content);
             firstTime = false;
