@@ -1,7 +1,9 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, unnecessary_string_interpolations, constant_identifier_names, file_names, must_be_immutable, camel_case_types, sized_box_for_whitespace, use_build_context_synchronously, non_constant_identifier_names
 import 'package:eshop/models/Profile.dart';
+import 'package:eshop/models/Response.dart';
 import 'package:eshop/sockets/connection.dart';
 import 'package:eshop/style/ColorsUsed.dart';
+import 'package:eshop/utils/MyWidgets.dart';
 import 'package:flutter/material.dart';
 import 'register.dart';
 import 'home.dart';
@@ -170,55 +172,52 @@ class _MyForm extends State<_MyBody> {
               ElevatedButton(
                 onPressed: () async {
                   final formState = _formKey.currentState;
-
                   if ((formState?.validate() ?? false)) {
                     formState!.save(); // Guarda valores en var. de estado
-                    /*Connection connection = Connection();
-                    await connection.query({
-                      "type": 1,
-                      "code": 1,
-                      "content": {"email": email, "password": password}
-                    });
-                    var d = connection.getData();
-                    if (d["code"] == 0 || d["content"]["success"] == false) {
+                    Connection connection = Connection();
+                    var data = await connection.logIn(email!, password!);
+                    Response response = Response.fromJson(data);
+                    if (response.error) {
                       showDialog(
                         context: context,
-                        builder: (context) => _MyAlert(context),
+                        builder: (context) => MyPopUp(
+                            context, "Error", response.content["details"], 1),
+                      );
+                    } else if (!response.content["success"]) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => MyPopUp(
+                            context, "Error", "Wrong user or password", 1),
                       );
                     } else {
-                      //@todo pedir perfil
-                      showDialog(
-                        context: context,
-                        builder: (context) => Home(
-                          connection: connection,
-                          admin: d["content"]["admin"],
-                          profile: ,
-                        ),
+                      bool admin = response.content["admin"];
+                      data = await connection.requestUserInfo();
+                      response = Response.fromJson(data);
+                      if (response.error) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => MyPopUp(
+                              context, "Error", response.content["details"], 1),
+                        );
+                      } else {
+                        Profile profile = Profile.fromJson(response.content);
                         var route = MaterialPageRoute(
-                        builder: (context) => Home(
-                          perfil: perfil,
-                        ),
-                      );
-                      Navigator.of(context).push(route);
-                      );
-                    }*/
-                    var route = MaterialPageRoute(
-                      builder: (context) => Home(
-                          connection: Connection(),
-                          admin: true,
-                          profile: Profile(
-                              email: "psegmar1@gmail.com",
-                              password: "1234",
-                              name: "Pablo",
-                              surname: "Segovia",
-                              payment: null,
-                              address: null)),
-                    );
-                    Navigator.of(context).push(route);
+                          builder: (context) => Home(
+                            connection: connection,
+                            admin: admin,
+                            profile: profile,
+                          ),
+                        );
+                        Navigator.of(context).push(route);
+                      }
+                    }
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Invalid form'),
+                        content: Text(
+                          'Invalid form',
+                          style: TextStyle(fontSize: 20),
+                        ),
                         backgroundColor: CustomColors.n1,
                       ),
                     );
@@ -265,24 +264,3 @@ void _goToRegister(BuildContext context) {
   );
   Navigator.of(context).push(route);
 }
-
-Widget _MyAlert(context) => AlertDialog(
-        title: const Text("Error"),
-        content: const Text(
-          "Wrong user or password",
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
-        ),
-        actions: [
-          Center(
-            child: TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text(
-                  "OK",
-                  style: TextStyle(
-                      color: CustomColors.n1,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15),
-                )),
-          )
-        ]);

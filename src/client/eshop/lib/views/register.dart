@@ -1,9 +1,10 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_local_variable, camel_case_types, constant_identifier_names, sized_box_for_whitespace, use_build_context_synchronously, non_constant_identifier_names
 
+import 'package:eshop/models/Response.dart';
+import 'package:eshop/utils/MyWidgets.dart';
 import 'package:flutter/material.dart';
 import 'package:eshop/sockets/connection.dart';
 import 'package:eshop/style/ColorsUsed.dart';
-import 'home.dart';
 import 'logIn.dart';
 
 class register extends StatefulWidget {
@@ -188,41 +189,34 @@ class _MyFormR extends State<_MyBodyR> {
                     if (password != password2) {
                       showDialog(
                         context: context,
-                        builder: (context) =>
-                            _MyAlert(context, "Passwords don't match"),
+                        builder: (context) => MyPopUp(
+                            context, "Error", "Passwords don't match", 1),
                       );
                     } else {
-                      Navigator.of(context).pop();
-                      /*Connection connection = Connection();
-                    await connection.query({
-                      "type": 1,
-                      "code": 2,
-                      "content": {
-                        "email": email,
-                        "password": password,
-                        "username": name,
+                      Connection connection = Connection();
+                      var data = await connection.signUp(email!, password!);
+                      Response response = Response.fromJson(data);
+                      if (response.error) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => MyPopUp(
+                              context, "Error", response.content["details"], 1),
+                        );
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (context) => MyPopUp(context, "Message",
+                              "Successful resgistration", 2),
+                        );
                       }
-                    });
-                    var d = connection.getData();
-                    if (d["code"] == 0 || d["content"]["success"] == false) {
-                      showDialog(
-                        context: context,
-                        builder: (context) => _MyAlert(context),
-                      );
-                    } else {
-                      //@todo pedir perfil
-                      
-                      showDialog(
-                        context: context,
-                        builder: (context) =>
-                            Home(connection: connection, admin: false),
-                      );
-                    }*/
                     }
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Invalid form'),
+                        content: Text(
+                          'Invalid form',
+                          style: TextStyle(fontSize: 20),
+                        ),
                         backgroundColor: CustomColors.n1,
                       ),
                     );
@@ -269,24 +263,3 @@ void _goToLogIn(BuildContext context) {
   );
   Navigator.of(context).push(route);
 }
-
-Widget _MyAlert(context, String message) => AlertDialog(
-        title: const Text("Error"),
-        content: Text(
-          message,
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
-        ),
-        actions: [
-          Center(
-            child: TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text(
-                  "OK",
-                  style: TextStyle(
-                      color: CustomColors.n1,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15),
-                )),
-          )
-        ]);
