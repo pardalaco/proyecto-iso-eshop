@@ -29,17 +29,11 @@ class _EditProfile extends State<EditProfile> {
   TextEditingController _addressController = TextEditingController();
 
   _EditProfile(
-      {required this.connection, required this.admin, required this.profile});
-
-  @override
-  void initState() {
-    super.initState();
+      {required this.connection, required this.admin, required this.profile}) {
     _nameController.text = profile.name;
     _emailController.text = profile.email;
-    _cardController.text =
-        profile.payment ?? ''; // Asegúrate de manejar valores nulos
-    _addressController.text =
-        profile.address ?? ''; // Asegúrate de manejar valores nulos
+    _cardController.text = profile.payment ?? '';
+    _addressController.text = profile.address ?? '';
   }
 
   @override
@@ -65,7 +59,7 @@ class _EditProfile extends State<EditProfile> {
         IconButton(
           icon: Icon(Icons.save),
           onPressed: () {
-            // Agrega aquí la lógica para guardar los cambios
+            _saveChanges(context);
           },
         ),
       ],
@@ -114,5 +108,31 @@ class _EditProfile extends State<EditProfile> {
         ),
       ),
     );
+  }
+
+  Future<void> _saveChanges(BuildContext context) async {
+    // Verificar si ha habido cambios
+    if (_nameController.text != profile.name ||
+        _emailController.text != profile.email ||
+        _cardController.text != profile.payment ||
+        _addressController.text != profile.address) {
+      // Guardar cambios
+      profile.name = _nameController.text;
+      profile.email = _emailController.text;
+      profile.payment = _cardController.text;
+      profile.address = _addressController.text;
+
+      // Mostrar un mensaje informativo
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Los cambios se han guardado'),
+      ));
+    } else {
+      // Si no hay cambios, mostrar un mensaje informativo
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('No se realizaron cambios.'),
+        ),
+      );
+    }
   }
 }
