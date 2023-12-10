@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names, prefer_interpolation_to_compose_strings, prefer_const_constructors, no_leading_underscores_for_local_identifiers, no_logic_in_create_state, must_be_immutable, unused_element, sized_box_for_whitespace
 
+import 'package:eshop/models/Response.dart';
 import 'package:eshop/models/Tag.dart';
 import 'package:eshop/views/productDetails.dart';
 import 'package:flutter/material.dart';
@@ -369,7 +370,8 @@ Widget FuturaLista(
     builder: (context, AsyncSnapshot<String> snapshot) {
       if (snapshot.hasData) {
         Map<String, dynamic> data = json.decode(snapshot.data!);
-        var products = Products.fromJson(data);
+        Response response = Response.fromJson(data);
+        var products = Products.fromJson(response.content, false);
         final productList = products.products.map((product) {
           return ListTile(
             title: Text(product.name),
@@ -476,8 +478,9 @@ class _TagsListState extends State<_TagsList> {
       builder: (context, AsyncSnapshot<String> snapshot) {
         if (snapshot.hasData) {
           Map<String, dynamic> data = json.decode(snapshot.data!);
+          Response response = Response.fromJson(data);
           if (firstTime) {
-            tags = Tags.fromJson(data);
+            tags = Tags.fromJson(response.content);
             firstTime = false;
           }
           final tagsList = tags.tags.map((t) {
