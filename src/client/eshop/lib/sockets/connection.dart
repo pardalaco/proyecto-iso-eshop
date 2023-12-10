@@ -373,7 +373,7 @@ class Connection {
     //@todo
   }
 
-  // 5. USER INFO
+  // 5.USER INFO
 
   Future<String> editName(String email, String name) async {
     return json.encode({
@@ -446,8 +446,90 @@ class Connection {
   }
 
   //6. ORDERS
-  //7. ORDERSADMIN
-  //8. RECOMENDATIONS AND PRODUCT RATING
+
+  Future<String> requestOrders(String email) async {
+    return json.encode({
+      "type": 6,
+      "code": 1,
+      "content": {
+        "orders": [
+          {
+            "orderid": 1013,
+            "date": "Today",
+            "total": 10.74,
+            "status": "invoiced"
+          }
+        ],
+      }
+    });
+    //@todo
+  }
+
+  Future<String> requestOrderDetails(String email, int o_id) async {
+    return json.encode({
+      "type": 6,
+      "code": 2,
+      "content": {
+        "success": true,
+        "orderid": 1013,
+        "email": email,
+        "address": "Av",
+        "payment": "14574",
+        "date": "Yesterday",
+        "total": 10.32,
+        "status": "delivered"
+      }
+    });
+    //@todo
+  }
+
+  Future<String> cancelOrder(String email, int o_id) async {
+    return json.encode({
+      "type": 6,
+      "code": 3,
+      "content": {
+        "success": true,
+      }
+    });
+    //@todo
+  }
+
+  // 7.ORDERSADMIN
+
+  Future<String> listAllOrders(String email) async {
+    return json.encode({
+      "type": 7,
+      "code": 1,
+      "content": {
+        "amount": 1,
+        "orders": [
+          {
+            "orderid": 1013,
+            "email": email,
+            "address": "Av",
+            "payment": "14574",
+            "date": "Yesterday",
+            "total": 10.32,
+            "status": "delivered"
+          }
+        ]
+      }
+    });
+    //@todo
+  }
+
+  Future<String> changeOrderStatus(String email, int p_id, int status) async {
+    return json.encode({
+      "type": 7,
+      "code": 2,
+      "content": {
+        "success": true,
+      }
+    });
+    //@todo
+  }
+
+  // 8.RECOMENDATIONS AND PRODUCT RATING
 
   Future<String> rateProduct(
       String email, int p_id, double rating, String comment) async {
@@ -480,6 +562,40 @@ class Connection {
             "rating": 3.5,
             "comment": "Mal producto",
             "date": "ayer"
+          }
+        ]
+      }
+    });
+    //@todo
+  }
+
+  Future<String> requestRecommendedProducts(String email) async {
+    await Future.delayed(const Duration(seconds: 1));
+    return json.encode({
+      "type": 8,
+      "code": 3,
+      "content": {
+        "amount": 2,
+        "products": [
+          {
+            "id": 1,
+            "name": "iPhone 14",
+            "description": "Movil que funciona de maravilla pero radioactivo",
+            "image": "/imagenes/iPhone12",
+            "price": 799.99,
+            "rating": 5,
+            "count": 10,
+            "tags": "tecnologia"
+          },
+          {
+            "id": 2,
+            "name": "Air Jordan Magic",
+            "description": "Zapatillas para saltar mucho",
+            "image": "/imagenes/Jordan",
+            "price": 180,
+            "rating": 4.5,
+            "count": 12,
+            "tags": "ropa"
           }
         ]
       }

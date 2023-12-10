@@ -7,7 +7,7 @@ class Carts {
 
   Carts.fromJson(Map<String, dynamic> json) {
     carts = <Cart>[];
-    var a = json['content']['carts'];
+    var a = json['carts'];
     a.forEach((v) {
       carts.add(Cart.fromJson(v, false));
     });
@@ -21,11 +21,12 @@ class Cart {
   late Products listProducts;
 
   Cart.fromJson(Map<String, dynamic> json, bool loadList) {
-    cartid = json['cartid'];
-    cartname = json['cartname'];
     total = json['total'].toDouble();
     if (loadList) {
-      listProducts = Products.fromJsonInCart(json);
+      listProducts = Products.fromJson(json, true);
+    } else {
+      cartid = json['cartid'];
+      cartname = json['cartname'];
     }
   }
 }

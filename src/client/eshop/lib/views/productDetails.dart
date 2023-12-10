@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'package:eshop/models/Cart.dart';
 import 'package:eshop/models/Profile.dart';
+import 'package:eshop/models/Response.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:eshop/models/Comment.dart';
 import 'package:eshop/sockets/connection.dart';
@@ -221,14 +222,16 @@ class _ListCartState extends State<_ListCart> {
       builder: (context, AsyncSnapshot<String> snapshot) {
         if (snapshot.hasData) {
           Map<String, dynamic> data = json.decode(snapshot.data!);
-          var carts = Carts.fromJson(data);
+          Response response = Response.fromJson(data);
+          var carts = Carts.fromJson(response.content);
           final cartsList = carts.carts.map((c) {
             return ListTile(
               title: Text(c.cartname),
               onTap: () async {
                 var data = await widget.connection
                     .addToCart(widget.email, c.cartid, widget.p_id);
-                bool success = json.decode(data)['content']['success'];
+                Response response = Response.fromJson(json.decode(data));
+                bool success = response.content["success"];
                 if (success) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -314,7 +317,8 @@ Widget _MyAlertAddCart(context, Connection connection, String email) {
             onPressed: () async {
               if (_controller.text.isNotEmpty) {
                 var data = await connection.createCart(email, _controller.text);
-                bool success = json.decode(data)['content']['success'];
+                Response response = Response.fromJson(json.decode(data));
+                bool success = response.content["success"];
                 if (!success) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -414,7 +418,8 @@ class _ComAndRatState extends State<ComAndRat> {
           builder: (context, AsyncSnapshot<String> snapshot) {
             if (snapshot.hasData) {
               Map<String, dynamic> data = json.decode(snapshot.data!);
-              var comments = Comments.fromJson(data);
+              Response response = Response.fromJson(data);
+              var comments = Comments.fromJson(response.content);
               final commentsList = comments.comments.map((c) {
                 return Container(
                   padding: const EdgeInsetsDirectional.all(20),

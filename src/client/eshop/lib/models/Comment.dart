@@ -5,7 +5,7 @@ class Comments {
 
   Comments.fromJson(Map<String, dynamic> json) {
     comments = <Comment>[];
-    var a = json['content']['ratings'];
+    var a = json['ratings'];
     a.forEach((v) {
       comments.add(Comment.fromJson(v));
     });
