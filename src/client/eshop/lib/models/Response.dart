@@ -1,11 +1,14 @@
+import 'dart:convert';
+
 class Response {
   bool error = false;
   late Map<String, dynamic> content;
 
-  Response.fromJson(Map<String, dynamic> json) {
-    if (json["type"] == 0) {
+  Response.fromJson(String jsonRaw) {
+    Map<String, dynamic> data = json.decode(jsonRaw);
+    if (data["type"] == 0) {
       error = true;
     }
-    content = json["content"];
+    content = data["content"];
   }
 }
