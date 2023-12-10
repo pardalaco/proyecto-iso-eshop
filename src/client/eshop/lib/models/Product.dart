@@ -6,22 +6,12 @@ class Products {
 
   Products({required this.products});
 
-  Products.fromJson(
-    Map<String, dynamic> json,
-  ) {
-    products = <Product>[];
-    amount = json['content']['amount'];
-    var a = json['content']['products'];
-    a.forEach((v) {
-      products.add(Product.fromJson(v, false));
-    });
-  }
-  Products.fromJsonInCart(Map<String, dynamic> json) {
+  Products.fromJson(Map<String, dynamic> json, bool inCart) {
     products = <Product>[];
     amount = json['amount'];
     var a = json['products'];
     a.forEach((v) {
-      products.add(Product.fromJson(v, true));
+      products.add(Product.fromJson(v, inCart));
     });
   }
 }

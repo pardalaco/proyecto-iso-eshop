@@ -15,13 +15,11 @@ class Profile {
       this.address});
 
   Profile.fromJson(Map<String, dynamic> json) {
-    var a = json['content'];
-
-    email = a['email'];
-    password = a['password'];
-    name = a['name'];
-    surname = a['surname'];
-    payment = a['payment'];
-    address = a['address'];
+    email = json['email'];
+    password = json['password'];
+    name = json['name'];
+    surname = json['surname'];
+    payment = json['payment'];
+    address = json['address'];
   }
 }
