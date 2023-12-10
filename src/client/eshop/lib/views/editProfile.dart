@@ -23,8 +23,24 @@ class _EditProfile extends State<EditProfile> {
   Connection connection;
   bool admin;
   Profile profile;
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _cardController = TextEditingController();
+  TextEditingController _addressController = TextEditingController();
+
   _EditProfile(
       {required this.connection, required this.admin, required this.profile});
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController.text = profile.name;
+    _emailController.text = profile.email;
+    _cardController.text =
+        profile.payment ?? ''; // Asegúrate de manejar valores nulos
+    _addressController.text =
+        profile.address ?? ''; // Asegúrate de manejar valores nulos
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +58,6 @@ class _EditProfile extends State<EditProfile> {
       leading: IconButton(
         icon: Icon(Icons.arrow_back),
         onPressed: () {
-          // Agrega aquí la lógica para volver a la pestaña anterior
           Navigator.of(context).pop();
         },
       ),
@@ -56,6 +71,48 @@ class _EditProfile extends State<EditProfile> {
       ],
     );
 
-    return Scaffold(appBar: _MyAppBar, body: Text("hola"));
+    return Scaffold(
+      appBar: _MyAppBar,
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 16.0),
+            child: Container(
+              alignment: Alignment.center,
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/img/User.jpg',
+                  width: 120.0,
+                  height: 120.0,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 16.0),
+          _buildTextFieldWithIcon("Nombre", Icons.person, _nameController),
+          _buildTextFieldWithIcon("Email", Icons.email, _emailController),
+          _buildTextFieldWithIcon(
+              "Tarjeta", Icons.credit_card, _cardController),
+          _buildTextFieldWithIcon(
+              "Dirección", Icons.location_on, _addressController),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTextFieldWithIcon(
+      String labelText, IconData icon, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: labelText,
+          prefixIcon: Icon(icon),
+          border: OutlineInputBorder(),
+        ),
+      ),
+    );
   }
 }
