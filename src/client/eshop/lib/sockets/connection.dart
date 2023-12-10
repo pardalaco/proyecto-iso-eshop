@@ -5,6 +5,7 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:eshop/models/Comment.dart';
+import 'package:eshop/models/Product.dart';
 
 class Connection {
   late Socket client;
@@ -19,7 +20,7 @@ class Connection {
     client.write(send);
     subscription = client.listen((List<int> data1) {
       final jsonData = utf8.decode(data1);
-      datos = json.decode(jsonData);
+      datos = jsonData;
       debeEsperar = false;
     }, onDone: () {
       client.destroy();
@@ -42,7 +43,7 @@ class Connection {
     subscription.pause();
   }
 
-  Map<String, dynamic> getData() {
+  String getData() {
     return datos;
   }
 
@@ -59,38 +60,120 @@ class Connection {
     }
   }
 
-//METODOS A UTILIZAR
-//METODOS GET
+//METODOS DEFINIDOS EN EL JSON
 
-//Devolver json.encode() para poder recibirlo en el future: del futureBuilder
-  Future<String> getComments(int p_id) async {
-    await Future.delayed(const Duration(seconds: 1));
+// 1.USER ACCESS
+
+  Future<String> logIn(String email, String password) async {
     return json.encode({
-      "amount": 1,
-      "ratings": [
-        {
-          "email": "Pablo@gmail.com",
-          "rating": 4.5,
-          "comment": "Buen producto",
-          "date": "ayer"
-        },
-        {
-          "email": "Joan@gmail.com",
-          "rating": 3.5,
-          "comment": "Mal producto",
-          "date": "ayer"
-        }
-      ]
+      "type": 1,
+      "code": 1,
+      "content": {
+        "success": true,
+        "admin": true,
+      }
     });
-    //@todo Decir lo de la fecha
+    //@todo
   }
 
-//Devolver json.encode() para poder recibirlo en el future: del futureBuilder
+  Future<String> signUp(String email, String password) async {
+    return json.encode({
+      "type": 1,
+      "code": 2,
+      "content": {
+        "success": true,
+      }
+    });
+    //@todo
+  }
+
+  Future<String> isAdmin(String email) async {
+    return json.encode({
+      "type": 1,
+      "code": 3,
+      "content": {
+        "success": true,
+      }
+    });
+    //@todo
+  }
+
+  // 2.REQUEST PRODUCTS
+
   Future<String> getProducts(String email) async {
     await Future.delayed(const Duration(seconds: 1));
     return json.encode({
-      "amount": 2,
-      "products": [
+      "type": 2,
+      "code": 1,
+      "content": {
+        "amount": 2,
+        "products": [
+          {
+            "id": 1,
+            "name": "iPhone 12",
+            "description": "Movil que funciona de maravilla pero radioactivo",
+            "image": "/imagenes/iPhone12",
+            "price": 799.99,
+            "rating": 5,
+            "count": 10,
+            "tags": "tecnologia"
+          },
+          {
+            "id": 2,
+            "name": "Air Jordan Zoom",
+            "description": "Zapatillas para saltar mucho",
+            "image": "/imagenes/Jordan",
+            "price": 180,
+            "rating": 4.5,
+            "count": 12,
+            "tags": "ropa"
+          }
+        ]
+      }
+    });
+    //@todo
+  }
+
+  Future<String> getProductByID(String email, int p_id) async {
+    await Future.delayed(const Duration(seconds: 1));
+    return json.encode({
+      "type": 2,
+      "code": 2,
+      "content": {
+        "amount": 2,
+        "products": [
+          {
+            "id": 1,
+            "name": "iPhone 12",
+            "description": "Movil que funciona de maravilla pero radioactivo",
+            "image": "/imagenes/iPhone12",
+            "price": 799.99,
+            "rating": 5,
+            "count": 10,
+            "tags": "tecnologia"
+          },
+          {
+            "id": 2,
+            "name": "Air Jordan Zoom",
+            "description": "Zapatillas para saltar mucho",
+            "image": "/imagenes/Jordan",
+            "price": 180,
+            "rating": 4.5,
+            "count": 12,
+            "tags": "ropa"
+          }
+        ]
+      }
+    });
+    //@todo
+  }
+
+  Future<String> getProductByTags(String email, String tags) async {
+    await Future.delayed(const Duration(seconds: 1));
+    return json.encode({
+      "type": 2,
+      "code": 3,
+      "content": {
         {
           "id": 1,
           "name": "iPhone 12",
@@ -98,70 +181,309 @@ class Connection {
           "image": "/imagenes/iPhone12",
           "price": 799.99,
           "rating": 5,
+          "count": 10,
           "tags": "tecnologia"
         },
-        {
-          "id": 2,
-          "name": "Air Jordan Zoom",
-          "description": "Zapatillas para saltar mucho",
-          "image": "/imagenes/Jordan",
-          "price": 180,
-          "rating": 4.5,
-          "tags": "ropa"
-        }
-      ]
+      }
     });
     //@todo
   }
 
-  //Devolver json.encode() para poder recibirlo en el future: del futureBuilder
   Future<String> getTags() async {
-    await Future.delayed(const Duration(seconds: 1));
     return json.encode({
-      "tags": ["Tag 1", "Tag 2", "Tag 3", "Tag 4"]
+      "type": 2,
+      "code": 4,
+      "content": {
+        "tags": ["Tag 1", "Tag 2", "Tag 3", "Tag 4"]
+      }
     });
     //@todo
   }
 
-  //Devolver json.encode() para poder recibirlo en el future: del futureBuilder.
-  int count = 0; //Probar una cosa, esto luego borrar
+  // 3.Manage Product Admin
+
+  Future<String> addNewProduct(Product product) async {
+    return json.encode({
+      "type": 3,
+      "code": 1,
+      "content": {
+        "success": true,
+      }
+    });
+    //@todo
+  }
+
+  Future<String> editProduct(Map<String, dynamic> content) async {
+    return json.encode({
+      "type": 3,
+      "code": 2,
+      "content": {
+        "success": true,
+      }
+    });
+    //@todo
+  }
+
+  Future<String> removeProduct(String email, int p_id) async {
+    return json.encode({
+      "type": 3,
+      "code": 3,
+      "content": {
+        "success": true,
+      }
+    });
+    //@todo
+  }
+
+  Future<String> addNewTag(String email, String tag) async {
+    return json.encode({
+      "type": 3,
+      "code": 4,
+      "content": {
+        "success": true,
+      }
+    });
+    //@todo
+  }
+
+  // 4.RELATED TO CART
+
+  Future<String> createCart(String email, String cartname) async {
+    return json.encode({
+      "type": 4,
+      "code": 1,
+      "content": {
+        "success": true,
+      }
+    });
+    //@todo
+  }
+
+  Future<String> editCart(String email, int c_id, String newName) async {
+    return json.encode({
+      "type": 4,
+      "code": 2,
+      "content": {
+        "success": true,
+      }
+    });
+    //@todo
+  }
+
+  Future<String> deleteCart(String email, int c_id) async {
+    return json.encode({
+      "type": 4,
+      "code": 3,
+      "content": {
+        "success": true,
+      }
+    });
+    //@todo
+  }
+
+  Future<String> addToCart(String email, int c_id, int p_id) async {
+    return json.encode({
+      "type": 4,
+      "code": 4,
+      "content": {
+        "success": true,
+      }
+    });
+    //@todo
+  }
+
+  Future<String> editQuantity(String email, int c_id, int p_id, int q) async {
+    return json.encode({
+      "type": 4,
+      "code": 5,
+      "content": {
+        "success": true,
+      }
+    });
+    //@todo
+  }
+
+  Future<String> removeProductFromCart(String email, int c_id, int p_id) async {
+    return json.encode({
+      "type": 4,
+      "code": 6,
+      "content": {
+        "success": true,
+      }
+    });
+    //@todo
+  }
+
+  Future<String> requestCartProducts(String email, int c_id) async {
+    return json.encode({
+      "type": 4,
+      "code": 4,
+      "content": {
+        "success": true,
+        "amount": 2,
+        "total": 12.14,
+        "products": [
+          {
+            "id": 1,
+            "name": "iPhone 12",
+            "description": "Movil que funciona de maravilla pero radioactivo",
+            "image": "/imagenes/iPhone12",
+            "price": 799.99,
+            "tags": "tecnologia",
+            "quantity": 4
+          },
+          {
+            "id": 2,
+            "name": "Air Jordan Zoom",
+            "description": "Zapatillas para saltar mucho",
+            "image": "/imagenes/Jordan",
+            "price": 180,
+            "tags": "ropa",
+            "quantity": 4
+          }
+        ]
+      }
+    });
+    //@todo
+  }
+
   Future<String> getAllCarts(String email) async {
-    await Future.delayed(const Duration(seconds: 1));
-    if (count == 0) {
-      count++;
-      return json.encode({
+    return json.encode({
+      "type": 4,
+      "code": 6,
+      "content": {
         "carts": [
           {"cartid": 1, "cartname": "Cart 1", "total": 50.45},
           {"cartid": 2, "cartname": "Cart 2", "total": 20}
         ]
-      });
-    } else {
-      return json.encode({
-        "carts": [
-          {"cartid": 1, "cartname": "Cart 1", "total": 50.45},
-          {"cartid": 2, "cartname": "Cart 2", "total": 20},
-          {"cartid": 3, "cartname": "Cart 3", "total": 20}
-        ]
-      });
-    }
+      }
+    });
     //@todo
   }
 
-  //METODOS POST
+  Future<String> purchase(String email, int c_id) async {
+    return json.encode({
+      "type": 4,
+      "code": 9,
+      "content": {
+        "success": true,
+        "orderid": 1,
+      }
+    });
+    //@todo
+  }
 
-  Future<bool> sendComment(String email, int p_id, Comment t) async {
+  // 5. USER INFO
+
+  Future<String> editName(String email, String name) async {
+    return json.encode({
+      "type": 5,
+      "code": 1,
+      "content": {
+        "success": true,
+      }
+    });
+    //@todo
+  }
+
+  Future<String> editEmail(String email, String newEmail) async {
+    return json.encode({
+      "type": 5,
+      "code": 2,
+      "content": {
+        "success": true,
+      }
+    });
+    //@todo
+  }
+
+  Future<String> editPassword(String email, String password) async {
+    return json.encode({
+      "type": 5,
+      "code": 3,
+      "content": {
+        "success": true,
+      }
+    });
+    //@todo
+  }
+
+  Future<String> editPayment(String email, String payment) async {
+    return json.encode({
+      "type": 5,
+      "code": 4,
+      "content": {
+        "success": true,
+      }
+    });
+    //@todo
+  }
+
+  Future<String> editAddress(String email, String address) async {
+    return json.encode({
+      "type": 5,
+      "code": 5,
+      "content": {
+        "success": true,
+      }
+    });
+    //@todo
+  }
+
+  Future<String> requestUserInfo() async {
+    return json.encode({
+      "type": 5,
+      "code": 1,
+      "content": {
+        "email": "Pablo@gmail.com",
+        "password": "1234",
+        "name": "Pablo",
+        "payment": "00012457",
+        "address": "Calle Ave del Paraiso",
+      }
+    });
+    //@todo
+  }
+
+  //6. ORDERS
+  //7. ORDERSADMIN
+  //8. RECOMENDATIONS AND PRODUCT RATING
+
+  Future<String> rateProduct(
+      String email, int p_id, double rating, String comment) async {
+    return json.encode({
+      "type": 8,
+      "code": 1,
+      "content": {
+        "success": true,
+      }
+    });
+    //@todo
+  }
+
+  Future<String> viewProductRating(int p_id) async {
     await Future.delayed(const Duration(seconds: 1));
-    return true;
-    //@todo
-  }
-
-  Future<bool> createCart(String email, String cartname) async {
-    return true;
-    //@todo
-  }
-
-  Future<bool> addToCart(String email, int card_id, int p_id) async {
-    return true;
+    return json.encode({
+      "type": 8,
+      "code": 2,
+      "content": {
+        "amount": 1,
+        "ratings": [
+          {
+            "email": "Pablo@gmail.com",
+            "rating": 4.5,
+            "comment": "Buen producto",
+            "date": "ayer"
+          },
+          {
+            "email": "Joan@gmail.com",
+            "rating": 3.5,
+            "comment": "Mal producto",
+            "date": "ayer"
+          }
+        ]
+      }
+    });
     //@todo
   }
 }
