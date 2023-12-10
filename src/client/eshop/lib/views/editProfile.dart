@@ -29,6 +29,7 @@ class _EditProfile extends State<EditProfile> {
   final TextEditingController _addressController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
+  bool _hasChanges = false;
 
   _EditProfile(
       {required this.connection, required this.admin, required this.profile}) {
@@ -53,8 +54,8 @@ class _EditProfile extends State<EditProfile> {
       ),
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
-        onPressed: () {
-          Navigator.of(context).pop();
+        onPressed: () async {
+          await _handleBackNavigation(context);
         },
       ),
       actions: [
@@ -67,36 +68,41 @@ class _EditProfile extends State<EditProfile> {
       ],
     );
 
-    return Scaffold(
-      appBar: _MyAppBar,
-      body: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 16.0),
-              child: Container(
-                alignment: Alignment.center,
-                child: ClipOval(
-                  child: Image.asset(
-                    'assets/img/User.jpg',
-                    width: 120.0,
-                    height: 120.0,
-                    fit: BoxFit.cover,
+    return WillPopScope(
+      onWillPop: () async {
+        return await _handleBackNavigation(context);
+      },
+      child: Scaffold(
+        appBar: _MyAppBar,
+        body: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 16.0),
+                child: Container(
+                  alignment: Alignment.center,
+                  child: ClipOval(
+                    child: Image.asset(
+                      'assets/img/User.jpg',
+                      width: 120.0,
+                      height: 120.0,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),
-            ),
-            SizedBox(height: 16.0),
-            _buildTextFieldWithIcon(
-                "Nombre", Icons.person, _nameController, true),
-            _buildTextFieldWithIcon(
-                "Email", Icons.email, _emailController, true),
-            _buildTextFieldWithIcon(
-                "Tarjeta", Icons.credit_card, _cardController, false),
-            _buildTextFieldWithIcon(
-                "Dirección", Icons.location_on, _addressController, false),
-          ],
+              SizedBox(height: 16.0),
+              _buildTextFieldWithIcon(
+                  "Nombre", Icons.person, _nameController, true),
+              _buildTextFieldWithIcon(
+                  "Email", Icons.email, _emailController, true),
+              _buildTextFieldWithIcon(
+                  "Tarjeta", Icons.credit_card, _cardController, false),
+              _buildTextFieldWithIcon(
+                  "Dirección", Icons.location_on, _addressController, false),
+            ],
+          ),
         ),
       ),
     );
@@ -113,6 +119,11 @@ class _EditProfile extends State<EditProfile> {
           prefixIcon: Icon(icon),
           border: OutlineInputBorder(),
         ),
+        onChanged: (value) {
+          setState(() {
+            _hasChanges = true;
+          });
+        },
         validator: (value) {
           if (isRequired && (value == null || value.isEmpty)) {
             return 'Este campo es necesario';
@@ -121,6 +132,38 @@ class _EditProfile extends State<EditProfile> {
         },
       ),
     );
+  }
+
+  Future<bool> _handleBackNavigation(BuildContext context) async {
+    if (_hasChanges) {
+      return await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Descartar Cambios'),
+            content: const Text('¿Seguro que quieres descartar los cambios?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true); // Descartar cambios
+                },
+                child: const Text(
+                  'Descartar',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false); // Cancelar
+                },
+                child: const Text('Cancelar'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+    return true; // Si no hay cambios, permitir regresar
   }
 
   Future<void> _saveChanges(BuildContext context) async {
@@ -151,6 +194,10 @@ class _EditProfile extends State<EditProfile> {
             );
           },
         );
+
+        setState(() {
+          _hasChanges = false;
+        });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
