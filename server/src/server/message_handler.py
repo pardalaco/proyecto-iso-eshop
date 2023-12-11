@@ -97,7 +97,7 @@ class MessageHandler:
 		else:
 			success = Database.user_signup(email, password)
 			if success:
-				self.handle_new_cart({"email": email, "cartname": "Carrito"})
+				self.handle_new_cart({"email": email, "cartname": "Cart"})
 			return {"success": success}
 
 

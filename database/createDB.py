@@ -13,7 +13,7 @@ cursor.execute(
 )
 cursor.execute(
 	'''
-        DROP TABLE IF EXISTS Carrito;
+        DROP TABLE IF EXISTS Cart;
     '''
 )
 cursor.execute(
@@ -74,10 +74,10 @@ cursor.execute(
 )
 cursor.execute(
     '''
-	    CREATE TABLE Carrito (
+	    CREATE TABLE Cart (
             ROWID INTEGER NOT NULL,
             email VARCHAR(40) NOT NULL,
-            name VARCHAR(40) NOT NULL Default 'Carrito',
+            name VARCHAR(40) NOT NULL Default 'Cart',
             total DECIMAL(7,2) NOT NULL DEFAULT 0.0,
             PRIMARY KEY (ROWID),
             FOREIGN KEY (email)
@@ -95,7 +95,7 @@ cursor.execute(
             quantity INT NOT NULL DEFAULT 1,
             PRIMARY KEY (cart_id, product_id),
             FOREIGN KEY (cart_id)
-                REFERENCES Carrito (ROWID)
+                REFERENCES Cart (ROWID)
                     ON DELETE CASCADE
                     ON UPDATE CASCADE,
             FOREIGN KEY (product_id)

@@ -448,7 +448,7 @@ class Database:
 	def is_user_cart(cls, email: str, cartid: int) -> bool:
 		query = """
 		SELECT COUNT(*)
-		FROM Carrito
+		FROM Cart
 		WHERE ROWID = ? AND email = ?;
 		"""
 		cls.cursor.execute(query, (cartid, email))
@@ -461,7 +461,7 @@ class Database:
 	def get_cart_user(cls, cartid: str) -> str:
 		query = """
 		SELECT email
-		FROM Carrito
+		FROM Cart
 		WHERE ROWID = ?
 		"""
 		cls.cursor.execute(query, (cartid,))
@@ -473,7 +473,7 @@ class Database:
 	@classmethod
 	def new_cart(cls, email: str, cartname: str) -> bool:
 		query = """
-		INSERT INTO Carrito (email, name)
+		INSERT INTO Cart (email, name)
 			VALUES (?, ?);
 		"""
 		try:
@@ -490,7 +490,7 @@ class Database:
 	@classmethod
 	def edit_cart(cls, email: str, cartid: int, newname: str) -> bool:
 		query = """
-		UPDATE Carrito 
+		UPDATE Cart 
 		SET name = ?
 		WHERE ROWID = ? AND email = ?;
 		"""
@@ -508,7 +508,7 @@ class Database:
 	@classmethod
 	def remove_cart(cls, email: str, cartid: int) -> bool:
 		query = """
-		DELETE FROM Carrito 
+		DELETE FROM Cart 
 			WHERE ROWID = ? AND email = ?;
 		"""
 		try:
@@ -621,7 +621,7 @@ class Database:
 	def fetch_carts(cls, email: str) -> dict:
 		query = """
 		SELECT ROWID, name 
-		FROM Carrito
+		FROM Cart
 		WHERE email = ?;
 		"""
 
