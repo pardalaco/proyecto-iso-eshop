@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:eshop/style/ColorsUsed.dart';
 import 'package:eshop/sockets/connection.dart';
 import 'package:eshop/models/Profile.dart';
+import 'package:eshop/views/changePassword.dart';
 
 class EditProfile extends StatefulWidget {
   Connection connection;
@@ -92,7 +93,7 @@ class _EditProfile extends State<EditProfile> {
                   ),
                 ),
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               _buildTextFieldWithIcon(
                   "Nombre", Icons.person, _nameController, true),
               _buildTextFieldWithIcon(
@@ -101,6 +102,35 @@ class _EditProfile extends State<EditProfile> {
                   "Tarjeta", Icons.credit_card, _cardController, false),
               _buildTextFieldWithIcon(
                   "Dirección", Icons.location_on, _addressController, false),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ChangePassword(
+                          connection: connection,
+                          admin: admin,
+                          profile: profile,
+                        ),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: CustomColors.n1,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.all(12.0),
+                    child: Text(
+                      "Cambiar Contraseña",
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
