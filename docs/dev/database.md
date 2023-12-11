@@ -4,17 +4,16 @@
 Table User {
   email varchar(40) [pk] 
   name varchar(45) [note: "default Mr"]
-  apellidos VARCHAR(70) [note: "default Robberino"]
   password VARCHAR [not null]
   payment VARCHAR(45)
   address VARCHAR(45)
   admin TINYINT [note: "default 0"]
 }
 
-Table Carrito {
+Table Cart {
   ROWID INT [pk]
   email varchar(40) [not null]
-  name VARCHAR(40) [note: "default Carrito"]
+  name VARCHAR(40) [note: "default Cart"]
   total DECIMAL(7,2) [not null, note: "default 0"]
 }
 
@@ -55,7 +54,7 @@ Table ShopOrder {
 
 Table ShopOrderLine {
   order_id INT [pk]
-  name VARCHAR(45) [pk] 
+  name VARCHAR(45) [pk]
   product_id INT
   quantity INT [not null, default: 1]
 }
@@ -77,8 +76,8 @@ Table Feedback {
 
 Ref: Classification.product_id > Product.ROWID
 Ref: Classification.tag > Tag.name 
-Ref: Carrito.email > User.email
-Ref: Contains.cart_id > Carrito.ROWID //ON DELETE CASCADE
+Ref: Cart.email > User.email
+Ref: Contains.cart_id > Cart.ROWID //ON DELETE CASCADE
 Ref: Contains.product_id > Product.ROWID
 Ref: ShopOrder.email > User.email  // ON DELETE nul
 Ref: ShopOrderLine.order_id > ShopOrder.ROWID //ON DELETE CASCADE

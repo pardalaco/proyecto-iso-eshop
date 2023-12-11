@@ -109,6 +109,102 @@ cursor.execute(
 	'''
 )
 ###############################################################################
+
+
+###############################################################################
+#Adding Filler Users
+cursor.execute(
+	'''
+	INSERT INTO User (email, name, payment, address, password, admin) 
+VALUES 
+    ('gatitolindosexy69@hotmail.es', 'Juan González', '1234567890123456', 'Calle 123', 'contrasena1', 0),
+    ('pedro_el_bayas33@gmail.com', 'María López', '9876543210987654', 'Avenida 456', 'contrasena2', 0),
+    ('atencionalclientegrupocorreos@correos.com', 'Carlos Martínez', '1111222233334444', 'Plaza Principal', 'contrasena3', 0),
+    ('jesustocristo@cocacolazero.rg', 'Jesus Cristo', '5555666677778888', 'Belén 789', 'contrasena4', 0);
+	'''
+)
+###############################################################################
+
+
+###############################################################################
+#Adding Filler Ratings
+cursor.execute(
+    '''
+		INSERT INTO Feedback (email, product_id, rating, comment, date)
+			VALUES	('gatitolindosexy69@hotmail.es', 13, 5, '¡Increíble, superó mis expectativas!', '10/09/2012'),
+    				('gatitolindosexy69@hotmail.es', 12, 4, 'Buen Product, bastante satisfecho.', '12/01/2020'),
+    				('gatitolindosexy69@hotmail.es', 3, 3, 'Cumple su función, podría mejorar.', '01/05/2021'),
+    				('gatitolindosexy69@hotmail.es', 8, 2, 'No quedé satisfecho, esperaba más.', '10/03/2012'),
+    				('gatitolindosexy69@hotmail.es', 2, 1, 'No lo recomendaría, mala calidad.', '23/12/2012'),
+    				('pedro_el_bayas33@gmail.com', 2, 5, '¡Impresionante, funciona perfectamente!', '03/12/2012'),
+    				('pedro_el_bayas33@gmail.com', 3, 4, 'Buen diseño, satisfecho con la compra.', '02/20/2011'),
+    				('pedro_el_bayas33@gmail.com', 9, 3, 'Promedio, esperaba más por el precio.', '01/20/2019'),
+    				('pedro_el_bayas33@gmail.com', 1, 2, 'No duró mucho, se rompió rápido.', '10/02/2000'),
+    				('pedro_el_bayas33@gmail.com', 5, 1, 'Decepcionado, no cumplió mis expectativas.', '10/02/2003'),
+    				('atencionalclientegrupocorreos@correos.com', 4, 5, '¡Sorprendente, mejor de lo esperado!', '10/01/2010'),
+    				('atencionalclientegrupocorreos@correos.com', 8, 4, 'Buen rendimiento, lo recomendaría.', '17/02/1984'),
+    				('atencionalclientegrupocorreos@correos.com', 12, 3, 'Aceptable, pero podría mejorar.', '20/20/2020'),
+    				('atencionalclientegrupocorreos@correos.com', 9, 2, 'No quedé satisfecho, esperaba más.', '10/10/2013'),
+    				('atencionalclientegrupocorreos@correos.com', 2, 1, 'Mala calidad, no lo recomendaría.', '01/09/2010'),
+    				('jesustocristo@cocacolazero.rg', 16, 5, '¡Excelente, gran utilidad!', '10/13/777'),
+    				('jesustocristo@cocacolazero.rg', 11, 4, 'Bastante satisfecho, cumple lo esperado.', '1/11/2'),
+    				('jesustocristo@cocacolazero.rg', 4, 3, 'Normal, nada especial.', '29/04/-56'),
+    				('jesustocristo@cocacolazero.rg', 2, 2, 'Se sobrecalenta demasiado, cada 2x3 tengo que meterlo en el frigorífico, y eso que aun no se ha inventado!', '01/01/117'),
+    				('jesustocristo@cocacolazero.rg', 8, 1, 'Decepcionado, no cumplió con mis necesidades.', '10/02/1021');					
+	'''
+)
+###############################################################################
+
+
+###############################################################################
+#Updating Product global rating
+cursor.execute(
+    '''
+        UPDATE Product
+        SET rating = (
+                        SELECT AVG(rating)
+                        FROM Feedback
+                        WHERE Feedback.product_id = Product.ROWID
+        )
+        WHERE ROWID IN (SELECT DISTINCT product_id FROM Feedback);
+    '''
+)
+###############################################################################
+
+
+###############################################################################
+#Updating Product global rating
+cursor.execute(
+    '''
+        UPDATE Product
+        SET rating = (
+                        SELECT AVG(rating)
+                        FROM Feedback
+                        WHERE Feedback.product_id = Product.ROWID
+        )
+        WHERE ROWID IN (SELECT DISTINCT product_id FROM Feedback);
+    '''
+)
+###############################################################################
+
+
+###############################################################################
+#Updating Product contRating
+cursor.execute(
+    '''
+        UPDATE Product
+        SET rating_count  = (
+                            SELECT COUNT(rating)
+                            FROM Feedback
+                            WHERE Feedback.product_id = Product.ROWID
+        )
+        WHERE ROWID IN (SELECT DISTINCT product_id FROM Feedback);
+    '''
+)
+
+###############################################################################
+
+###############################################################################
 connection.commit()
 ###############################################################################
 

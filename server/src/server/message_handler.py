@@ -362,7 +362,7 @@ class MessageHandler:
 		productid = content["productid"]
 		if Database.has_bought(email, productid):
 			rating = content["rating"]
-			comment = content["comment"] if content["comment"] else None
+			comment = content["comment"]
 			return {"success": Database.rate_product(email, productid, rating, comment)}
 		else:
 			return {"success": False}

@@ -1,5 +1,5 @@
 # Resumen de la Reunión Scrum
-**date:**      26/11/2023  
+**Fecha:**      26/11/2023  
 **Equipo:**     Los Niños de Adolfo 
 **Sprint:**     2  
 
@@ -12,8 +12,7 @@
 ---
 
 ## 2. Tipo de Reunión:
-
-- Review diagrama de flujo
+Review diagrama de flujo
 
 ## 3. Puntos Destacados
 

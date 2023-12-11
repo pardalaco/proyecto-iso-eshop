@@ -43,7 +43,7 @@ def handle_view_ratings(isresponse: bool, current_user: dict, args: list[str]) -
 		if isresponse:
 			product_ratings = "Ratings:\n"
 			for i, rating in enumerate(args[0]["content"]["ratings"]):
-				product_ratings += f"\n{i + 1}.- *{rating['rating']}*, {rating['email']} ({rating['date']})"
+				product_ratings += f"\n{i + 1}.- *{rating['rating']:.2f}*, {rating['email']} ({rating['date']})"
 				if rating["comment"]:
 					product_ratings += f"\n\t{rating['comment']}"
 			return (False, product_ratings)
@@ -59,7 +59,7 @@ def handle_list_recommended(isresponse: bool, current_user: dict, args: list[str
 		if isresponse:
 			products = ""
 			for item in args[0]["content"]["products"]:
-				products += (f"\n*{item['rating']}({item['count']})* {item['id']}: {item['name']} - "
+				products += (f"\n*{item['rating']:.2f}({item['count']})* {item['id']}: {item['name']} - "
 											f"{item['price']}€")
 			return (False, products)
 		else:
