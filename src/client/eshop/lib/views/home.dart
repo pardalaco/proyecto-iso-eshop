@@ -2,6 +2,7 @@
 
 import 'package:eshop/models/Response.dart';
 import 'package:eshop/models/Tag.dart';
+import 'package:eshop/utils/MyWidgets.dart';
 import 'package:eshop/views/productDetails.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
@@ -488,26 +489,33 @@ class _TagsListState extends State<_TagsList> {
       builder: (context, AsyncSnapshot<String> snapshot) {
         if (snapshot.hasData) {
           Response response = Response.fromJson(snapshot.data!);
-          if (firstTime) {
-            tags = Tags.fromJson(response.content);
-            firstTime = false;
-          }
-          final tagsList = tags.tags.map((t) {
-            return CheckboxListTile(
-              title: Text(t.name),
-              value: t.choose,
-              activeColor: CustomColors.n1,
-              onChanged: (bool? value) {
-                t.choose = value ?? false;
-                setState(() {});
-                print('Checkbox ${t.name}: ${t.choose}');
-              },
+          if (response.error) {
+            showDialog(
+                context: context,
+                builder: (context) =>
+                    MyPopUp(context, "Error", response.content["details"], 1));
+          } else {
+            if (firstTime) {
+              tags = Tags.fromJson(response.content);
+              firstTime = false;
+            }
+            final tagsList = tags.tags.map((t) {
+              return CheckboxListTile(
+                title: Text(t.name),
+                value: t.choose,
+                activeColor: CustomColors.n1,
+                onChanged: (bool? value) {
+                  t.choose = value ?? false;
+                  setState(() {});
+                  print('Checkbox ${t.name}: ${t.choose}');
+                },
+              );
+            }).toList();
+            return ListView.builder(
+              itemCount: tagsList.length,
+              itemBuilder: (context, index) => tagsList[index],
             );
-          }).toList();
-          return ListView.builder(
-            itemCount: tagsList.length,
-            itemBuilder: (context, index) => tagsList[index],
-          );
+          }
         }
         return Center(
             child: SizedBox(

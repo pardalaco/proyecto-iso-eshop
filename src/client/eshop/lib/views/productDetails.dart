@@ -315,8 +315,7 @@ Widget _MyAlertAddCart(context, Connection connection, String email) {
               if (_controller.text.isNotEmpty) {
                 var data = await connection.createCart(email, _controller.text);
                 Response response = Response.fromJson(data);
-                bool success = response.content["success"];
-                if (!success) {
+                if (response.error || !response.content["success"]) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: SizedBox(
