@@ -6,23 +6,20 @@ import 'package:eshop/views/changePassword.dart';
 
 class EditProfile extends StatefulWidget {
   Connection connection;
-  bool admin;
   Profile profile;
   EditProfile(
       {Key? key,
       required this.connection,
-      required this.admin,
       required this.profile})
       : super(key: key);
 
   @override
   State<EditProfile> createState() =>
-      _EditProfile(connection: connection, admin: admin, profile: profile);
+      _EditProfile(connection: connection, profile: profile);
 }
 
 class _EditProfile extends State<EditProfile> {
   Connection connection;
-  bool admin;
   Profile profile;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -33,7 +30,7 @@ class _EditProfile extends State<EditProfile> {
   bool _hasChanges = false;
 
   _EditProfile(
-      {required this.connection, required this.admin, required this.profile}) {
+      {required this.connection, required this.profile}) {
     _nameController.text = profile.name;
     _emailController.text = profile.email;
     _cardController.text = profile.payment ?? '';
@@ -110,7 +107,6 @@ class _EditProfile extends State<EditProfile> {
                       MaterialPageRoute(
                         builder: (context) => ChangePassword(
                           connection: connection,
-                          admin: admin,
                           profile: profile,
                         ),
                       ),

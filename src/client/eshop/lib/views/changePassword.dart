@@ -5,23 +5,20 @@ import 'package:eshop/models/Profile.dart';
 
 class ChangePassword extends StatefulWidget {
   Connection connection;
-  bool admin;
   Profile profile;
   ChangePassword({
     Key? key,
     required this.connection,
-    required this.admin,
     required this.profile,
   }) : super(key: key);
 
   @override
   State<ChangePassword> createState() =>
-      _ChangePassword(connection: connection, admin: admin, profile: profile);
+      _ChangePassword(connection: connection, profile: profile);
 }
 
 class _ChangePassword extends State<ChangePassword> {
   Connection connection;
-  bool admin;
   Profile profile;
   final TextEditingController _currentPasswordController =
       TextEditingController();
@@ -34,7 +31,6 @@ class _ChangePassword extends State<ChangePassword> {
 
   _ChangePassword({
     required this.connection,
-    required this.admin,
     required this.profile,
   });
 
