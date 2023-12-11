@@ -7,10 +7,7 @@ import 'package:eshop/views/changePassword.dart';
 class EditProfile extends StatefulWidget {
   Connection connection;
   Profile profile;
-  EditProfile(
-      {Key? key,
-      required this.connection,
-      required this.profile})
+  EditProfile({Key? key, required this.connection, required this.profile})
       : super(key: key);
 
   @override
@@ -29,8 +26,7 @@ class _EditProfile extends State<EditProfile> {
   final _formKey = GlobalKey<FormState>();
   bool _hasChanges = false;
 
-  _EditProfile(
-      {required this.connection, required this.profile}) {
+  _EditProfile({required this.connection, required this.profile}) {
     _nameController.text = profile.name;
     _emailController.text = profile.email;
     _cardController.text = profile.payment ?? '';
@@ -143,7 +139,7 @@ class _EditProfile extends State<EditProfile> {
         decoration: InputDecoration(
           labelText: labelText,
           prefixIcon: Icon(icon),
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
         ),
         onChanged: (value) {
           setState(() {

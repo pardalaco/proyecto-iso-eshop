@@ -66,30 +66,33 @@ class _ChangePassword extends State<ChangePassword> {
 
     return Scaffold(
       appBar: _MyAppBar,
-      body: Column(
-        children: [
-          const SizedBox(height: 16.0),
-          _buildPasswordTextField(
-            "Contraseña Actual",
-            Icons.lock,
-            _currentPasswordController,
-            true,
-          ),
-          _buildPasswordTextField(
-            "Nueva Contraseña",
-            Icons.lock,
-            _newPasswordController,
-            true,
-          ),
-          _buildPasswordTextField(
-            "Confirmar Nueva Contraseña",
-            Icons.lock,
-            _confirmNewPasswordController,
-            true,
-          ),
-          const SizedBox(height: 16.0),
-          _buildWarningText(),
-        ],
+      body: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            const SizedBox(height: 16.0),
+            _buildPasswordTextField(
+              "Contraseña Actual",
+              Icons.lock,
+              _currentPasswordController,
+              true,
+            ),
+            _buildPasswordTextField(
+              "Nueva Contraseña",
+              Icons.lock,
+              _newPasswordController,
+              true,
+            ),
+            _buildPasswordTextField(
+              "Confirmar Nueva Contraseña",
+              Icons.lock,
+              _confirmNewPasswordController,
+              true,
+            ),
+            const SizedBox(height: 16.0),
+            _buildWarningText(),
+          ],
+        ),
       ),
     );
   }
@@ -142,7 +145,7 @@ class _ChangePassword extends State<ChangePassword> {
     if (_hasChanges) {
       // Mostrar un mensaje temporal en la parte inferior de la pantalla
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('La contraseña no ha sido cambiada.'),
         ),
       );
@@ -153,8 +156,26 @@ class _ChangePassword extends State<ChangePassword> {
 
   Future<void> _saveChanges(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      // Lógica para guardar cambios en la contraseña
-      // ...
+      if (_currentPasswordController.text.isEmpty ||
+          _newPasswordController.text.isEmpty ||
+          _confirmNewPasswordController.text.isEmpty) {
+        // Muestra un mensaje de error si algún campo está vacío
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Por favor, llena todos los campos.'),
+          ),
+        );
+      } else {
+        // Lógica para guardar cambios en la contraseña
+        // ...
+      }
+    } else {
+      // El formulario no es válido, lo que significa que hay campos no válidos
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, corrige los campos no válidos.'),
+        ),
+      );
     }
   }
 }
