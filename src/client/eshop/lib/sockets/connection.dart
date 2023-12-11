@@ -6,6 +6,7 @@ import 'dart:convert';
 
 import 'package:eshop/models/Comment.dart';
 import 'package:eshop/models/Product.dart';
+import 'package:eshop/models/Tag.dart';
 
 class Connection {
   late Socket client;
@@ -140,35 +141,20 @@ class Connection {
       "type": 2,
       "code": 2,
       "content": {
-        "amount": 2,
-        "products": [
-          {
-            "id": 1,
-            "name": "iPhone 12",
-            "description": "Movil que funciona de maravilla pero radioactivo",
-            "image": "/imagenes/iPhone12",
-            "price": 799.99,
-            "rating": 5,
-            "count": 10,
-            "tags": "tecnologia"
-          },
-          {
-            "id": 2,
-            "name": "Air Jordan Zoom",
-            "description": "Zapatillas para saltar mucho",
-            "image": "/imagenes/Jordan",
-            "price": 180,
-            "rating": 4.5,
-            "count": 12,
-            "tags": "ropa"
-          }
-        ]
+        "id": 1,
+        "name": "iPhone 12",
+        "description": "Movil que funciona de maravilla pero radioactivo",
+        "image": "/imagenes/iPhone12",
+        "price": 799.99,
+        "rating": 5,
+        "count": 10,
+        "tags": "tecnologia"
       }
     });
     //@todo
   }
 
-  Future<String> getProductByTags(String email, String tags) async {
+  Future<String> getProductByTags(String email, Tags tags) async {
     await Future.delayed(const Duration(seconds: 1));
     return json.encode({
       "type": 2,
@@ -445,7 +431,7 @@ class Connection {
     //@todo
   }
 
-  //6. ORDERS
+  // 6.ORDERS
 
   Future<String> requestOrders(String email) async {
     return json.encode({
@@ -570,6 +556,51 @@ class Connection {
   }
 
   Future<String> requestRecommendedProducts(String email) async {
+    await Future.delayed(const Duration(seconds: 1));
+    return json.encode({
+      "type": 8,
+      "code": 3,
+      "content": {
+        "amount": 3,
+        "products": [
+          {
+            "id": 1,
+            "name": "iPhone 14",
+            "description": "Movil que funciona de maravilla pero radioactivo",
+            "image": "/imagenes/iPhone12",
+            "price": 799.99,
+            "rating": 5,
+            "count": 10,
+            "tags": "tecnologia"
+          },
+          {
+            "id": 2,
+            "name": "Air Jordan Magic",
+            "description": "Zapatillas para saltar mucho",
+            "image": "/imagenes/Jordan",
+            "price": 180,
+            "rating": 4.5,
+            "count": 12,
+            "tags": "ropa"
+          },
+          {
+            "id": 3,
+            "name": "Sudadera",
+            "description": "Abriga mucho",
+            "image": "/imagenes/sudadera",
+            "price": 180,
+            "rating": 4.5,
+            "count": 12,
+            "tags": "ropa"
+          }
+        ]
+      }
+    });
+    //@todo
+  }
+
+  Future<String> requestRecommendedProductsByTags(
+      String email, Tags tags) async {
     await Future.delayed(const Duration(seconds: 1));
     return json.encode({
       "type": 8,
