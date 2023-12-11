@@ -165,9 +165,42 @@ class _ChangePassword extends State<ChangePassword> {
             content: Text('Por favor, llena todos los campos.'),
           ),
         );
+      } else if (_currentPasswordController.text != profile.password) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('La contraseña actual es incorrecta.'),
+          ),
+        );
+      } else if (_newPasswordController.text !=
+          _confirmNewPasswordController.text) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content:
+                Text('La nueva contraseña y la confirmación no coinciden.'),
+          ),
+        );
+      } else if (_currentPasswordController.text !=
+          _newPasswordController.text) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'La nueva contraseña no puede ser la misma que la actual.'),
+          ),
+        );
       } else {
-        // Lógica para guardar cambios en la contraseña
-        // ...
+        // Si todas las validaciones pasan, actualiza la contraseña en el perfil
+        profile.password = _newPasswordController.text;
+
+        // Puedes realizar la lógica adicional para guardar la contraseña en tu backend o donde sea necesario.
+
+        Navigator.of(context).pop();
+
+        // Muestra un mensaje de éxito
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Contraseña cambiada exitosamente.'),
+          ),
+        );
       }
     } else {
       // El formulario no es válido, lo que significa que hay campos no válidos
