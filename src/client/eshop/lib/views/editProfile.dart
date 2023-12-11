@@ -175,7 +175,7 @@ class _EditProfile extends State<EditProfile> {
             actions: <Widget>[
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop(true); // Descartar cambios
+                  Navigator.of(context).pop(true);
                 },
                 child: const Text(
                   'Descartar',
@@ -192,8 +192,10 @@ class _EditProfile extends State<EditProfile> {
           );
         },
       );
+    } else {
+      Navigator.of(context).pop(true);
+      return true;
     }
-    return true; // Si no hay cambios, permitir regresar
   }
 
   Future<void> _saveChanges(BuildContext context) async {
