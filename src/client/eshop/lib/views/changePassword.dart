@@ -49,8 +49,9 @@ class _ChangePassword extends State<ChangePassword> {
       ),
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
-        onPressed: () async {
-          await _handleBackNavigation(context);
+        onPressed: () {
+          Navigator.of(context).pop();
+          _handleBackNavigation(context);
         },
       ),
       actions: [
@@ -63,37 +64,32 @@ class _ChangePassword extends State<ChangePassword> {
       ],
     );
 
-    return WillPopScope(
-      onWillPop: () async {
-        return await _handleBackNavigation(context);
-      },
-      child: Scaffold(
-        appBar: _MyAppBar,
-        body: Column(
-          children: [
-            const SizedBox(height: 16.0),
-            _buildPasswordTextField(
-              "Contraseña Actual",
-              Icons.lock,
-              _currentPasswordController,
-              true,
-            ),
-            _buildPasswordTextField(
-              "Nueva Contraseña",
-              Icons.lock,
-              _newPasswordController,
-              true,
-            ),
-            _buildPasswordTextField(
-              "Confirmar Nueva Contraseña",
-              Icons.lock,
-              _confirmNewPasswordController,
-              true,
-            ),
-            const SizedBox(height: 16.0),
-            _buildWarningText(),
-          ],
-        ),
+    return Scaffold(
+      appBar: _MyAppBar,
+      body: Column(
+        children: [
+          const SizedBox(height: 16.0),
+          _buildPasswordTextField(
+            "Contraseña Actual",
+            Icons.lock,
+            _currentPasswordController,
+            true,
+          ),
+          _buildPasswordTextField(
+            "Nueva Contraseña",
+            Icons.lock,
+            _newPasswordController,
+            true,
+          ),
+          _buildPasswordTextField(
+            "Confirmar Nueva Contraseña",
+            Icons.lock,
+            _confirmNewPasswordController,
+            true,
+          ),
+          const SizedBox(height: 16.0),
+          _buildWarningText(),
+        ],
       ),
     );
   }
@@ -142,37 +138,16 @@ class _ChangePassword extends State<ChangePassword> {
     );
   }
 
-  Future<bool> _handleBackNavigation(BuildContext context) async {
+  void _handleBackNavigation(BuildContext context) {
     if (_hasChanges) {
-      return await showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Descartar Cambios'),
-            content: const Text('¿Seguro que quieres descartar los cambios?'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(true); // Descartar cambios
-                },
-                child: const Text(
-                  'Descartar',
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(false); // Cancelar
-                },
-                child: const Text('Cancelar'),
-              ),
-            ],
-          );
-        },
+      // Mostrar un mensaje temporal en la parte inferior de la pantalla
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('La contraseña no ha sido cambiada.'),
+        ),
       );
     } else {
-      Navigator.of(context).pop(true);
-      return true;
+      Navigator.of(context).pop();
     }
   }
 
