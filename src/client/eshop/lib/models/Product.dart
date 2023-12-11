@@ -20,18 +20,12 @@ class Product {
   late int id;
   late String name;
   late String description;
+  late String image;
   late double price;
   late double rating;
   late int count;
   late String tags;
   late int quantity; //In cart
-
-  Product(
-      {required this.id,
-      required this.name,
-      required this.description,
-      required this.price,
-      required this.tags});
 
   Product.fromJson(Map<String, dynamic> json, bool inCart) {
     id = json['id'];
@@ -39,6 +33,7 @@ class Product {
     price = json['price'].toDouble();
     description = json['description'];
     tags = json['tags'];
+    image = json['image'];
 
     if (inCart) {
       quantity = json['quantity'];

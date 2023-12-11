@@ -65,9 +65,7 @@ class _MyPage extends State<Home> {
           ),
           floatingActionButton: adminMode
               ? FloatingActionButton(
-                  onPressed: () {
-                    print("Add product");
-                  },
+                  onPressed: () {},
                   backgroundColor: CustomColors.n1,
                   child: const Icon(Icons.add, color: Colors.white),
                 )
@@ -176,8 +174,8 @@ class _HomeBody extends State<_MyHomeBody> {
               )
             ] else ...[
               Expanded(
-                  child:
-                      FuturaLista(context, widget.connection, widget.profile))
+                  child: FuturaLista(
+                      context, widget.connection, widget.profile, 1))
             ]
           ] else if (searchByTag) ...[
             Text(
@@ -187,16 +185,14 @@ class _HomeBody extends State<_MyHomeBody> {
                   color: Colors.white,
                   fontSize: 20,
                   fontWeight: FontWeight.bold),
+            ),
+            Expanded(
+              child: FuturaLista(context, widget.connection, widget.profile, 4),
             )
           ] else ...[
-            const Text(
-              "Please enter a search term",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-            )
+            Expanded(
+                child:
+                    FuturaLista(context, widget.connection, widget.profile, 2))
           ]
         ],
       ),
@@ -362,13 +358,26 @@ class _MySwitchState extends State<MySwitch> {
   }
 }
 
-//@toDo Manejar errores cuando el server este OK
+Future<String> getData(Connection connection, int n, String email) {
+  switch (n) {
+    case 1:
+      return connection.getProducts(email); //Simula al de nombre
+    case 2:
+      return connection.requestRecommendedProducts(email);
+    default:
+      return connection.requestRecommendedProductsByTags(email, tags);
+  }
+}
+
+bool notPass =
+    false; //Lo he creado porque con el snapshot.hasdata una vez ya tiene me da siempre true.
 Widget FuturaLista(
-    BuildContext context, Connection connection, Profile profile) {
+    BuildContext context, Connection connection, Profile profile, int n) {
   return FutureBuilder(
-    future: connection.getProducts(profile.email),
-    builder: (context, AsyncSnapshot<String> snapshot) {
-      if (snapshot.hasData) {
+    future: getData(connection, n, profile.email),
+    builder: (context, snapshot) {
+      if (notPass) {
+        notPass = false;
         Response response = Response.fromJson(snapshot.data!);
         var products = Products.fromJson(response.content, false);
         final productList = products.products.map((product) {
@@ -410,15 +419,17 @@ Widget FuturaLista(
             itemCount: productList.length,
           );
         }
+      } else {
+        notPass = true;
+        return Center(
+            child: SizedBox(
+          height: MediaQuery.of(context).size.width * 0.25,
+          width: MediaQuery.of(context).size.width * 0.25,
+          child: CircularProgressIndicator(
+              strokeWidth: 10.0,
+              valueColor: AlwaysStoppedAnimation(CustomColors.n1)),
+        ));
       }
-      return Center(
-          child: SizedBox(
-        height: MediaQuery.of(context).size.width * 0.25,
-        width: MediaQuery.of(context).size.width * 0.25,
-        child: CircularProgressIndicator(
-            strokeWidth: 10.0,
-            valueColor: AlwaysStoppedAnimation(CustomColors.n1)),
-      ));
     },
   );
 }

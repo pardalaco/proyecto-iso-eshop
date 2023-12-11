@@ -1,9 +1,10 @@
-// ignore_for_file: non_constant_identifier_names, no_leading_underscores_for_local_identifiers, must_be_immutable, duplicate_ignore, unused_element, use_build_context_synchronously
+// ignore_for_file: non_constant_identifier_names, no_leading_underscores_for_local_identifiers, must_be_immutable, duplicate_ignore, unused_element, use_build_context_synchronously, prefer_final_fields
 
 import 'dart:convert';
 import 'package:eshop/models/Cart.dart';
 import 'package:eshop/models/Profile.dart';
 import 'package:eshop/models/Response.dart';
+import 'package:eshop/utils/MyWidgets.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:eshop/models/Comment.dart';
 import 'package:eshop/sockets/connection.dart';
@@ -45,7 +46,7 @@ class DetailPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               myImage(context, producto),
-              myDescription(context, producto, connection),
+              myDescription(context, producto, connection, profile.email),
               Container(
                 padding: EdgeInsetsDirectional.symmetric(
                     horizontal: MediaQuery.of(context).size.width * 0.05,
@@ -88,7 +89,8 @@ Widget myImage(context, Product producto) {
   );
 }
 
-Widget myDescription(context, Product producto, Connection connection) {
+Widget myDescription(
+    context, Product producto, Connection connection, String email) {
   final Size size = MediaQuery.of(context).size;
   final double altura = size.height;
   return Expanded(
@@ -109,34 +111,28 @@ Widget myDescription(context, Product producto, Connection connection) {
             height: altura * 0.5,
             child: SingleChildScrollView(
               child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      producto.name,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 35,
-                      ),
-                    ),
-                    SizedBox(
-                      height: altura * 0.025,
-                    ),
-                    Text(
-                      "${producto.price} €",
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 25,
-                      ),
-                    ),
-                    SizedBox(
-                      height: altura * 0.025,
-                    ),
-                    const Text(
-                      "Description",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 30,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          producto.name,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 35,
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(),
+                        ),
+                        Text(
+                          "${producto.price} €",
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 25,
+                          ),
+                        ),
+                      ],
                     ),
                     SizedBox(
                       height: altura * 0.025,
@@ -145,7 +141,7 @@ Widget myDescription(context, Product producto, Connection connection) {
                       producto.description,
                       style: const TextStyle(
                         color: Colors.black,
-                        fontSize: 15,
+                        fontSize: 20,
                       ),
                     ),
                     SizedBox(
@@ -154,6 +150,8 @@ Widget myDescription(context, Product producto, Connection connection) {
                     ComAndRat(
                       connection: connection,
                       avgRate: producto.rating,
+                      email: email,
+                      p_id: producto.id,
                     )
                   ]),
             ),
@@ -229,7 +227,7 @@ class _ListCartState extends State<_ListCart> {
               onTap: () async {
                 var data = await widget.connection
                     .addToCart(widget.email, c.cartid, widget.p_id);
-                Response response = Response.fromJson(json.decode(data));
+                Response response = Response.fromJson(data);
                 bool success = response.content["success"];
                 if (success) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -316,7 +314,7 @@ Widget _MyAlertAddCart(context, Connection connection, String email) {
             onPressed: () async {
               if (_controller.text.isNotEmpty) {
                 var data = await connection.createCart(email, _controller.text);
-                Response response = Response.fromJson(json.decode(data));
+                Response response = Response.fromJson(data);
                 bool success = response.content["success"];
                 if (!success) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -348,14 +346,21 @@ Widget _MyAlertAddCart(context, Connection connection, String email) {
 class ComAndRat extends StatefulWidget {
   Connection connection;
   double avgRate;
-  ComAndRat({super.key, required this.connection, required this.avgRate});
+  String email;
+  int p_id;
+  ComAndRat(
+      {super.key,
+      required this.connection,
+      required this.avgRate,
+      required this.email,
+      required this.p_id});
 
   @override
   State<ComAndRat> createState() => _ComAndRatState();
 }
 
 class _ComAndRatState extends State<ComAndRat> {
-  late String text;
+  TextEditingController _controller = TextEditingController();
   double rate = 1;
   @override
   Widget build(BuildContext context) {
@@ -392,13 +397,13 @@ class _ComAndRatState extends State<ComAndRat> {
           ),
           onRatingUpdate: (_rating) {
             rate = _rating;
-            print(rate);
           },
         ),
         SizedBox(
           height: MediaQuery.of(context).size.height * 0.015,
         ),
         TextField(
+          controller: _controller,
           decoration: const InputDecoration(
             hintText: "Optional comment",
             filled: true,
@@ -407,7 +412,36 @@ class _ComAndRatState extends State<ComAndRat> {
             ),
           ),
           cursorColor: CustomColors.n1,
-          onSubmitted: (value) => {setState(() {})},
+        ),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.025,
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            var data = await widget.connection
+                .rateProduct(widget.email, widget.p_id, rate, _controller.text);
+            Response response = Response.fromJson(data);
+            if (response.error || !response.content["success"]) {
+              showDialog(
+                  context: context,
+                  builder: (context) =>
+                      MyPopUp(context, "Error", "Error adding the product", 1));
+            } else {
+              showDialog(
+                  context: context,
+                  builder: (context) =>
+                      MyPopUp(context, "Message", "Comment added", 1));
+            }
+            setState(() {});
+          },
+          style: ButtonStyle(
+              backgroundColor:
+                  MaterialStateProperty.all<Color>(CustomColors.n1)),
+          child: Icon(
+            Icons.comment,
+            color: Colors.white,
+            size: MediaQuery.of(context).size.height * 0.04,
+          ),
         ),
         SizedBox(
           height: MediaQuery.of(context).size.height * 0.025,
