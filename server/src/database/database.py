@@ -204,7 +204,7 @@ class Database:
 			LEFT JOIN Tag t 
 					ON c.tag = t.name
 			GROUP BY p.ROWID, p.name, p.description, p.image, p.price, p.rating, p.rating_count
-			ORDER BY p.rating DESC;
+			ORDER BY p.rating DESC, p.rating_count DESC;
 		"""
 		cls.cursor.execute(query)
 		results = cls.cursor.fetchall()
@@ -264,9 +264,8 @@ class Database:
 		LEFT JOIN Classification c ON c.product_id = p.ROWID 
 		WHERE c.tag IN (
 		""" + ",".join("?" for i in range(len(tags))) + ")"
-		query += """GROUP BY p.ROWID, p.name, p.description, p.image, 
-			p.price, p.rating, p.rating_count 
-		ORDER BY p.rating DESC
+		query += """GROUP BY p.ROWID, p.name, p.description, p.image, p.price, p.rating, p.rating_count
+		ORDER BY p.rating DESC, p.rating_count DESC;
 		"""
 		cls.cursor.execute(query, tags)
 		results = cls.cursor.fetchall()
@@ -910,7 +909,7 @@ class Database:
 
 #***************************************************************************************************
 	@classmethod
-	def rate_product(cls, email: str, productid: int, rating: float, comment: str = None ) -> bool:
+	def rate_product(cls, email: str, productid: int, rating: float, comment: str) -> bool:
 		current_date = datetime.now()
 		current_date = current_date.strftime("%d/%m/%Y")
 		query1 = """
@@ -936,7 +935,7 @@ class Database:
 		WHERE ROWID = ?
 		"""
 		try:
-			if comment:
+			if comment != "":
 				cls.cursor.execute(query1, (email, productid, rating, current_date, comment))
 			else:
 				cls.cursor.execute(query2, (email, productid, rating, current_date))
@@ -995,7 +994,8 @@ class Database:
 		WHERE m.email = ?
 		GROUP BY p.ROWID, p.name, p.description, p.image, p.price, p.rating, p.rating_count
 		ORDER BY COALESCE(SUM(m.weight), 0) / (SELECT COUNT(*) 
-			FROM Classification c2 WHERE c2.product_id = p.ROWID) DESC;
+			FROM Classification c2 WHERE c2.product_id = p.ROWID) DESC, p.rating DESC, 
+				p.rating_count DESC;
 		"""
 		cls.cursor.execute(query, (email, email))
 		results = cls.cursor.fetchall()

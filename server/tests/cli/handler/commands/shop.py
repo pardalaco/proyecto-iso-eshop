@@ -25,7 +25,7 @@ def handle_list_products(isresponse: bool, current_user: dict, args: list[str]) 
 		if isresponse:
 			response = ""
 			for item in args[0]["content"]["products"]:
-				response += (f"*{item['rating']}({item['count']})* {item['id']}: {item['name']} - "
+				response += (f"*{item['rating']:.2f}({item['count']})* {item['id']}: {item['name']} - "
 											f"{item['price']}€\n")
 			return (False, response)
 		else:
@@ -45,7 +45,7 @@ def handle_product(isresponse: bool, current_user: dict, args: list[str]) -> tup
 	else:
 		if isresponse:
 			item = args[0]["content"]
-			return (False, f"*{item['rating']}({item['count']})* {item['id']}: {item['name']} - "
+			return (False, f"*{item['rating']:.2f}({item['count']})* {item['id']}: {item['name']} - "
 											f"{item['price']}€\n"
 										 f"\t{item['description']}\n\tTAGS = {item['tags'].replace(',', ', ')}")
 		else:

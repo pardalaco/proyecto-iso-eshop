@@ -4,7 +4,6 @@
 Table User {
   email varchar(40) [pk] 
   name varchar(45) [note: "default Mr"]
-  apellidos VARCHAR(70) [note: "default Robberino"]
   password VARCHAR [not null]
   payment VARCHAR(45)
   address VARCHAR(45)
@@ -55,7 +54,7 @@ Table ShopOrder {
 
 Table ShopOrderLine {
   order_id INT [pk]
-  name VARCHAR(45) [pk] 
+  name VARCHAR(45) [pk]
   product_id INT
   quantity INT [not null, default: 1]
 }
