@@ -1,5 +1,7 @@
 // ignore_for_file: file_names
 
+import 'package:eshop/models/Tag.dart';
+
 class Products {
   late List<Product> products;
   late int amount;
@@ -24,7 +26,7 @@ class Product {
   late double price;
   late double rating;
   late int count;
-  late String tags;
+  late Tags tags;
   late int quantity; //In cart
 
   Product.fromJson(Map<String, dynamic> json, bool inCart) {
@@ -32,8 +34,8 @@ class Product {
     name = json['name'];
     price = json['price'].toDouble();
     description = json['description'];
-    tags = json['tags'];
     image = json['image'];
+    tags = Tags.fromJson(json, true);
 
     if (inCart) {
       quantity = json['quantity'];

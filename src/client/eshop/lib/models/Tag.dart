@@ -3,9 +3,12 @@
 class Tags {
   late List<Tag> tags;
 
-  Tags.fromJson(Map<String, dynamic> json) {
+  Tags.fromJson(Map<String, dynamic> json, bool fromProduct) {
     tags = <Tag>[];
     var a = json['tags'];
+    if (fromProduct) {
+      a = a.split(",");
+    }
     a.forEach((v) {
       tags.add(Tag.fromJson(v, false));
     });
@@ -15,9 +18,9 @@ class Tags {
   String toString() {
     String rv = "";
     for (Tag t in tags) {
-      rv += "${t.name} = ${t.choose.toString()}";
+      rv += "${t.name},";
     }
-    return rv;
+    return rv.substring(0, rv.length - 1);
   }
 }
 
