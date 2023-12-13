@@ -191,7 +191,7 @@ class _MyForm extends State<_MyBody> {
                       );
                     } else {
                       bool admin = response.content["admin"];
-                      data = await connection.requestUserInfo();
+                      data = await connection.requestUserInfo(email!);
                       response = Response.fromJson(data);
                       if (response.error) {
                         showDialog(
