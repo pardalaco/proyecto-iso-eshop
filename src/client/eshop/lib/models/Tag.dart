@@ -18,6 +18,14 @@ class Tags {
   String toString() {
     String rv = "";
     for (Tag t in tags) {
+      rv += "${t.name},";
+    }
+    return rv.substring(0, rv.length - 1);
+  }
+
+  String onlyTrues() {
+    String rv = "";
+    for (Tag t in tags) {
       if (t.choose) {
         rv += "${t.name},";
       }
