@@ -18,7 +18,9 @@ class Tags {
   String toString() {
     String rv = "";
     for (Tag t in tags) {
-      rv += "${t.name},";
+      if (t.choose) {
+        rv += "${t.name},";
+      }
     }
     return rv.substring(0, rv.length - 1);
   }
