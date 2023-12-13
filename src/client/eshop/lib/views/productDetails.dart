@@ -1,6 +1,6 @@
 // ignore_for_file: non_constant_identifier_names, no_leading_underscores_for_local_identifiers, must_be_immutable, duplicate_ignore, unused_element, use_build_context_synchronously, prefer_final_fields
-
-import 'dart:convert';
+import 'dart:async';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:eshop/models/Cart.dart';
 import 'package:eshop/models/Profile.dart';
 import 'package:eshop/models/Response.dart';
@@ -111,34 +111,40 @@ Widget myDescription(
             height: altura * 0.5,
             child: SingleChildScrollView(
               child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          producto.name,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 35,
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(),
-                        ),
-                        Text(
-                          "${producto.price} €",
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 25,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      producto.name,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 25,
+                      ),
+                    ),
+                    SizedBox(
+                      height: altura * 0.025,
+                    ),
+                    Text(
+                      "${producto.price} €",
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                      ),
                     ),
                     SizedBox(
                       height: altura * 0.025,
                     ),
                     Text(
                       producto.description,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 15,
+                      ),
+                    ),
+                    SizedBox(
+                      height: altura * 0.025,
+                    ),
+                    Text(
+                      "Tags: ${producto.tags.toString()}",
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 20,
@@ -378,6 +384,7 @@ class _ComAndRatState extends State<ComAndRat> {
             color: Colors.black,
             fontSize: 23,
           ),
+          textAlign: TextAlign.center,
         ),
         SizedBox(
           height: MediaQuery.of(context).size.height * 0.01,
@@ -424,7 +431,7 @@ class _ComAndRatState extends State<ComAndRat> {
               showDialog(
                   context: context,
                   builder: (context) =>
-                      MyPopUp(context, "Error", "Error adding the product", 1));
+                      MyPopUp(context, "Error", "Error adding the comment", 1));
             } else {
               showDialog(
                   context: context,
@@ -446,7 +453,7 @@ class _ComAndRatState extends State<ComAndRat> {
           height: MediaQuery.of(context).size.height * 0.025,
         ),
         FutureBuilder(
-          future: widget.connection.viewProductRating(10),
+          future: widget.connection.viewProductRating(widget.p_id),
           builder: (context, AsyncSnapshot<String> snapshot) {
             if (snapshot.hasData) {
               Response response = Response.fromJson(snapshot.data!);
