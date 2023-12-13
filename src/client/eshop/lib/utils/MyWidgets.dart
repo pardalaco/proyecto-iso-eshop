@@ -5,12 +5,14 @@ import 'package:eshop/style/ColorsUsed.dart';
 
 Widget MyPopUp(context, String title, String msg, int numberPops) =>
     AlertDialog(
-        title: Text(title),
-        content: Text(
-          msg,
-          style: const TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+        title: Text(
+          title,
+          textAlign: TextAlign.center,
         ),
+        content: Text(msg,
+            style: const TextStyle(
+                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+            textAlign: TextAlign.center),
         actions: [
           Center(
             child: TextButton(
