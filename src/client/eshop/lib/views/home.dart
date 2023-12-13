@@ -1,15 +1,17 @@
-// ignore_for_file: non_constant_identifier_names, prefer_interpolation_to_compose_strings, prefer_const_constructors, no_leading_underscores_for_local_identifiers, no_logic_in_create_state, must_be_immutable, unused_element, sized_box_for_whitespace
+// ignore_for_file: non_constant_identifier_names, prefer_interpolation_to_compose_strings, prefer_const_constructors, no_leading_underscores_for_local_identifiers, no_logic_in_create_state, must_be_immutable, unused_element, sized_box_for_whitespace, use_build_context_synchronously
 
+import 'dart:async';
 import 'package:eshop/models/Response.dart';
 import 'package:eshop/models/Tag.dart';
 import 'package:eshop/utils/MyWidgets.dart';
 import 'package:eshop/views/productDetails.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:eshop/sockets/connection.dart';
 import 'package:eshop/models/Product.dart';
 import 'package:eshop/models/Profile.dart';
 import 'package:eshop/style/ColorsUsed.dart';
+import 'dart:developer' as dev;
 
 class Home extends StatefulWidget {
   Connection connection;
@@ -93,9 +95,29 @@ bool adminMode = false;
 bool searchByTag = false;
 bool searchByName = false;
 
+bool doSearch = true;
+bool notPass = true;
+final FocusNode _focusNode = FocusNode();
+String? textoIngresado;
+bool keyboardOpen = false;
+
 class _HomeBody extends State<_MyHomeBody> {
-  final FocusNode _focusNode = FocusNode();
-  String? textoIngresado;
+  late StreamSubscription<bool> subscription;
+
+  @override
+  void initState() {
+    super.initState();
+    subscription = KeyboardVisibilityController().onChange.listen((isVisible) {
+      keyboardOpen = isVisible;
+      dev.log(isVisible ? "VISIBLE" : "OCULTO");
+    });
+  }
+
+  @override
+  void dispose() {
+    subscription.cancel();
+    super.dispose();
+  }
 
   void updateState2() {
     setState(() {});
@@ -137,12 +159,20 @@ class _HomeBody extends State<_MyHomeBody> {
                         Icons.search,
                         color: _focusNode.hasFocus ? Colors.grey : Colors.white,
                       )),
-                  onSubmitted: (value) => {
+                  onSubmitted: (value) async {
+                    while (keyboardOpen) {
+                      await Future.delayed(Duration(milliseconds: 500));
+                    }
                     setState(() {
                       textoIngresado = value;
+                      dev.log(textoIngresado?.isEmpty ?? true
+                          ? "Nada"
+                          : textoIngresado!);
                       searchByName = true;
                       searchByTag = false;
-                    })
+                      doSearch = true;
+                      notPass = false;
+                    });
                   },
                 ),
               ),
@@ -163,37 +193,40 @@ class _HomeBody extends State<_MyHomeBody> {
           SizedBox(
             height: size.height * 0.025,
           ),
-          if (searchByName) ...[
-            if (textoIngresado?.isEmpty ?? true) ...[
-              const Text(
-                "Please enter a search term",
+          if (doSearch) ...[
+            if (searchByName) ...[
+              if (textoIngresado?.isEmpty ?? true) ...[
+                const Text(
+                  "Please enter a search term",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
+                )
+              ] else ...[
+                Expanded(
+                    child: FuturaLista(
+                        context, widget.connection, widget.profile, 1))
+              ]
+            ] else if (searchByTag) ...[
+              Text(
+                "Searching by tags: " + tags.onlyTrues(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold),
+              ),
+              Expanded(
+                child:
+                    FuturaLista(context, widget.connection, widget.profile, 4),
               )
             ] else ...[
               Expanded(
                   child: FuturaLista(
-                      context, widget.connection, widget.profile, 1))
+                      context, widget.connection, widget.profile, 2))
             ]
-          ] else if (searchByTag) ...[
-            Text(
-              "Searching by tags: " + tags.toString(),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-            ),
-            Expanded(
-              child: FuturaLista(context, widget.connection, widget.profile, 4),
-            )
-          ] else ...[
-            Expanded(
-                child:
-                    FuturaLista(context, widget.connection, widget.profile, 2))
           ]
         ],
       ),
@@ -359,25 +392,25 @@ class _MySwitchState extends State<MySwitch> {
   }
 }
 
-Future<String> getData(Connection connection, int n, String email) {
+Future<String> getData(Connection connection, int n, String email) async {
   switch (n) {
     case 1:
-      return connection.getProducts(email); //Simula al de nombre
+      return await connection.getAllProducts(); //Simula al de nombre
     case 2:
-      return connection.requestRecommendedProducts(email);
+      return await connection.requestRecommendedProducts(email);
     default:
-      return connection.requestRecommendedProductsByTags(email, tags);
+      return await connection.requestRecommendedProductsByTags(email, tags);
   }
 }
 
-bool notPass =
-    false; //Lo he creado porque con el snapshot.hasdata una vez ya tiene me da siempre true.
 Widget FuturaLista(
     BuildContext context, Connection connection, Profile profile, int n) {
   return FutureBuilder(
     future: getData(connection, n, profile.email),
     builder: (context, snapshot) {
-      if (notPass) {
+      dev.log("Estoy aqui");
+      if (snapshot.hasData && notPass) {
+        doSearch = false;
         notPass = false;
         Response response = Response.fromJson(snapshot.data!);
         var products = Products.fromJson(response.content, false);
@@ -385,7 +418,7 @@ Widget FuturaLista(
           return ListTile(
             title: Text(product.name),
             textColor: Colors.white,
-            subtitle: Text(product.price.toString()),
+            subtitle: Text(product.price.toString() + " €"),
             trailing: const Icon(
               Icons.arrow_forward_ios,
               color: Colors.white,
@@ -457,6 +490,8 @@ Widget _MyAlert(
                   for (Tag t in tags.tags) {
                     searchByTag = searchByTag || t.choose;
                   }
+                  doSearch = true;
+                  notPass = false;
                   updateState2();
                   Navigator.of(context).pop();
                 },
@@ -478,14 +513,23 @@ class _TagsList extends StatefulWidget {
 }
 
 late Tags tags;
-bool firstTime =
-    true; //Para evitar que al reconstruir el widget se me ponga a false "choose"
 
 class _TagsListState extends State<_TagsList> {
+  bool firstTime =
+      true; //Para evitar que al reconstruir el widget se me ponga a false "choose"
+  late String rawTags;
+
+  Future<String> getTags() async {
+    if (firstTime) {
+      rawTags = await widget.connection.getTags();
+    }
+    return rawTags;
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: widget.connection.getTags(),
+      future: getTags(),
       builder: (context, AsyncSnapshot<String> snapshot) {
         if (snapshot.hasData) {
           Response response = Response.fromJson(snapshot.data!);
@@ -496,7 +540,7 @@ class _TagsListState extends State<_TagsList> {
                     MyPopUp(context, "Error", response.content["details"], 1));
           } else {
             if (firstTime) {
-              tags = Tags.fromJson(response.content);
+              tags = Tags.fromJson(response.content, false);
               firstTime = false;
             }
             final tagsList = tags.tags.map((t) {
@@ -507,7 +551,6 @@ class _TagsListState extends State<_TagsList> {
                 onChanged: (bool? value) {
                   t.choose = value ?? false;
                   setState(() {});
-                  print('Checkbox ${t.name}: ${t.choose}');
                 },
               );
             }).toList();
