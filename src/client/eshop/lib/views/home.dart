@@ -1,12 +1,10 @@
 // ignore_for_file: non_constant_identifier_names, prefer_interpolation_to_compose_strings, prefer_const_constructors, no_leading_underscores_for_local_identifiers, no_logic_in_create_state, must_be_immutable, unused_element, sized_box_for_whitespace, use_build_context_synchronously
-
-import 'dart:async';
+import 'package:eshop/models/KeyboardController.dart';
 import 'package:eshop/models/Response.dart';
 import 'package:eshop/models/Tag.dart';
 import 'package:eshop/utils/MyWidgets.dart';
 import 'package:eshop/views/productDetails.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:eshop/sockets/connection.dart';
 import 'package:eshop/models/Product.dart';
 import 'package:eshop/models/Profile.dart';
@@ -99,24 +97,13 @@ bool doSearch = true;
 bool notPass = true;
 final FocusNode _focusNode = FocusNode();
 String? textoIngresado;
-bool keyboardOpen = false;
+late KeyboardController kb;
 
 class _HomeBody extends State<_MyHomeBody> {
-  late StreamSubscription<bool> subscription;
-
   @override
   void initState() {
     super.initState();
-    subscription = KeyboardVisibilityController().onChange.listen((isVisible) {
-      keyboardOpen = isVisible;
-      dev.log(isVisible ? "VISIBLE" : "OCULTO");
-    });
-  }
-
-  @override
-  void dispose() {
-    subscription.cancel();
-    super.dispose();
+    kb = KeyboardController();
   }
 
   void updateState2() {
@@ -160,8 +147,8 @@ class _HomeBody extends State<_MyHomeBody> {
                         color: _focusNode.hasFocus ? Colors.grey : Colors.white,
                       )),
                   onSubmitted: (value) async {
-                    while (keyboardOpen) {
-                      await Future.delayed(Duration(milliseconds: 500));
+                    while (kb.keyboardOpen) {
+                      await Future.delayed(const Duration(milliseconds: 500));
                     }
                     setState(() {
                       textoIngresado = value;
@@ -429,6 +416,7 @@ Widget FuturaLista(
                   producto: product,
                   connection: connection,
                   profile: profile,
+                  kb: kb,
                 ),
               );
               Navigator.of(context).push(route);

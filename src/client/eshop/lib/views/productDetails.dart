@@ -1,7 +1,6 @@
 // ignore_for_file: non_constant_identifier_names, no_leading_underscores_for_local_identifiers, must_be_immutable, duplicate_ignore, unused_element, use_build_context_synchronously, prefer_final_fields
-import 'dart:async';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:eshop/models/Cart.dart';
+import 'package:eshop/models/KeyboardController.dart';
 import 'package:eshop/models/Profile.dart';
 import 'package:eshop/models/Response.dart';
 import 'package:eshop/utils/MyWidgets.dart';
@@ -11,20 +10,24 @@ import 'package:eshop/sockets/connection.dart';
 import 'package:flutter/material.dart';
 import 'package:eshop/models/Product.dart';
 import 'package:eshop/style/ColorsUsed.dart';
+import 'dart:developer' as dev;
 
 class DetailPage extends StatelessWidget {
   Product producto;
   Connection connection;
   Profile profile;
+  KeyboardController kb;
   DetailPage(
       {Key? key,
       required this.producto,
       required this.connection,
-      required this.profile})
+      required this.profile,
+      required this.kb})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    kbcontroller = kb;
     final _MyAppBar = AppBar(
         toolbarHeight: MediaQuery.of(context).size.height * 0.1,
         backgroundColor: CustomColors.n1,
@@ -144,7 +147,7 @@ Widget myDescription(
                       height: altura * 0.025,
                     ),
                     Text(
-                      "Tags: ${producto.tags.toString()}",
+                      producto.tags.toString(),
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 20,
@@ -164,46 +167,50 @@ Widget myDescription(
           )));
 }
 
-Widget _MyAlert(context, Connection connection, String email, int p_id) =>
-    AlertDialog(
-        title: const Text(
-          "Select a cart",
-          textAlign: TextAlign.center,
-        ),
-        content: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.15,
-            height: MediaQuery.of(context).size.height * 0.25,
-            child: Column(
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.15,
-                  child: _ListCart(
-                    connection: connection,
-                    email: email,
-                    p_id: p_id,
-                  ),
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.03,
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (context) =>
-                            _MyAlertAddCart(context, connection, email));
-                  },
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(CustomColors.n1)),
-                  child: Icon(
-                    Icons.add,
-                    color: Colors.white,
-                    size: MediaQuery.of(context).size.height * 0.04,
-                  ),
-                ),
-              ],
-            )));
+late KeyboardController kbcontroller;
+bool show = true;
+late VoidCallback updateListCart;
+
+Widget _MyAlert(context, Connection connection, String email, int p_id) {
+  return AlertDialog(
+      title: const Text(
+        "Select a cart",
+        textAlign: TextAlign.center,
+      ),
+      content: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.15,
+          height: MediaQuery.of(context).size.height * 0.25,
+          child: Column(children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.15,
+              child: _ListCart(
+                connection: connection,
+                email: email,
+                p_id: p_id,
+              ),
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.03,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                show = false;
+                showDialog(
+                    context: context,
+                    builder: (context) =>
+                        _MyAlertAddCart(context, connection, email));
+              },
+              style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(CustomColors.n1)),
+              child: Icon(
+                Icons.add,
+                color: Colors.white,
+                size: MediaQuery.of(context).size.height * 0.04,
+              ),
+            ),
+          ])));
+}
 
 class _ListCart extends StatefulWidget {
   Connection connection;
@@ -218,74 +225,96 @@ class _ListCart extends StatefulWidget {
   State<_ListCart> createState() => _ListCartState();
 }
 
+bool pass = false;
+
 class _ListCartState extends State<_ListCart> {
   @override
+  void initState() {
+    updateListCart = updateState;
+    super.initState();
+  }
+
+  void updateState() {
+    setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: widget.connection.getAllCarts(widget.email),
-      builder: (context, AsyncSnapshot<String> snapshot) {
-        if (snapshot.hasData) {
-          Response response = Response.fromJson(snapshot.data!);
-          var carts = Carts.fromJson(response.content);
-          final cartsList = carts.carts.map((c) {
-            return ListTile(
-              title: Text(c.cartname),
-              onTap: () async {
-                var data = await widget.connection
-                    .addToCart(widget.email, c.cartid, widget.p_id);
-                Response response = Response.fromJson(data);
-                bool success = response.content["success"];
-                if (success) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.05,
-                        child: Text(
-                          'Add to ${c.cartname}',
-                          style: const TextStyle(fontSize: 25),
+    if (show) {
+      return FutureBuilder(
+        future: widget.connection.getAllCarts(widget.email),
+        builder: (context, AsyncSnapshot<String> snapshot) {
+          if (snapshot.hasData && pass) {
+            pass = false;
+            dev.log("Estoy en _ListCartState (if)");
+            Response response = Response.fromJson(snapshot.data!);
+            var carts = Carts.fromJson(response.content);
+            final cartsList = carts.carts.map((c) {
+              return ListTile(
+                title: Text(c.cartname),
+                onTap: () async {
+                  var data = await widget.connection
+                      .addToCart(widget.email, c.cartid, widget.p_id);
+                  Response response = Response.fromJson(data);
+                  bool success = response.content["success"];
+                  if (success) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.05,
+                          child: Text(
+                            'Add to ${c.cartname}',
+                            style: const TextStyle(fontSize: 25),
+                          ),
                         ),
+                        backgroundColor: CustomColors.n1,
                       ),
-                      backgroundColor: CustomColors.n1,
-                    ),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.05,
-                        child: const Text(
-                          'ERROR ADDING PRODUCT',
-                          style: TextStyle(fontSize: 25),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.05,
+                          child: const Text(
+                            'ERROR ADDING PRODUCT',
+                            style: TextStyle(fontSize: 25),
+                          ),
                         ),
+                        backgroundColor: CustomColors.n1,
                       ),
-                      backgroundColor: CustomColors.n1,
-                    ),
-                  );
-                }
-                Navigator.of(context).pop();
-              },
+                    );
+                  }
+                  Navigator.of(context).pop();
+                },
+              );
+            }).toList();
+            return ListView.builder(
+              itemCount: cartsList.length,
+              itemBuilder: (context, index) => cartsList[index],
             );
-          }).toList();
-          return ListView.builder(
-            itemCount: cartsList.length,
-            itemBuilder: (context, index) => cartsList[index],
-          );
-        }
-        return Center(
-            child: SizedBox(
-          height: MediaQuery.of(context).size.width * 0.1,
-          width: MediaQuery.of(context).size.width * 0.1,
-          child: const CircularProgressIndicator(
-              strokeWidth: 5,
-              valueColor: AlwaysStoppedAnimation(CustomColors.n1)),
-        ));
-      },
-    );
+          } else {
+            pass = true;
+            dev.log("Estoy en _ListCartState (else)");
+            return Center(
+                child: SizedBox(
+              height: MediaQuery.of(context).size.width * 0.1,
+              width: MediaQuery.of(context).size.width * 0.1,
+              child: const CircularProgressIndicator(
+                  strokeWidth: 5,
+                  valueColor: AlwaysStoppedAnimation(CustomColors.n1)),
+            ));
+          }
+        },
+      );
+    } else {
+      return const SizedBox();
+    }
   }
 }
 
+TextEditingController _controller = TextEditingController();
+
 Widget _MyAlertAddCart(context, Connection connection, String email) {
-  TextEditingController _controller = TextEditingController();
   return AlertDialog(
       title: const Text(
         "Create a cart",
@@ -306,7 +335,13 @@ Widget _MyAlertAddCart(context, Connection connection, String email) {
           )),
       actions: [
         TextButton(
-            onPressed: () {
+            onPressed: () async {
+              FocusScope.of(context).unfocus();
+              while (kbcontroller.keyboardOpen) {
+                await Future.delayed(const Duration(milliseconds: 500));
+              }
+              show = true;
+              updateListCart();
               Navigator.of(context).pop();
             },
             child: const Text(
@@ -318,6 +353,7 @@ Widget _MyAlertAddCart(context, Connection connection, String email) {
             )),
         TextButton(
             onPressed: () async {
+              FocusScope.of(context).unfocus();
               if (_controller.text.isNotEmpty) {
                 var data = await connection.createCart(email, _controller.text);
                 Response response = Response.fromJson(data);
@@ -336,6 +372,12 @@ Widget _MyAlertAddCart(context, Connection connection, String email) {
                   );
                 }
               }
+              _controller.clear();
+              while (kbcontroller.keyboardOpen) {
+                await Future.delayed(const Duration(milliseconds: 500));
+              }
+              show = true;
+              updateListCart();
               Navigator.of(context).pop();
             },
             child: const Text(
@@ -364,9 +406,25 @@ class ComAndRat extends StatefulWidget {
   State<ComAndRat> createState() => _ComAndRatState();
 }
 
+TextEditingController _controller2 = TextEditingController();
+double rate = 1;
+
 class _ComAndRatState extends State<ComAndRat> {
-  TextEditingController _controller = TextEditingController();
-  double rate = 1;
+  FocusNode _textFieldFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _textFieldFocusNode.addListener(() async {
+      if (_textFieldFocusNode.hasFocus) {
+        dev.log("TextField seleccionado");
+        show = false;
+      } else {
+        dev.log("TextField no seleccionado");
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -379,7 +437,7 @@ class _ComAndRatState extends State<ComAndRat> {
           height: MediaQuery.of(context).size.height * 0.01,
         ),
         Text(
-          "Average rating: ${widget.avgRate}",
+          "Average rating: ${widget.avgRate.toStringAsFixed(2)}",
           style: const TextStyle(
             color: Colors.black,
             fontSize: 23,
@@ -391,7 +449,7 @@ class _ComAndRatState extends State<ComAndRat> {
         ),
         RatingBar.builder(
           itemSize: 25,
-          initialRating: 1,
+          initialRating: rate,
           minRating: 1,
           direction: Axis.horizontal,
           allowHalfRating: true,
@@ -410,6 +468,7 @@ class _ComAndRatState extends State<ComAndRat> {
         ),
         TextField(
           controller: _controller,
+          focusNode: _textFieldFocusNode,
           decoration: const InputDecoration(
             hintText: "Optional comment",
             filled: true,
@@ -422,120 +481,145 @@ class _ComAndRatState extends State<ComAndRat> {
         SizedBox(
           height: MediaQuery.of(context).size.height * 0.025,
         ),
-        ElevatedButton(
-          onPressed: () async {
-            var data = await widget.connection
-                .rateProduct(widget.email, widget.p_id, rate, _controller.text);
-            Response response = Response.fromJson(data);
-            if (response.error || !response.content["success"]) {
-              showDialog(
-                  context: context,
-                  builder: (context) =>
-                      MyPopUp(context, "Error", "Error adding the comment", 1));
-            } else {
-              showDialog(
-                  context: context,
-                  builder: (context) =>
-                      MyPopUp(context, "Message", "Comment added", 1));
-            }
-            setState(() {});
-          },
-          style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateProperty.all<Color>(CustomColors.n1)),
-          child: Icon(
-            Icons.comment,
-            color: Colors.white,
-            size: MediaQuery.of(context).size.height * 0.04,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () async {
+                var data = await widget.connection.rateProduct(
+                    widget.email, widget.p_id, rate, _controller2.text);
+                Response response = Response.fromJson(data);
+                if (response.error || !response.content["success"]) {
+                  showDialog(
+                      context: context,
+                      builder: (context) => MyPopUp(
+                          context, "Error", "Error adding the comment", 1));
+                } else {
+                  showDialog(
+                      context: context,
+                      builder: (context) =>
+                          MyPopUp(context, "Message", "Comment added", 1));
+                }
+                setState(() {});
+              },
+              style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(CustomColors.n1)),
+              child: Icon(
+                Icons.comment,
+                color: Colors.white,
+                size: MediaQuery.of(context).size.height * 0.04,
+              ),
+            ),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.015,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                show = true;
+                setState(() {});
+              },
+              style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(CustomColors.n1)),
+              child: Icon(
+                Icons.refresh,
+                color: Colors.white,
+                size: MediaQuery.of(context).size.height * 0.04,
+              ),
+            ),
+          ],
         ),
         SizedBox(
           height: MediaQuery.of(context).size.height * 0.025,
         ),
-        FutureBuilder(
-          future: widget.connection.viewProductRating(widget.p_id),
-          builder: (context, AsyncSnapshot<String> snapshot) {
-            if (snapshot.hasData) {
-              Response response = Response.fromJson(snapshot.data!);
-              var comments = Comments.fromJson(response.content);
-              final commentsList = comments.comments.map((c) {
-                return Container(
-                  padding: const EdgeInsetsDirectional.all(20),
-                  margin: const EdgeInsetsDirectional.only(bottom: 10),
-                  decoration: BoxDecoration(
-                      color: CustomColors.n2.withOpacity(0.3),
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(30),
-                      )),
-                  width: double.infinity,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        c.email,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
-                        ),
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.01,
-                      ),
-                      Row(
-                        children: [
-                          RatingBar.builder(
-                            itemSize: 25,
-                            initialRating: c.rating,
-                            minRating: 1,
-                            direction: Axis.horizontal,
-                            allowHalfRating: true,
-                            itemCount: 5,
-                            itemPadding:
-                                const EdgeInsets.symmetric(horizontal: 4.0),
-                            itemBuilder: (context, _) => const Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                            ),
-                            ignoreGestures: true,
-                            onRatingUpdate: (_rating) {},
+        if (show) ...[
+          FutureBuilder(
+            future: widget.connection.viewProductRating(widget.p_id),
+            builder: (context, AsyncSnapshot<String> snapshot) {
+              dev.log("Estoy en el ComRat");
+              if (snapshot.hasData) {
+                Response response = Response.fromJson(snapshot.data!);
+                var comments = Comments.fromJson(response.content);
+                final commentsList = comments.comments.map((c) {
+                  return Container(
+                    padding: const EdgeInsetsDirectional.all(20),
+                    margin: const EdgeInsetsDirectional.only(bottom: 10),
+                    decoration: BoxDecoration(
+                        color: CustomColors.n2.withOpacity(0.3),
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(30),
+                        )),
+                    width: double.infinity,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          c.email,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
                           ),
-                          Text(
-                            c.date,
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 15,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.01,
-                      ),
-                      Text(
-                        c.com,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 15,
                         ),
-                      ),
-                    ],
-                  ),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.01,
+                        ),
+                        Row(
+                          children: [
+                            RatingBar.builder(
+                              itemSize: 25,
+                              initialRating: c.rating,
+                              minRating: 1,
+                              direction: Axis.horizontal,
+                              allowHalfRating: true,
+                              itemCount: 5,
+                              itemPadding:
+                                  const EdgeInsets.symmetric(horizontal: 4.0),
+                              itemBuilder: (context, _) => const Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                              ),
+                              ignoreGestures: true,
+                              onRatingUpdate: (_rating) {},
+                            ),
+                            Text(
+                              c.date,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 15,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.01,
+                        ),
+                        Text(
+                          c.com,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList();
+                return Column(
+                  children: commentsList,
                 );
-              }).toList();
-              return Column(
-                children: commentsList,
-              );
-            }
-            return Center(
-                child: SizedBox(
-              height: MediaQuery.of(context).size.width * 0.1,
-              width: MediaQuery.of(context).size.width * 0.1,
-              child: const CircularProgressIndicator(
-                  strokeWidth: 5,
-                  valueColor: AlwaysStoppedAnimation(CustomColors.n1)),
-            ));
-          },
-        )
+              }
+              return Center(
+                  child: SizedBox(
+                height: MediaQuery.of(context).size.width * 0.1,
+                width: MediaQuery.of(context).size.width * 0.1,
+                child: const CircularProgressIndicator(
+                    strokeWidth: 5,
+                    valueColor: AlwaysStoppedAnimation(CustomColors.n1)),
+              ));
+            },
+          )
+        ]
       ],
     );
   }
