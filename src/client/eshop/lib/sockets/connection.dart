@@ -4,7 +4,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 
-import 'package:eshop/models/Comment.dart';
 import 'package:eshop/models/Product.dart';
 import 'package:eshop/models/Tag.dart';
 
@@ -66,26 +65,38 @@ class Connection {
 // 1.USER ACCESS
 
   Future<String> logIn(String email, String password) async {
-    return json.encode({
+    /*return json.encode({
       "type": 1,
       "code": 1,
       "content": {
         "success": true,
         "admin": true,
       }
-    });
+    });*/
     //@todo
+    await query({
+      "type": 1,
+      "code": 1,
+      "content": {"email": email, "password": password}
+    });
+    return getData();
   }
 
   Future<String> signUp(String email, String password) async {
-    return json.encode({
+    /*return json.encode({
       "type": 1,
       "code": 2,
       "content": {
         "success": true,
       }
-    });
+    });*/
     //@todo
+    await query({
+      "type": 1,
+      "code": 2,
+      "content": {"email": email, "password": password}
+    });
+    return getData();
   }
 
   Future<String> isAdmin(String email) async {
@@ -101,8 +112,8 @@ class Connection {
 
   // 2.REQUEST PRODUCTS
 
-  Future<String> getProducts(String email) async {
-    await Future.delayed(const Duration(seconds: 1));
+  Future<String> getAllProducts() async {
+    /*await Future.delayed(const Duration(seconds: 1));
     return json.encode({
       "type": 2,
       "code": 1,
@@ -131,8 +142,10 @@ class Connection {
           }
         ]
       }
-    });
+    });*/
     //@todo
+    await query({"type": 2, "code": 1, "content": {}});
+    return getData();
   }
 
   Future<String> getProductByID(String email, int p_id) async {
@@ -176,14 +189,16 @@ class Connection {
   }
 
   Future<String> getTags() async {
-    return json.encode({
+    /*return json.encode({
       "type": 2,
       "code": 4,
       "content": {
         "tags": ["Tag 1", "Tag 2", "Tag 3", "Tag 4"]
       }
-    });
+    });*/
     //@todo
+    await query({"type": 2, "code": 4, "content": {}});
+    return getData();
   }
 
   // 3.Manage Product Admin
@@ -235,14 +250,20 @@ class Connection {
   // 4.RELATED TO CART
 
   Future<String> createCart(String email, String cartname) async {
-    return json.encode({
+    /*return json.encode({
       "type": 4,
       "code": 1,
       "content": {
         "success": true,
       }
-    });
+    });*/
     //@todo
+    await query({
+      "type": 4,
+      "code": 1,
+      "content": {"email": email, "cartname": cartname}
+    });
+    return getData();
   }
 
   Future<String> editCart(String email, int c_id, String newName) async {
@@ -334,7 +355,7 @@ class Connection {
   }
 
   Future<String> getAllCarts(String email) async {
-    return json.encode({
+    /*return json.encode({
       "type": 4,
       "code": 6,
       "content": {
@@ -343,8 +364,14 @@ class Connection {
           {"cartid": 2, "cartname": "Cart 2", "total": 20}
         ]
       }
-    });
+    });*/
     //@todo
+    await query({
+      "type": 4,
+      "code": 8,
+      "content": {"email": email}
+    });
+    return getData();
   }
 
   Future<String> purchase(String email, int c_id) async {
@@ -416,8 +443,8 @@ class Connection {
     //@todo
   }
 
-  Future<String> requestUserInfo() async {
-    return json.encode({
+  Future<String> requestUserInfo(String email) async {
+    /*return json.encode({
       "type": 5,
       "code": 1,
       "content": {
@@ -427,8 +454,14 @@ class Connection {
         "payment": "00012457",
         "address": "Calle Ave del Paraiso",
       }
-    });
+    });*/
     //@todo
+    await query({
+      "type": 5,
+      "code": 6,
+      "content": {"email": email}
+    });
+    return getData();
   }
 
   // 6.ORDERS
@@ -519,18 +552,29 @@ class Connection {
 
   Future<String> rateProduct(
       String email, int p_id, double rating, String comment) async {
-    return json.encode({
+    /*return json.encode({
       "type": 8,
       "code": 1,
       "content": {
         "success": true,
       }
-    });
+    });*/
     //@todo
+    await query({
+      "type": 8,
+      "code": 1,
+      "content": {
+        "email": email,
+        "productid": p_id,
+        "rating": rating,
+        "comment": comment
+      }
+    });
+    return getData();
   }
 
   Future<String> viewProductRating(int p_id) async {
-    await Future.delayed(const Duration(seconds: 1));
+    /*await Future.delayed(const Duration(seconds: 1));
     return json.encode({
       "type": 8,
       "code": 2,
@@ -551,12 +595,18 @@ class Connection {
           }
         ]
       }
-    });
+    });*/
     //@todo
+    await query({
+      "type": 8,
+      "code": 2,
+      "content": {"productid": p_id}
+    });
+    return getData();
   }
 
   Future<String> requestRecommendedProducts(String email) async {
-    await Future.delayed(const Duration(seconds: 1));
+    /*await Future.delayed(const Duration(seconds: 1));
     return json.encode({
       "type": 8,
       "code": 3,
@@ -595,13 +645,19 @@ class Connection {
           }
         ]
       }
-    });
+    });*/
     //@todo
+    await query({
+      "type": 8,
+      "code": 3,
+      "content": {"email": email}
+    });
+    return getData();
   }
 
   Future<String> requestRecommendedProductsByTags(
       String email, Tags tags) async {
-    await Future.delayed(const Duration(seconds: 1));
+    /*await Future.delayed(const Duration(seconds: 1));
     return json.encode({
       "type": 8,
       "code": 3,
@@ -630,7 +686,13 @@ class Connection {
           }
         ]
       }
-    });
+    });*/
     //@todo
+    await query({
+      "type": 8,
+      "code": 4,
+      "content": {"email": email, "tags": tags.onlyTrues()}
+    });
+    return getData();
   }
 }
