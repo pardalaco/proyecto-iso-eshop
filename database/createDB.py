@@ -220,10 +220,14 @@ cursor.execute(
 	    ) WITHOUT ROWID;
     '''
 )
+###############################################################################
+#Adding Clients
 cursor.execute(
-    '''
-	    DROP TRIGGER IF EXISTS TOTAL_CARRITO;
-    '''
+	'''
+	    INSERT INTO User (email, name, apellidos, payment, address, password, admin) 
+			VALUES ('admin', 'admin', 'admin', 'admin', 'admin', 'admin', 1);
+	'''
 )
+###############################################################################
 connection.close()
 print("Ejecución con éxito.")

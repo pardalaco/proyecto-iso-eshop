@@ -46,7 +46,7 @@
 			- [**8.2. View Product Ratings**](#82-view-product-ratings)
 			- [**8.3. Request Recommended Products**](#83-request-recommended-products)
 			- [**8.4. Request Recommended Products by Tag**](#84-request-recommended-products-by-tag)
-			- [\*\*8.4. Request User Marketing Profile \*\*](#84-request-user-marketing-profile-)
+			- [**8.4. Request User Marketing Profile**](#84-request-user-marketing-profile)
 		- [**9. Optimized and Additional Funcitonality**](#9-optimized-and-additional-funcitonality)
 			- [**9.1. Change Product Tag Set (ADMIN)**](#91-change-product-tag-set-admin)
 			- [**9.2. Dynamic User Info Edit**](#92-dynamic-user-info-edit)
@@ -915,7 +915,7 @@ server = {
 	}
 }
 ```
-#### **8.4. Request User Marketing Profile **
+#### **8.4. Request User Marketing Profile**
 ```js
 client = {
 	type: 8,

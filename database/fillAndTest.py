@@ -13,17 +13,6 @@ cursor.execute('''PRAGMA foreign_keys = ON;''')
 #INSERTIONS
 
 ###############################################################################
-#Adding Clients
-cursor.execute(
-	'''
-	    INSERT INTO User (email, name, apellidos, payment, address, password, admin) 
-			VALUES ('admin', 'Admin', 'Admin2', 'adminCard', 'AdminAddress', 'admin', 1);
-	'''
-)
-###############################################################################
-
-
-###############################################################################
 #Adding Products
 cursor.execute(
 	'''
