@@ -288,10 +288,13 @@ class _ListCartState extends State<_ListCart> {
                 },
               );
             }).toList();
-            return ListView.builder(
-              itemCount: cartsList.length,
-              itemBuilder: (context, index) => cartsList[index],
-            );
+            return Scrollbar(
+                trackVisibility: true,
+                thumbVisibility: true,
+                child: ListView.builder(
+                  itemCount: cartsList.length,
+                  itemBuilder: (context, index) => cartsList[index],
+                ));
           } else {
             pass = true;
             dev.log("Estoy en _ListCartState (else)");
@@ -482,7 +485,7 @@ class _ComAndRatState extends State<ComAndRat> {
           height: MediaQuery.of(context).size.height * 0.015,
         ),
         TextField(
-          controller: _controller,
+          controller: _controller2,
           focusNode: _textFieldFocusNode,
           decoration: const InputDecoration(
             hintText: "Optional comment",

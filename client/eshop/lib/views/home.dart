@@ -546,10 +546,13 @@ class _TagsListState extends State<_TagsList> {
                 },
               );
             }).toList();
-            return ListView.builder(
-              itemCount: tagsList.length,
-              itemBuilder: (context, index) => tagsList[index],
-            );
+            return Scrollbar(
+                trackVisibility: true,
+                thumbVisibility: true,
+                child: ListView.builder(
+                  itemCount: tagsList.length,
+                  itemBuilder: (context, index) => tagsList[index],
+                ));
           }
         }
         return Center(
