@@ -47,6 +47,9 @@
 			- [**8.3. Request Recommended Products**](#83-request-recommended-products)
 			- [**8.4. Request Recommended Products by Tag**](#84-request-recommended-products-by-tag)
 			- [\*\*8.4. Request User Marketing Profile \*\*](#84-request-user-marketing-profile-)
+		- [**9. Optimized and Additional Funcitonality**](#9-optimized-and-additional-funcitonality)
+			- [**9.1. Change Product Tag Set (ADMIN)**](#91-change-product-tag-set-admin)
+			- [**9.2. Dynamic User Info Edit**](#92-dynamic-user-info-edit)
 # **JSON Message Structure**
 ## **Main format**
 ```js
@@ -269,6 +272,9 @@ server = {
 }
 ```
 #### **3.2. Edit product**
+> *Content is a dictionary where the key is the field to edit, and the value is the value of what the new field value should be*
+> *Field must be an attribute of **Product***
+> *If field == "tags", value = "str,str,str,..."*
 ```js
 client = {
 	type: 3,
@@ -283,9 +289,6 @@ client = {
 	}
 }
 ```
-> *Content is a dictionary where the key is the field to edit, and the value is the value of what the new field value should be*
-> *Field must be an attribute of **Product***
-> *If field == "tags", value = "str,str,str,..."*
 ```js
 server = {
 	type: 3,
@@ -935,6 +938,57 @@ server = {
 				count: "int"
 			}
 		]
+	}
+}
+```
+---
+&nbsp;
+### **9. Optimized and Additional Funcitonality**
+#### **9.1. Change Product Tag Set (ADMIN)**
+> *This function will overwrite the set of tags for a product with the new set, as long as all the provided tags exist.*
+> *It will remove all previous tags that are not in the new set, and add the new ones*
+```js
+client = {
+	type: 9,
+	code: 1,
+	content: {
+		email: "str",
+		productid: "int",
+		tags: "list"["str"]
+	}
+}
+```
+```js
+server = {
+	type: 9,
+	code: 1,
+	content: {
+		success: "bool"
+	}
+}
+```
+#### **9.2. Dynamic User Info Edit**
+> *To change one or mutliple user data in one message, all the atributes to change (name, email, address, etc) should be provided on the <changes> list with the exact attribute name as it is on the database*
+> *For each attribute provided in the <changes> list, a dictionary key of the same name will be provided with the value of the entry being the new value of the attribute*
+```js
+client = {
+	type: 9,
+	code: 2,
+	content: {
+		email: "str",
+		changes: "list"["str"]
+		"str"(field): "str"(value),
+		"str"(field): "str"(value),
+		...
+	}
+}
+```
+```js
+server = {
+	type: 9,
+	code: 2,
+	content: {
+		success: "bool"
 	}
 }
 ```
