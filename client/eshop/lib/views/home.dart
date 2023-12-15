@@ -3,6 +3,7 @@ import 'package:eshop/models/KeyboardController.dart';
 import 'package:eshop/models/Response.dart';
 import 'package:eshop/models/Tag.dart';
 import 'package:eshop/utils/MyWidgets.dart';
+import 'package:eshop/views/editProfile.dart';
 import 'package:eshop/views/productDetails.dart';
 import 'package:flutter/material.dart';
 import 'package:eshop/sockets/connection.dart';
@@ -58,7 +59,7 @@ class _MyPage extends State<Home> {
         },
         child: Scaffold(
           appBar: _MyAppBar,
-          drawer: _MyDrawer(context, profile, admin, updateState),
+          drawer: _MyDrawer(context, profile, admin, updateState, connection),
           body: _MyHomeBody(
             connection: connection,
             admin: admin,
@@ -221,8 +222,8 @@ class _HomeBody extends State<_MyHomeBody> {
   }
 }
 
-Widget _MyDrawer(
-    context, Profile perfil, bool admin, VoidCallback updateState) {
+Widget _MyDrawer(context, Profile perfil, bool admin, VoidCallback updateState,
+    Connection connection) {
   return Drawer(
       child: Container(
     color: CustomColors.background,
@@ -278,7 +279,10 @@ Widget _MyDrawer(
             color: Colors.white,
           ),
           onTap: () {
-            //_goToProfilePage(context, perfil);
+            var route = MaterialPageRoute(
+                builder: (context) =>
+                    EditProfile(connection: connection, profile: perfil));
+            Navigator.of(context).push(route);
           },
         ),
         SizedBox(
@@ -341,7 +345,7 @@ Widget _MyDrawer(
             color: Colors.white,
           ),
           onTap: () {
-            //_goToLogIn(context);
+            doSearch = true;
             Navigator.of(context).pop();
             Navigator.of(context).pop();
           },
