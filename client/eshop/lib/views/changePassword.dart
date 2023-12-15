@@ -149,8 +149,6 @@ class _ChangePassword extends State<ChangePassword> {
           content: Text('La contraseña no ha sido cambiada.'),
         ),
       );
-    } else {
-      Navigator.of(context).pop();
     }
   }
 
@@ -179,7 +177,7 @@ class _ChangePassword extends State<ChangePassword> {
                 Text('La nueva contraseña y la confirmación no coinciden.'),
           ),
         );
-      } else if (_currentPasswordController.text !=
+      } else if (_currentPasswordController.text ==
           _newPasswordController.text) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
