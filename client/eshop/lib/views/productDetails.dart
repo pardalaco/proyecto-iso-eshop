@@ -316,12 +316,9 @@ class _ListCartState extends State<_ListCart> {
             show = true;
             setState(() {});
           },
-          style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateProperty.all<Color>(CustomColors.n1)),
           child: Icon(
             Icons.refresh,
-            color: Colors.white,
+            color: CustomColors.n1,
             size: MediaQuery.of(context).size.height * 0.04,
           ),
         ),
