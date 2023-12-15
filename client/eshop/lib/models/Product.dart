@@ -29,6 +29,13 @@ class Product {
   late Tags tags;
   late int quantity; //In cart
 
+  Product(
+      {required this.name,
+      required this.description,
+      required this.image,
+      required this.price,
+      required this.tags});
+
   Product.fromJson(Map<String, dynamic> json, bool inCart) {
     id = json['id'];
     name = json['name'];
