@@ -10,6 +10,7 @@
 - Rovira Martínez, Daniel
 - Sánchez Verdú, Joan
 - Segovia Martínez, Pablo
+- Macíás Puig, Jose Luís
 
 ---
 
