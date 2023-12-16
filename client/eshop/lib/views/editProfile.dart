@@ -88,13 +88,13 @@ class _EditProfile extends State<EditProfile> {
               ),
               const SizedBox(height: 16.0),
               _buildTextFieldWithIcon(
-                  "Nombre", Icons.person, _nameController, true),
+                  "Name", Icons.person, _nameController, true),
               _buildTextFieldWithIcon(
                   "Email", Icons.email, _emailController, true),
               _buildTextFieldWithIcon(
-                  "Tarjeta", Icons.credit_card, _cardController, false),
+                  "Card", Icons.credit_card, _cardController, false),
               _buildTextFieldWithIcon(
-                  "Dirección", Icons.location_on, _addressController, false),
+                  "Address", Icons.location_on, _addressController, false),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: ElevatedButton(
@@ -117,7 +117,7 @@ class _EditProfile extends State<EditProfile> {
                   child: const Padding(
                     padding: EdgeInsets.all(12.0),
                     child: Text(
-                      "Cambiar Contraseña",
+                      "Change Password",
                       style: TextStyle(fontSize: 16.0),
                     ),
                   ),
@@ -148,7 +148,7 @@ class _EditProfile extends State<EditProfile> {
         },
         validator: (value) {
           if (isRequired && (value == null || value.isEmpty)) {
-            return 'Este campo es necesario';
+            return 'This field is required';
           }
           return null;
         },
@@ -162,23 +162,24 @@ class _EditProfile extends State<EditProfile> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Descartar Cambios'),
-            content: const Text('¿Seguro que quieres descartar los cambios?'),
+            title: const Text('Discard Changes'),
+            content:
+                const Text('Are you sure you want to discard the changes?'),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(true);
                 },
                 child: const Text(
-                  'Descartar',
+                  'Discard',
                   style: TextStyle(color: Colors.red),
                 ),
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop(false); // Cancelar
+                  Navigator.of(context).pop(false); // Cancel
                 },
-                child: const Text('Cancelar'),
+                child: const Text('Cancel'),
               ),
             ],
           );
@@ -205,8 +206,8 @@ class _EditProfile extends State<EditProfile> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: const Text('Cambios Guardados'),
-              content: const Text('Los cambios se han guardado correctamente.'),
+              title: const Text('Changes Saved'),
+              content: const Text('The changes have been saved successfully.'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
@@ -225,7 +226,7 @@ class _EditProfile extends State<EditProfile> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('No se realizaron cambios.'),
+            content: Text('No changes were made.'),
           ),
         );
       }
