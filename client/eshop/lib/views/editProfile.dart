@@ -139,7 +139,11 @@ class _EditProfile extends State<EditProfile> {
         controller: controller,
         decoration: InputDecoration(
           labelText: labelText,
-          prefixIcon: Icon(icon),
+          labelStyle: TextStyle(color: CustomColors.n1),
+          prefixIcon: Icon(
+            icon,
+            color: CustomColors.n1,
+          ),
           border: const OutlineInputBorder(),
           enabledBorder: OutlineInputBorder(
             borderSide: const BorderSide(width: 3, color: CustomColors.n1),
