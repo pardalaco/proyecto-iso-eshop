@@ -68,6 +68,7 @@ class _EditProfile extends State<EditProfile> {
       },
       child: Scaffold(
         appBar: _MyAppBar,
+        backgroundColor: CustomColors.background,
         body: Form(
           key: _formKey,
           child: Column(
@@ -140,7 +141,17 @@ class _EditProfile extends State<EditProfile> {
           labelText: labelText,
           prefixIcon: Icon(icon),
           border: const OutlineInputBorder(),
+          enabledBorder: OutlineInputBorder(
+            borderSide: const BorderSide(width: 3, color: CustomColors.n1),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          focusedBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: CustomColors.n1),
+          ),
+          filled: true,
+          fillColor: CustomColors.n2,
         ),
+        cursorColor: CustomColors.n1,
         onChanged: (value) {
           setState(() {
             _hasChanges = true;

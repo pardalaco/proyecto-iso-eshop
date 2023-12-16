@@ -66,6 +66,7 @@ class _ChangePassword extends State<ChangePassword> {
 
     return Scaffold(
       appBar: _MyAppBar,
+      backgroundColor: CustomColors.background,
       body: Form(
         key: _formKey,
         child: Column(
@@ -111,7 +112,17 @@ class _ChangePassword extends State<ChangePassword> {
           labelText: labelText,
           prefixIcon: Icon(icon),
           border: const OutlineInputBorder(),
+          enabledBorder: OutlineInputBorder(
+            borderSide: const BorderSide(width: 3, color: CustomColors.n1),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          focusedBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: CustomColors.n1),
+          ),
+          filled: true,
+          fillColor: CustomColors.n2,
         ),
+        cursorColor: CustomColors.n1,
         onChanged: (value) {
           setState(() {
             _hasChanges = true;
@@ -123,7 +134,6 @@ class _ChangePassword extends State<ChangePassword> {
           }
           return null;
         },
-        obscureText: true, // To hide the password
       ),
     );
   }
