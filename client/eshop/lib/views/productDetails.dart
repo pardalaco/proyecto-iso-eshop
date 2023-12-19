@@ -12,6 +12,16 @@ import 'package:eshop/models/Product.dart';
 import 'package:eshop/style/ColorsUsed.dart';
 import 'dart:developer' as dev;
 
+late KeyboardController kbcontroller;
+bool show = true;
+late VoidCallback updateListCart;
+bool pass = false;
+TextEditingController _controller = TextEditingController();
+TextEditingController _controller2 = TextEditingController();
+double rate = 1;
+bool firstTime = true;
+late String rawComments;
+
 class DetailPage extends StatelessWidget {
   Product producto;
   Connection connection;
@@ -167,10 +177,6 @@ Widget myDescription(
           )));
 }
 
-late KeyboardController kbcontroller;
-bool show = true;
-late VoidCallback updateListCart;
-
 Widget _MyAlert(context, Connection connection, String email, int p_id) {
   return AlertDialog(
       title: const Text(
@@ -224,8 +230,6 @@ class _ListCart extends StatefulWidget {
   @override
   State<_ListCart> createState() => _ListCartState();
 }
-
-bool pass = false;
 
 class _ListCartState extends State<_ListCart> {
   @override
@@ -316,6 +320,8 @@ class _ListCartState extends State<_ListCart> {
             show = true;
             setState(() {});
           },
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.white)),
           child: Icon(
             Icons.refresh,
             color: CustomColors.n1,
@@ -326,8 +332,6 @@ class _ListCartState extends State<_ListCart> {
     }
   }
 }
-
-TextEditingController _controller = TextEditingController();
 
 Widget _MyAlertAddCart(context, Connection connection, String email) {
   return AlertDialog(
@@ -421,8 +425,13 @@ class ComAndRat extends StatefulWidget {
   State<ComAndRat> createState() => _ComAndRatState();
 }
 
-TextEditingController _controller2 = TextEditingController();
-double rate = 1;
+Future<String> getComments(Connection connection, int p_id) async {
+  if (firstTime) {
+    rawComments = await connection.viewProductRating(p_id);
+    firstTime = false;
+  }
+  return rawComments;
+}
 
 class _ComAndRatState extends State<ComAndRat> {
   FocusNode _textFieldFocusNode = FocusNode();
@@ -442,175 +451,162 @@ class _ComAndRatState extends State<ComAndRat> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Divider(
-          color: CustomColors.n2,
-          thickness: 2,
+    return Column(children: [
+      const Divider(
+        color: CustomColors.n2,
+        thickness: 2,
+      ),
+      SizedBox(
+        height: MediaQuery.of(context).size.height * 0.01,
+      ),
+      Text(
+        "Average rating: ${widget.avgRate.toStringAsFixed(2)}",
+        style: const TextStyle(
+          color: Colors.black,
+          fontSize: 23,
         ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.01,
+        textAlign: TextAlign.center,
+      ),
+      SizedBox(
+        height: MediaQuery.of(context).size.height * 0.01,
+      ),
+      RatingBar.builder(
+        itemSize: 25,
+        initialRating: rate,
+        minRating: 1,
+        direction: Axis.horizontal,
+        allowHalfRating: true,
+        itemCount: 5,
+        itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+        itemBuilder: (context, _) => const Icon(
+          Icons.star,
+          color: Colors.amber,
         ),
-        Text(
-          "Average rating: ${widget.avgRate.toStringAsFixed(2)}",
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 23,
+        onRatingUpdate: (_rating) {
+          rate = _rating;
+        },
+      ),
+      SizedBox(
+        height: MediaQuery.of(context).size.height * 0.015,
+      ),
+      TextField(
+        controller: _controller2,
+        focusNode: _textFieldFocusNode,
+        decoration: const InputDecoration(
+          hintText: "Optional comment",
+          filled: true,
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: CustomColors.n1),
           ),
-          textAlign: TextAlign.center,
         ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.01,
-        ),
-        RatingBar.builder(
-          itemSize: 25,
-          initialRating: rate,
-          minRating: 1,
-          direction: Axis.horizontal,
-          allowHalfRating: true,
-          itemCount: 5,
-          itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-          itemBuilder: (context, _) => const Icon(
-            Icons.star,
-            color: Colors.amber,
-          ),
-          onRatingUpdate: (_rating) {
-            rate = _rating;
-          },
-        ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.015,
-        ),
-        TextField(
-          controller: _controller2,
-          focusNode: _textFieldFocusNode,
-          decoration: const InputDecoration(
-            hintText: "Optional comment",
-            filled: true,
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: CustomColors.n1),
+        cursorColor: CustomColors.n1,
+      ),
+      SizedBox(
+        height: MediaQuery.of(context).size.height * 0.025,
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton(
+            onPressed: () async {
+              var data = await widget.connection.rateProduct(
+                  widget.email, widget.p_id, rate, _controller2.text);
+              Response response = Response.fromJson(data);
+              if (response.error || !response.content["success"]) {
+                showDialog(
+                    context: context,
+                    builder: (context) => MyPopUp(
+                        context, "Error", "Error adding the comment", 1));
+              } else {
+                showDialog(
+                    context: context,
+                    builder: (context) =>
+                        MyPopUp(context, "Message", "Comment added", 1));
+              }
+              setState(() {});
+            },
+            style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(CustomColors.n1)),
+            child: Icon(
+              Icons.comment,
+              color: Colors.white,
+              size: MediaQuery.of(context).size.height * 0.04,
             ),
           ),
-          cursorColor: CustomColors.n1,
-        ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.025,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () async {
-                var data = await widget.connection.rateProduct(
-                    widget.email, widget.p_id, rate, _controller2.text);
-                Response response = Response.fromJson(data);
-                if (response.error || !response.content["success"]) {
-                  showDialog(
-                      context: context,
-                      builder: (context) => MyPopUp(
-                          context, "Error", "Error adding the comment", 1));
-                } else {
-                  showDialog(
-                      context: context,
-                      builder: (context) =>
-                          MyPopUp(context, "Message", "Comment added", 1));
-                }
-                setState(() {});
-              },
-              style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(CustomColors.n1)),
-              child: Icon(
-                Icons.comment,
-                color: Colors.white,
-                size: MediaQuery.of(context).size.height * 0.04,
-              ),
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.015,
+          ),
+          ElevatedButton(
+            onPressed: () {
+              firstTime = true;
+              setState(() {});
+            },
+            style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(CustomColors.n1)),
+            child: Icon(
+              Icons.refresh,
+              color: Colors.white,
+              size: MediaQuery.of(context).size.height * 0.04,
             ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.015,
-            ),
-            ElevatedButton(
-              onPressed: () {
-                show = true;
-                setState(() {});
-              },
-              style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(CustomColors.n1)),
-              child: Icon(
-                Icons.refresh,
-                color: Colors.white,
-                size: MediaQuery.of(context).size.height * 0.04,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.025,
-        ),
-        if (show) ...[
-          FutureBuilder(
-            future: widget.connection.viewProductRating(widget.p_id),
-            builder: (context, AsyncSnapshot<String> snapshot) {
-              dev.log("Estoy en el ComRat");
-              if (snapshot.hasData) {
-                Response response = Response.fromJson(snapshot.data!);
-                var comments = Comments.fromJson(response.content);
-                final commentsList = comments.comments.map((c) {
-                  return Container(
-                    padding: const EdgeInsetsDirectional.all(20),
-                    margin: const EdgeInsetsDirectional.only(bottom: 10),
-                    decoration: BoxDecoration(
-                        color: CustomColors.n2.withOpacity(0.3),
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(30),
-                        )),
-                    width: double.infinity,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+          ),
+        ],
+      ),
+      SizedBox(
+        height: MediaQuery.of(context).size.height * 0.025,
+      ),
+      FutureBuilder(
+        future: getComments(widget.connection, widget.p_id),
+        builder: (context, AsyncSnapshot<String> snapshot) {
+          if (snapshot.hasData && pass) {
+            pass = false;
+            dev.log("Estoy en el ComRat dentro del if");
+            Response response = Response.fromJson(snapshot.data!);
+            var comments = Comments.fromJson(response.content);
+            final commentsList = comments.comments.map((c) {
+              return Container(
+                padding: const EdgeInsetsDirectional.all(20),
+                margin: const EdgeInsetsDirectional.only(bottom: 10),
+                decoration: BoxDecoration(
+                    color: CustomColors.n2.withOpacity(0.3),
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(30),
+                    )),
+                width: double.infinity,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      c.email,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                      ),
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.01,
+                    ),
+                    Row(
                       children: [
-                        Text(
-                          c.email,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 20,
+                        RatingBar.builder(
+                          itemSize: 25,
+                          initialRating: c.rating,
+                          minRating: 1,
+                          direction: Axis.horizontal,
+                          allowHalfRating: true,
+                          itemCount: 5,
+                          itemPadding:
+                              const EdgeInsets.symmetric(horizontal: 4.0),
+                          itemBuilder: (context, _) => const Icon(
+                            Icons.star,
+                            color: Colors.amber,
                           ),
-                        ),
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.01,
-                        ),
-                        Row(
-                          children: [
-                            RatingBar.builder(
-                              itemSize: 25,
-                              initialRating: c.rating,
-                              minRating: 1,
-                              direction: Axis.horizontal,
-                              allowHalfRating: true,
-                              itemCount: 5,
-                              itemPadding:
-                                  const EdgeInsets.symmetric(horizontal: 4.0),
-                              itemBuilder: (context, _) => const Icon(
-                                Icons.star,
-                                color: Colors.amber,
-                              ),
-                              ignoreGestures: true,
-                              onRatingUpdate: (_rating) {},
-                            ),
-                            Text(
-                              c.date,
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 15,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.01,
+                          ignoreGestures: true,
+                          onRatingUpdate: (_rating) {},
                         ),
                         Text(
-                          c.com,
+                          c.date,
                           style: const TextStyle(
                             color: Colors.black,
                             fontSize: 15,
@@ -618,24 +614,36 @@ class _ComAndRatState extends State<ComAndRat> {
                         ),
                       ],
                     ),
-                  );
-                }).toList();
-                return Column(
-                  children: commentsList,
-                );
-              }
-              return Center(
-                  child: SizedBox(
-                height: MediaQuery.of(context).size.width * 0.1,
-                width: MediaQuery.of(context).size.width * 0.1,
-                child: const CircularProgressIndicator(
-                    strokeWidth: 5,
-                    valueColor: AlwaysStoppedAnimation(CustomColors.n1)),
-              ));
-            },
-          )
-        ]
-      ],
-    );
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.01,
+                    ),
+                    Text(
+                      c.com,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList();
+            return Column(
+              children: commentsList,
+            );
+          }
+          dev.log("Estoy en el ComRat fuera del if");
+          pass = true;
+          return Center(
+              child: SizedBox(
+            height: MediaQuery.of(context).size.width * 0.1,
+            width: MediaQuery.of(context).size.width * 0.1,
+            child: const CircularProgressIndicator(
+                strokeWidth: 5,
+                valueColor: AlwaysStoppedAnimation(CustomColors.n1)),
+          ));
+        },
+      )
+    ]);
   }
 }
