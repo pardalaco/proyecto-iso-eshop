@@ -80,6 +80,7 @@ def admin_help() -> str:
 		edit-product (ep) <product_id> <field> <value> [tagop = "0", "1"]
 			(field can be: "name", "description", "image", "price")
 			(tagop only if field == "tags")
+		edit-product-tags (ept) <product_id> <tag> [tag tag ...]
 		delete-product (dp) <product_id>
 		new-tag (nt) <tag>
 		list-all-orders (lao)

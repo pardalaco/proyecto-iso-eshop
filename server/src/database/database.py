@@ -349,14 +349,13 @@ class Database:
 
 #***************************************************************************************************
 	@classmethod
-	def add_product_tags(cls, productid: int, tags: str) -> bool:
-		taglist = tags.split(",")
+	def add_product_tags(cls, productid: int, tags: list[str]) -> bool:
 		query = """
 		INSERT INTO Classification 
     	VALUES(?, ?);
 		"""
 		try:
-			for tag in taglist:
+			for tag in tags:
 				if cls.tag_exists(tag):
 					cls.cursor.execute(query, (productid, tag))
 				else:
@@ -373,14 +372,13 @@ class Database:
 
 #***************************************************************************************************
 	@classmethod
-	def remove_product_tags(cls, productid: int, tags: str) -> bool:
-		taglist = tags.split(",")
+	def remove_product_tags(cls, productid: int, tags: list[str]) -> bool:
 		query = """
 		DELETE FROM Classification
 		WHERE product_id = ? AND tag = ?;
 		"""
 		try:
-			for tag in taglist:
+			for tag in tags:
 				if cls.tag_exists(tag):
 					cls.cursor.execute(query, (productid, tag))
 				else:

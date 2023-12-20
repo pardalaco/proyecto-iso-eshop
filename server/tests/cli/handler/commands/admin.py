@@ -68,6 +68,23 @@ def handle_edit_product(isresponse: bool, current_user: dict, args: list[str]) -
 
 
 #***************************************************************************************************
+def handle_edit_product_tags(isresponse: bool, current_user: dict, 
+															args: list[str]) -> tuple[bool, dict]:
+	if current_user["privilege"] != PRIVILEGE_ADMIN:
+		return (False, "You need to be an Admin to use this command")
+	else:
+		if isresponse:
+			if args[0]["content"]["success"]:
+				return (False, "Product tags edited")
+			else:
+				return (False, "There was a problem editing the product tags")
+		else:
+			return (True, {"type": 9, "code": 1, "content": {"email": current_user["email"], 
+																												"productid": args[0],
+																												"tags": args[1:]}})
+
+
+#***************************************************************************************************
 def handle_delete_product(isresponse: bool, current_user: dict, 
 													args: list[str]) -> tuple[bool, dict]:
 	if current_user["privilege"] != PRIVILEGE_ADMIN:
@@ -138,6 +155,9 @@ admin_command_handlers = {
 
 	"edit-product": handle_edit_product,
 	"ep": handle_edit_product,
+
+	"edit-product-tags": handle_edit_product_tags,
+	"ept": handle_edit_product_tags,
 
 	"delete-product": handle_delete_product,
 	"dp": handle_delete_product,

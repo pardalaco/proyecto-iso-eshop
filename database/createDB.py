@@ -228,6 +228,7 @@ cursor.execute(
 			VALUES ('admin', 'admin', 'admin', 'admin', 'admin', 'admin', 1);
 	'''
 )
+connection.commit()
 ###############################################################################
 connection.close()
 print("Ejecución con éxito.")

@@ -55,6 +55,7 @@ class MessageHandler:
 			(8, 3): self.handle_fetch_recommended_products,
 			(8, 4): self.handle_fetch_recommended_products_by_tags,
 			(8, 5): self.handle_fetch_marketing_profile,
+			(9, 1): self.handle_edit_product_tags,
 		}
 
 
@@ -155,10 +156,10 @@ class MessageHandler:
 			for key in content:
 				if key == "tags":
 					if tagop == 0:
-						if not Database.add_product_tags(productid, content[key]):
+						if not Database.add_product_tags(productid, content[key].split(",")):
 							return {"success": False}
 					else:
-						if not Database.remove_product_tags(productid, content[key]):
+						if not Database.remove_product_tags(productid, content[key].split(",")):
 							return {"success": False}
 				else:	
 					if not Database.edit_product(productid, key, content[key]):
@@ -391,3 +392,21 @@ class MessageHandler:
 	def handle_fetch_marketing_profile(self, content: dict) -> dict:
 		email = content["email"]
 		return Database.fetch_marketing_profile(email)
+
+
+#***************************************************************************************************
+	def handle_edit_product_tags(self, content: dict) -> dict:
+		email = content["email"]
+		if not Database.is_admin(email):
+			return {"success": False}
+		tags = content["tags"]
+		productid = content["productid"]
+		original_tags = Database.fetch_product_tags(productid)
+		tags_to_add = [tag for tag in tags if tag not in original_tags]
+		tags_to_remove = [tag for tag in original_tags if tag not in tags]
+
+		if not Database.add_product_tags(productid, tags_to_add):
+			return {"success": False}
+		if not Database.remove_product_tags(productid, tags_to_remove):
+			return {"success": False}
+		return {"success": True}
