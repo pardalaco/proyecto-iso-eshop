@@ -66,25 +66,26 @@ class _ChangePassword extends State<ChangePassword> {
 
     return Scaffold(
       appBar: _MyAppBar,
+      backgroundColor: CustomColors.background,
       body: Form(
         key: _formKey,
         child: Column(
           children: [
             const SizedBox(height: 16.0),
             _buildPasswordTextField(
-              "Contraseña Actual",
+              "Current Password",
               Icons.lock,
               _currentPasswordController,
               true,
             ),
             _buildPasswordTextField(
-              "Nueva Contraseña",
+              "New Password",
               Icons.lock,
               _newPasswordController,
               true,
             ),
             _buildPasswordTextField(
-              "Confirmar Nueva Contraseña",
+              "Confirm New Password",
               Icons.lock,
               _confirmNewPasswordController,
               true,
@@ -109,9 +110,23 @@ class _ChangePassword extends State<ChangePassword> {
         controller: controller,
         decoration: InputDecoration(
           labelText: labelText,
-          prefixIcon: Icon(icon),
+          labelStyle: TextStyle(color: CustomColors.n1),
+          prefixIcon: Icon(
+            icon,
+            color: CustomColors.n1,
+          ),
           border: const OutlineInputBorder(),
+          enabledBorder: OutlineInputBorder(
+            borderSide: const BorderSide(width: 3, color: CustomColors.n1),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          focusedBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: CustomColors.n1),
+          ),
+          filled: true,
+          fillColor: CustomColors.n2,
         ),
+        cursorColor: CustomColors.n1,
         onChanged: (value) {
           setState(() {
             _hasChanges = true;
@@ -119,11 +134,10 @@ class _ChangePassword extends State<ChangePassword> {
         },
         validator: (value) {
           if (isRequired && (value == null || value.isEmpty)) {
-            return 'Este campo es necesario';
+            return 'This field is required';
           }
           return null;
         },
-        obscureText: true, // Para ocultar la contraseña
       ),
     );
   }
@@ -132,7 +146,7 @@ class _ChangePassword extends State<ChangePassword> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: const Text(
-        'Asegúrate de elegir una contraseña segura y mantenerla privada.',
+        'Make sure to choose a secure password and keep it private.',
         style: TextStyle(
           color: Colors.red,
           fontStyle: FontStyle.italic,
@@ -143,10 +157,10 @@ class _ChangePassword extends State<ChangePassword> {
 
   void _handleBackNavigation(BuildContext context) {
     if (_hasChanges) {
-      // Mostrar un mensaje temporal en la parte inferior de la pantalla
+      // Show a temporary message at the bottom of the screen
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('La contraseña no ha sido cambiada.'),
+          content: Text('Password has not been changed.'),
         ),
       );
     }
@@ -157,54 +171,53 @@ class _ChangePassword extends State<ChangePassword> {
       if (_currentPasswordController.text.isEmpty ||
           _newPasswordController.text.isEmpty ||
           _confirmNewPasswordController.text.isEmpty) {
-        // Muestra un mensaje de error si algún campo está vacío
+        // Show an error message if any field is empty
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Por favor, llena todos los campos.'),
+            content: Text('Please fill in all fields.'),
           ),
         );
       } else if (_currentPasswordController.text != profile.password) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('La contraseña actual es incorrecta.'),
+            content: Text('Current password is incorrect.'),
           ),
         );
       } else if (_newPasswordController.text !=
           _confirmNewPasswordController.text) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content:
-                Text('La nueva contraseña y la confirmación no coinciden.'),
+            content: Text('New password and confirmation do not match.'),
           ),
         );
       } else if (_currentPasswordController.text ==
           _newPasswordController.text) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(
-                'La nueva contraseña no puede ser la misma que la actual.'),
+            content:
+                Text('New password cannot be the same as the current one.'),
           ),
         );
       } else {
-        // Si todas las validaciones pasan, actualiza la contraseña en el perfil
+        // If all validations pass, update the password in the profile
         profile.password = _newPasswordController.text;
 
-        // Puedes realizar la lógica adicional para guardar la contraseña en tu backend o donde sea necesario.
+        // You can perform additional logic to save the password to your backend or wherever necessary.
 
         Navigator.of(context).pop();
 
-        // Muestra un mensaje de éxito
+        // Show a success message
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Contraseña cambiada exitosamente.'),
+            content: Text('Password changed successfully.'),
           ),
         );
       }
     } else {
-      // El formulario no es válido, lo que significa que hay campos no válidos
+      // The form is not valid, meaning there are invalid fields
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Por favor, corrige los campos no válidos.'),
+          content: Text('Please correct the invalid fields.'),
         ),
       );
     }
