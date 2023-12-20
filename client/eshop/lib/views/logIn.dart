@@ -20,7 +20,6 @@ class _MyPage extends State<logIn> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       backgroundColor: CustomColors.background,
       body: SingleChildScrollView(
         child: Column(
@@ -94,7 +93,6 @@ class _MyForm extends State<_MyBody> {
               SizedBox(height: size.height * 0.01),
               TextFormField(
                 decoration: InputDecoration(
-                  //label: Text('Email'),
                   enabledBorder: OutlineInputBorder(
                     borderSide:
                         const BorderSide(width: 3, color: CustomColors.n1),

@@ -3,7 +3,9 @@ import 'package:eshop/models/Cart.dart';
 import 'package:eshop/models/KeyboardController.dart';
 import 'package:eshop/models/Profile.dart';
 import 'package:eshop/models/Response.dart';
+import 'package:eshop/models/Tag.dart';
 import 'package:eshop/utils/MyWidgets.dart';
+import 'package:eshop/views/editProduct.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:eshop/models/Comment.dart';
 import 'package:eshop/sockets/connection.dart';
@@ -12,88 +14,135 @@ import 'package:eshop/models/Product.dart';
 import 'package:eshop/style/ColorsUsed.dart';
 import 'dart:developer' as dev;
 
+/////////////////////////////////////////
 late KeyboardController kbcontroller;
-bool show = true;
 late VoidCallback updateListCart;
-bool pass = false;
 TextEditingController _controller = TextEditingController();
 TextEditingController _controller2 = TextEditingController();
+late String rawComments;
 double rate = 1;
 bool firstTime = true;
-late String rawComments;
+bool show = true;
+bool pass = false;
+//////////////////////////////////////////
 
 class DetailPage extends StatelessWidget {
-  Product producto;
+  Product product;
   Connection connection;
   Profile profile;
   KeyboardController kb;
+  bool adminMode;
+
   DetailPage(
       {Key? key,
-      required this.producto,
+      required this.product,
       required this.connection,
       required this.profile,
-      required this.kb})
+      required this.kb,
+      required this.adminMode})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     kbcontroller = kb;
-    final _MyAppBar = AppBar(
-        toolbarHeight: MediaQuery.of(context).size.height * 0.1,
-        backgroundColor: CustomColors.n1,
-        centerTitle: true,
-        title: Text(
-          "Product details",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: MediaQuery.of(context).size.height * 0.05,
-          ),
-        ));
-
-    return Scaffold(
-        appBar: _MyAppBar,
-        body: Container(
-          color: CustomColors.background,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              myImage(context, producto),
-              myDescription(context, producto, connection, profile.email),
-              Container(
-                padding: EdgeInsetsDirectional.symmetric(
-                    horizontal: MediaQuery.of(context).size.width * 0.05,
-                    vertical: MediaQuery.of(context).size.height * 0.02),
-                width: double.infinity,
-                color: Colors.white,
-                child: ElevatedButton(
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (context) => _MyAlert(
-                            context, connection, profile.email, producto.id));
-                  },
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(CustomColors.n1)),
-                  child: Icon(
-                    Icons.add_shopping_cart,
+    return WillPopScope(
+      onWillPop: () async {
+        firstTime = true;
+        rate = 1;
+        show = true;
+        pass = false;
+        return true;
+      },
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Scaffold(
+            appBar: AppBar(
+                toolbarHeight: constraints.maxHeight * 0.1,
+                backgroundColor: CustomColors.n1,
+                centerTitle: true,
+                title: Text(
+                  "Product details",
+                  style: TextStyle(
                     color: Colors.white,
-                    size: MediaQuery.of(context).size.height * 0.04,
+                    fontSize: constraints.maxHeight * 0.05,
                   ),
-                ),
-              )
-            ],
-          ),
-        ));
+                )),
+            body: Container(
+              color: CustomColors.background,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  myImage(context, product, constraints),
+                  myDescription(
+                      context, product, connection, profile.email, constraints),
+                  Container(
+                    padding: EdgeInsetsDirectional.symmetric(
+                        horizontal: constraints.maxWidth * 0.05,
+                        vertical: constraints.maxHeight * 0.02),
+                    width: double.infinity,
+                    color: Colors.white,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) => _MyAlert(context, connection,
+                                profile.email, product.id, constraints));
+                      },
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              CustomColors.n1)),
+                      child: Icon(
+                        Icons.add_shopping_cart,
+                        color: Colors.white,
+                        size: constraints.maxHeight * 0.04,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+            floatingActionButton: adminMode
+                ? FloatingActionButton(
+                    onPressed: () async {
+                      var data = await connection.getTags();
+                      Response response = Response.fromJson(data);
+                      if (response.error) {
+                        showDialog(
+                            context: context,
+                            builder: (context) => MyPopUp(
+                                context, "Error", "Something went wrong", 1));
+                      } else {
+                        Tags allTags = Tags.fromJson(response.content, false);
+                        dev.log(allTags.toString());
+                        allTags.intersectionToTrue(product.tags);
+                        dev.log(allTags.toString());
+                        var route = MaterialPageRoute(
+                            builder: (context) => editProduct(
+                                  connection: connection,
+                                  product: product,
+                                  profile: profile,
+                                  tags: allTags,
+                                  kb: kb,
+                                  adminMode: adminMode,
+                                ));
+                        Navigator.of(context).push(route);
+                      }
+                    },
+                    backgroundColor: CustomColors.n1,
+                    child: const Icon(Icons.edit, color: Colors.white),
+                  )
+                : null,
+          );
+        },
+      ),
+    );
   }
 }
 
-Widget myImage(context, Product producto) {
-  final Size size = MediaQuery.of(context).size;
-  final double altura = size.height;
+Widget myImage(context, Product producto, BoxConstraints constraints) {
   return SizedBox(
-    height: altura * 0.25,
+    height: constraints.maxHeight * 0.25,
     width: double.infinity,
     child: const Image(
       image: AssetImage("assets/img/gatitos.jpg"),
@@ -102,17 +151,15 @@ Widget myImage(context, Product producto) {
   );
 }
 
-Widget myDescription(
-    context, Product producto, Connection connection, String email) {
-  final Size size = MediaQuery.of(context).size;
-  final double altura = size.height;
+Widget myDescription(context, Product producto, Connection connection,
+    String email, BoxConstraints constraints) {
   return Expanded(
       child: Container(
           width: double.infinity,
           padding: EdgeInsetsDirectional.only(
-              start: size.width * 0.05,
-              end: size.width * 0.05,
-              top: altura * 0.05),
+              start: constraints.maxWidth * 0.05,
+              end: constraints.maxWidth * 0.05,
+              top: constraints.maxHeight * 0.05),
           decoration: const BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
@@ -121,7 +168,7 @@ Widget myDescription(
             ),
           ),
           child: SizedBox(
-            height: altura * 0.5,
+            height: constraints.maxHeight * 0.5,
             child: SingleChildScrollView(
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -134,7 +181,7 @@ Widget myDescription(
                       ),
                     ),
                     SizedBox(
-                      height: altura * 0.025,
+                      height: constraints.maxHeight * 0.025,
                     ),
                     Text(
                       "${producto.price} €",
@@ -144,7 +191,7 @@ Widget myDescription(
                       ),
                     ),
                     SizedBox(
-                      height: altura * 0.025,
+                      height: constraints.maxHeight * 0.025,
                     ),
                     Text(
                       producto.description,
@@ -154,7 +201,7 @@ Widget myDescription(
                       ),
                     ),
                     SizedBox(
-                      height: altura * 0.025,
+                      height: constraints.maxHeight * 0.025,
                     ),
                     Text(
                       producto.tags.toString(),
@@ -164,47 +211,50 @@ Widget myDescription(
                       ),
                     ),
                     SizedBox(
-                      height: altura * 0.025,
+                      height: constraints.maxHeight * 0.025,
                     ),
                     ComAndRat(
                       connection: connection,
                       avgRate: producto.rating,
                       email: email,
                       p_id: producto.id,
+                      constraints: constraints,
                     )
                   ]),
             ),
           )));
 }
 
-Widget _MyAlert(context, Connection connection, String email, int p_id) {
+Widget _MyAlert(context, Connection connection, String email, int p_id,
+    BoxConstraints constraints) {
   return AlertDialog(
       title: const Text(
         "Select a cart",
         textAlign: TextAlign.center,
       ),
       content: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.15,
-          height: MediaQuery.of(context).size.height * 0.25,
+          width: constraints.maxWidth * 0.15,
+          height: constraints.maxHeight * 0.25,
           child: Column(children: [
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.15,
+              height: constraints.maxHeight * 0.15,
               child: _ListCart(
                 connection: connection,
                 email: email,
                 p_id: p_id,
+                constraints: constraints,
               ),
             ),
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.03,
+              height: constraints.maxHeight * 0.03,
             ),
             ElevatedButton(
               onPressed: () {
                 show = false;
                 showDialog(
                     context: context,
-                    builder: (context) =>
-                        _MyAlertAddCart(context, connection, email));
+                    builder: (context) => _MyAlertAddCart(
+                        context, connection, email, constraints));
               },
               style: ButtonStyle(
                   backgroundColor:
@@ -212,7 +262,7 @@ Widget _MyAlert(context, Connection connection, String email, int p_id) {
               child: Icon(
                 Icons.add,
                 color: Colors.white,
-                size: MediaQuery.of(context).size.height * 0.04,
+                size: constraints.maxHeight * 0.04,
               ),
             ),
           ])));
@@ -222,11 +272,13 @@ class _ListCart extends StatefulWidget {
   Connection connection;
   String email;
   int p_id;
+  BoxConstraints constraints;
   _ListCart(
       {super.key,
       required this.connection,
       required this.email,
-      required this.p_id});
+      required this.p_id,
+      required this.constraints});
   @override
   State<_ListCart> createState() => _ListCartState();
 }
@@ -265,7 +317,7 @@ class _ListCartState extends State<_ListCart> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.05,
+                          height: widget.constraints.maxHeight * 0.05,
                           child: Text(
                             'Add to ${c.cartname}',
                             style: const TextStyle(fontSize: 25),
@@ -278,7 +330,7 @@ class _ListCartState extends State<_ListCart> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.05,
+                          height: widget.constraints.maxHeight * 0.05,
                           child: const Text(
                             'ERROR ADDING PRODUCT',
                             style: TextStyle(fontSize: 25),
@@ -304,8 +356,8 @@ class _ListCartState extends State<_ListCart> {
             dev.log("Estoy en _ListCartState (else)");
             return Center(
                 child: SizedBox(
-              height: MediaQuery.of(context).size.width * 0.1,
-              width: MediaQuery.of(context).size.width * 0.1,
+              height: widget.constraints.maxWidth * 0.1,
+              width: widget.constraints.maxWidth * 0.1,
               child: const CircularProgressIndicator(
                   strokeWidth: 5,
                   valueColor: AlwaysStoppedAnimation(CustomColors.n1)),
@@ -315,17 +367,15 @@ class _ListCartState extends State<_ListCart> {
       );
     } else {
       return SizedBox(
-        child: ElevatedButton(
+        child: IconButton(
           onPressed: () {
             show = true;
             setState(() {});
           },
-          style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.white)),
-          child: Icon(
+          icon: Icon(
             Icons.refresh,
             color: CustomColors.n1,
-            size: MediaQuery.of(context).size.height * 0.04,
+            size: widget.constraints.maxHeight * 0.04,
           ),
         ),
       );
@@ -333,15 +383,16 @@ class _ListCartState extends State<_ListCart> {
   }
 }
 
-Widget _MyAlertAddCart(context, Connection connection, String email) {
+Widget _MyAlertAddCart(
+    context, Connection connection, String email, BoxConstraints constraints) {
   return AlertDialog(
       title: const Text(
         "Create a cart",
         textAlign: TextAlign.center,
       ),
       content: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.15,
-          height: MediaQuery.of(context).size.height * 0.07,
+          width: constraints.maxWidth * 0.15,
+          height: constraints.maxHeight * 0.07,
           child: TextField(
             controller: _controller,
             decoration: const InputDecoration(
@@ -380,7 +431,7 @@ Widget _MyAlertAddCart(context, Connection connection, String email) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.05,
+                        height: constraints.maxHeight * 0.05,
                         child: const Text(
                           'ERROR CREATING CART',
                           style: TextStyle(fontSize: 25),
@@ -414,12 +465,14 @@ class ComAndRat extends StatefulWidget {
   double avgRate;
   String email;
   int p_id;
+  BoxConstraints constraints;
   ComAndRat(
       {super.key,
       required this.connection,
       required this.avgRate,
       required this.email,
-      required this.p_id});
+      required this.p_id,
+      required this.constraints});
 
   @override
   State<ComAndRat> createState() => _ComAndRatState();
@@ -442,7 +495,6 @@ class _ComAndRatState extends State<ComAndRat> {
     _textFieldFocusNode.addListener(() async {
       if (_textFieldFocusNode.hasFocus) {
         dev.log("TextField seleccionado");
-        show = false;
       } else {
         dev.log("TextField no seleccionado");
       }
@@ -457,7 +509,7 @@ class _ComAndRatState extends State<ComAndRat> {
         thickness: 2,
       ),
       SizedBox(
-        height: MediaQuery.of(context).size.height * 0.01,
+        height: widget.constraints.maxHeight * 0.01,
       ),
       Text(
         "Average rating: ${widget.avgRate.toStringAsFixed(2)}",
@@ -468,7 +520,7 @@ class _ComAndRatState extends State<ComAndRat> {
         textAlign: TextAlign.center,
       ),
       SizedBox(
-        height: MediaQuery.of(context).size.height * 0.01,
+        height: widget.constraints.maxHeight * 0.01,
       ),
       RatingBar.builder(
         itemSize: 25,
@@ -487,7 +539,7 @@ class _ComAndRatState extends State<ComAndRat> {
         },
       ),
       SizedBox(
-        height: MediaQuery.of(context).size.height * 0.015,
+        height: widget.constraints.maxHeight * 0.015,
       ),
       TextField(
         controller: _controller2,
@@ -502,7 +554,7 @@ class _ComAndRatState extends State<ComAndRat> {
         cursorColor: CustomColors.n1,
       ),
       SizedBox(
-        height: MediaQuery.of(context).size.height * 0.025,
+        height: widget.constraints.maxHeight * 0.025,
       ),
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -522,6 +574,7 @@ class _ComAndRatState extends State<ComAndRat> {
                     context: context,
                     builder: (context) =>
                         MyPopUp(context, "Message", "Comment added", 1));
+                firstTime = true;
               }
               setState(() {});
             },
@@ -531,11 +584,11 @@ class _ComAndRatState extends State<ComAndRat> {
             child: Icon(
               Icons.comment,
               color: Colors.white,
-              size: MediaQuery.of(context).size.height * 0.04,
+              size: widget.constraints.maxHeight * 0.04,
             ),
           ),
           SizedBox(
-            width: MediaQuery.of(context).size.width * 0.015,
+            width: widget.constraints.maxWidth * 0.015,
           ),
           ElevatedButton(
             onPressed: () {
@@ -548,19 +601,18 @@ class _ComAndRatState extends State<ComAndRat> {
             child: Icon(
               Icons.refresh,
               color: Colors.white,
-              size: MediaQuery.of(context).size.height * 0.04,
+              size: widget.constraints.maxHeight * 0.04,
             ),
           ),
         ],
       ),
       SizedBox(
-        height: MediaQuery.of(context).size.height * 0.025,
+        height: widget.constraints.maxHeight * 0.025,
       ),
       FutureBuilder(
         future: getComments(widget.connection, widget.p_id),
         builder: (context, AsyncSnapshot<String> snapshot) {
-          if (snapshot.hasData && pass) {
-            pass = false;
+          if (snapshot.hasData) {
             dev.log("Estoy en el ComRat dentro del if");
             Response response = Response.fromJson(snapshot.data!);
             var comments = Comments.fromJson(response.content);
@@ -585,7 +637,7 @@ class _ComAndRatState extends State<ComAndRat> {
                       ),
                     ),
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.01,
+                      height: widget.constraints.maxHeight * 0.01,
                     ),
                     Row(
                       children: [
@@ -615,7 +667,7 @@ class _ComAndRatState extends State<ComAndRat> {
                       ],
                     ),
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.01,
+                      height: widget.constraints.maxHeight * 0.01,
                     ),
                     Text(
                       c.com,
@@ -633,11 +685,10 @@ class _ComAndRatState extends State<ComAndRat> {
             );
           }
           dev.log("Estoy en el ComRat fuera del if");
-          pass = true;
           return Center(
               child: SizedBox(
-            height: MediaQuery.of(context).size.width * 0.1,
-            width: MediaQuery.of(context).size.width * 0.1,
+            height: widget.constraints.maxWidth * 0.1,
+            width: widget.constraints.maxWidth * 0.1,
             child: const CircularProgressIndicator(
                 strokeWidth: 5,
                 valueColor: AlwaysStoppedAnimation(CustomColors.n1)),

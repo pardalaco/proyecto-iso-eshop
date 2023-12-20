@@ -12,6 +12,18 @@ import 'package:eshop/models/Profile.dart';
 import 'package:eshop/style/ColorsUsed.dart';
 import 'dart:developer' as dev;
 
+/////////////////////////////////////
+bool adminMode = false;
+bool searchByTag = false;
+bool searchByName = false;
+bool doSearch = true;
+bool notPass = true;
+final FocusNode _focusNode = FocusNode();
+String? textoIngresado;
+late KeyboardController kb;
+late Tags tags;
+/////////////////////////////////////
+
 class Home extends StatefulWidget {
   Connection connection;
   bool admin;
@@ -89,16 +101,6 @@ class _MyHomeBody extends StatefulWidget {
   @override
   State<_MyHomeBody> createState() => _HomeBody();
 }
-
-bool adminMode = false;
-bool searchByTag = false;
-bool searchByName = false;
-
-bool doSearch = true;
-bool notPass = true;
-final FocusNode _focusNode = FocusNode();
-String? textoIngresado;
-late KeyboardController kb;
 
 class _HomeBody extends State<_MyHomeBody> {
   @override
@@ -346,6 +348,7 @@ Widget _MyDrawer(context, Profile perfil, bool admin, VoidCallback updateState,
           ),
           onTap: () {
             doSearch = true;
+            adminMode = false;
             Navigator.of(context).pop();
             Navigator.of(context).pop();
           },
@@ -417,10 +420,11 @@ Widget FuturaLista(
             onTap: () {
               var route = MaterialPageRoute(
                 builder: (context) => DetailPage(
-                  producto: product,
+                  product: product,
                   connection: connection,
                   profile: profile,
                   kb: kb,
+                  adminMode: adminMode,
                 ),
               );
               Navigator.of(context).push(route);
@@ -503,8 +507,6 @@ class _TagsList extends StatefulWidget {
   @override
   State<_TagsList> createState() => _TagsListState();
 }
-
-late Tags tags;
 
 class _TagsListState extends State<_TagsList> {
   bool firstTime =
