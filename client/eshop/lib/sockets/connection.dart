@@ -463,7 +463,7 @@ class Connection {
 
   Future<String> changeProductSetTags(
       String email, int p_id, String tags) async {
-    var tagList = tags.split(",");
+    var tagList = tags.isEmpty ? [] : tags.split(",");
     await query({
       "type": 9,
       "code": 1,
