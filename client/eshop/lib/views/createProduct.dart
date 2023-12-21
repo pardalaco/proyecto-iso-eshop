@@ -242,9 +242,14 @@ class _MyFormState extends State<MyForm> {
                                         onPressed: () async {
                                           FocusScope.of(context).unfocus();
                                           if (_controller.text.isNotEmpty) {
+                                            String s =
+                                                _controller.text.toUpperCase();
+                                            if (s.length > 1) {
+                                              s = s.substring(0, 1) +
+                                                  s.substring(1).toLowerCase();
+                                            }
                                             var data = await widget.connection
-                                                .addNewTag(widget.email,
-                                                    _controller.text);
+                                                .addNewTag(widget.email, s);
                                             Response response =
                                                 Response.fromJson(data);
                                             if (response.error ||
@@ -267,8 +272,8 @@ class _MyFormState extends State<MyForm> {
                                                 ),
                                               );
                                             } else {
-                                              widget.tags.tags.add(Tag.fromJson(
-                                                  _controller.text, false));
+                                              widget.tags.tags
+                                                  .add(Tag.fromJson(s, false));
                                               _controller.clear();
                                               setState(() {});
                                             }
