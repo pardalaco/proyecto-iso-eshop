@@ -325,7 +325,9 @@ class _MyFormState extends State<MyForm> {
                     };
                     var data = await widget.connection.editProduct(json);
                     Response response = Response.fromJson(data);
-                    success = success && !response.error;
+                    success = success &&
+                        !response.error &&
+                        response.content["success"];
                     if (response.error || !response.content["success"]) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
@@ -345,7 +347,9 @@ class _MyFormState extends State<MyForm> {
                         widget.product.id,
                         widget.tags.onlyTrues());
                     response = Response.fromJson(data);
-                    success = success && !response.error;
+                    success = success &&
+                        !response.error &&
+                        response.content["success"];
                     if (response.error || !response.content["success"]) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
