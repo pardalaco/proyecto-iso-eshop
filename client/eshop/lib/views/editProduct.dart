@@ -6,6 +6,7 @@ import 'package:eshop/models/Response.dart';
 import 'package:eshop/models/Tag.dart';
 import 'package:eshop/utils/MyWidgets.dart';
 import 'package:eshop/sockets/connection.dart';
+import 'package:eshop/views/home.dart';
 import 'package:eshop/views/productDetails.dart';
 import 'package:flutter/material.dart';
 import 'package:eshop/models/Product.dart';
@@ -110,10 +111,76 @@ class _MyFormState extends State<MyForm> {
             vertical: widget.constraints.maxHeight * 0.03),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           SizedBox(height: widget.constraints.maxHeight * 0.01),
-          Text(
-            'Product ${widget.product.id.toString()}',
-            style: const TextStyle(
-                color: Colors.white, fontSize: 35, fontWeight: FontWeight.bold),
+          Row(
+            children: [
+              Text(
+                'Product ${widget.product.id.toString()}',
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 35,
+                    fontWeight: FontWeight.bold),
+              ),
+              const Expanded(child: SizedBox()),
+              ElevatedButton(
+                onPressed: () async {
+                  var data = await widget.connection
+                      .removeProduct(widget.email, widget.product.id);
+                  Response response = Response.fromJson(data);
+                  if (response.error || !response.content["success"]) {
+                    showDialog(
+                        context: context,
+                        builder: (context) => MyPopUp(
+                            context, "Error", "Something went wrong", 1));
+                  } else {
+                    showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                                title: const Text(
+                                  "Successfully",
+                                  textAlign: TextAlign.center,
+                                ),
+                                content: const Text("Product removed",
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15),
+                                    textAlign: TextAlign.center),
+                                actions: [
+                                  Center(
+                                    child: TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                          Navigator.of(context).pop();
+                                          Navigator.of(context).pop();
+                                          var route = MaterialPageRoute(
+                                              builder: (context) => Home(
+                                                  connection: widget.connection,
+                                                  admin: true,
+                                                  profile: widget.profile));
+                                          Navigator.of(context)
+                                              .pushReplacement(route);
+                                        },
+                                        child: const Text(
+                                          "OK",
+                                          style: TextStyle(
+                                              color: CustomColors.n1,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15),
+                                        )),
+                                  )
+                                ]));
+                  }
+                },
+                style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(CustomColors.n1)),
+                child: Icon(
+                  Icons.delete,
+                  color: Colors.white,
+                  size: widget.constraints.maxHeight * 0.04,
+                ),
+              )
+            ],
           ),
           SizedBox(height: widget.constraints.maxHeight * 0.03),
           Form(
