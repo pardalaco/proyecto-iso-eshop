@@ -3,6 +3,7 @@ import 'package:eshop/models/KeyboardController.dart';
 import 'package:eshop/models/Response.dart';
 import 'package:eshop/models/Tag.dart';
 import 'package:eshop/utils/MyWidgets.dart';
+import 'package:eshop/views/cartList.dart';
 import 'package:eshop/views/createProduct.dart';
 import 'package:eshop/views/editProfile.dart';
 import 'package:eshop/views/productDetails.dart';
@@ -323,6 +324,29 @@ Widget _MyDrawer(context, Profile perfil, bool admin, VoidCallback updateState,
           ),
           onTap: () {
             //_goToEditProfile(context, perfil);
+          },
+        ),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.02,
+        ),
+        ListTile(
+          title: Text(
+            "My carts",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 25,
+            ),
+          ),
+          leading: Icon(
+            Icons.shopping_cart,
+            size: MediaQuery.of(context).size.height * 0.04,
+            color: Colors.white,
+          ),
+          onTap: () {
+            var route = MaterialPageRoute(
+                builder: (context) =>
+                    cartList(connection: connection, profile: perfil));
+            Navigator.of(context).push(route);
           },
         ),
         Expanded(child: Container()),

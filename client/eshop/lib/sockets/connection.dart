@@ -194,7 +194,7 @@ class Connection {
       "code": 3,
       "content": {
         "email": email,
-        "cardid": c_id,
+        "cartid": c_id,
       }
     });
     return getData();
