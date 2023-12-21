@@ -301,22 +301,50 @@ class _MyFormState extends State<MyForm> {
                           Product.fromJson(response.content, false);
                       dev.log("Ya tengo los datos del producto");
                     }
-                    dev.log("Estoy aqui");
                     if (success) {
+                      dev.log("Todo OK");
                       showDialog(
                           context: context,
-                          builder: (context) => MyPopUp(context, "Successfully",
-                              "Everything it's okey", 2));
-                      //Crear aqui el popup
-                      /*var route = MaterialPageRoute(
-                          builder: (context) => DetailPage(
-                                connection: widget.connection,
-                                product: widget.product,
-                                profile: widget.profile,
-                                adminMode: widget.adminMode,
-                                kb: widget.kb,
-                              ));
-                      Navigator.of(context).pushReplacement(route);*/
+                          builder: (context) => AlertDialog(
+                                  title: const Text(
+                                    "Successfully",
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  content: const Text("Everything it's okey",
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 15),
+                                      textAlign: TextAlign.center),
+                                  actions: [
+                                    Center(
+                                      child: TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                            Navigator.of(context).pop();
+                                            var route = MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailPage(
+                                                      connection:
+                                                          widget.connection,
+                                                      product: widget.product,
+                                                      profile: widget.profile,
+                                                      adminMode:
+                                                          widget.adminMode,
+                                                      kb: widget.kb,
+                                                    ));
+                                            Navigator.of(context)
+                                                .pushReplacement(route);
+                                          },
+                                          child: const Text(
+                                            "OK",
+                                            style: TextStyle(
+                                                color: CustomColors.n1,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15),
+                                          )),
+                                    )
+                                  ]));
                     } else {
                       showDialog(
                           context: context,

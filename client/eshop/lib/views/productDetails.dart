@@ -51,6 +51,8 @@ class DetailPage extends StatelessWidget {
         rate = 1;
         show = true;
         pass = false;
+        _controller = TextEditingController();
+        _controller2 = TextEditingController();
         return true;
       },
       child: LayoutBuilder(
@@ -103,34 +105,37 @@ class DetailPage extends StatelessWidget {
               ),
             ),
             floatingActionButton: adminMode
-                ? FloatingActionButton(
-                    onPressed: () async {
-                      var data = await connection.getTags();
-                      Response response = Response.fromJson(data);
-                      if (response.error) {
-                        showDialog(
-                            context: context,
-                            builder: (context) => MyPopUp(
-                                context, "Error", "Something went wrong", 1));
-                      } else {
-                        Tags allTags = Tags.fromJson(response.content, false);
-                        dev.log(allTags.toString());
-                        allTags.intersectionToTrue(product.tags);
-                        dev.log(allTags.toString());
-                        var route = MaterialPageRoute(
-                            builder: (context) => editProduct(
-                                  connection: connection,
-                                  product: product,
-                                  profile: profile,
-                                  tags: allTags,
-                                  kb: kb,
-                                  adminMode: adminMode,
-                                ));
-                        Navigator.of(context).push(route);
-                      }
-                    },
-                    backgroundColor: CustomColors.n1,
-                    child: const Icon(Icons.edit, color: Colors.white),
+                ? Padding(
+                    padding: const EdgeInsets.only(bottom: 50.0),
+                    child: FloatingActionButton(
+                      onPressed: () async {
+                        var data = await connection.getTags();
+                        Response response = Response.fromJson(data);
+                        if (response.error) {
+                          showDialog(
+                              context: context,
+                              builder: (context) => MyPopUp(
+                                  context, "Error", "Something went wrong", 1));
+                        } else {
+                          Tags allTags = Tags.fromJson(response.content, false);
+                          dev.log(allTags.toString());
+                          allTags.intersectionToTrue(product.tags);
+                          dev.log(allTags.toString());
+                          var route = MaterialPageRoute(
+                              builder: (context) => editProduct(
+                                    connection: connection,
+                                    product: product,
+                                    profile: profile,
+                                    tags: allTags,
+                                    kb: kb,
+                                    adminMode: adminMode,
+                                  ));
+                          Navigator.of(context).push(route);
+                        }
+                      },
+                      backgroundColor: CustomColors.n1,
+                      child: const Icon(Icons.edit, color: Colors.white),
+                    ),
                   )
                 : null,
           );
@@ -180,11 +185,39 @@ Widget myDescription(context, Product producto, Connection connection,
                         fontSize: 25,
                       ),
                     ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        RatingBar.builder(
+                          itemSize: 20,
+                          initialRating: producto.rating,
+                          minRating: 1,
+                          direction: Axis.horizontal,
+                          allowHalfRating: true,
+                          itemCount: 5,
+                          itemPadding:
+                              const EdgeInsets.symmetric(horizontal: 4.0),
+                          itemBuilder: (context, _) => const Icon(
+                            Icons.star,
+                            color: Colors.amber,
+                          ),
+                          ignoreGestures: true,
+                          onRatingUpdate: (_rating) {},
+                        ),
+                        Text(
+                          "(${producto.count})",
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ],
+                    ),
                     SizedBox(
                       height: constraints.maxHeight * 0.025,
                     ),
                     Text(
-                      "${producto.price} €",
+                      "${producto.price.toStringAsFixed(2)} €",
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 20,
@@ -215,7 +248,6 @@ Widget myDescription(context, Product producto, Connection connection,
                     ),
                     ComAndRat(
                       connection: connection,
-                      avgRate: producto.rating,
                       email: email,
                       p_id: producto.id,
                       constraints: constraints,
@@ -462,14 +494,12 @@ Widget _MyAlertAddCart(
 
 class ComAndRat extends StatefulWidget {
   Connection connection;
-  double avgRate;
   String email;
   int p_id;
   BoxConstraints constraints;
   ComAndRat(
       {super.key,
       required this.connection,
-      required this.avgRate,
       required this.email,
       required this.p_id,
       required this.constraints});
@@ -511,9 +541,9 @@ class _ComAndRatState extends State<ComAndRat> {
       SizedBox(
         height: widget.constraints.maxHeight * 0.01,
       ),
-      Text(
-        "Average rating: ${widget.avgRate.toStringAsFixed(2)}",
-        style: const TextStyle(
+      const Text(
+        "Rate product",
+        style: TextStyle(
           color: Colors.black,
           fontSize: 23,
         ),
@@ -556,55 +586,35 @@ class _ComAndRatState extends State<ComAndRat> {
       SizedBox(
         height: widget.constraints.maxHeight * 0.025,
       ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ElevatedButton(
-            onPressed: () async {
-              var data = await widget.connection.rateProduct(
-                  widget.email, widget.p_id, rate, _controller2.text);
-              Response response = Response.fromJson(data);
-              if (response.error || !response.content["success"]) {
-                showDialog(
-                    context: context,
-                    builder: (context) => MyPopUp(
-                        context, "Error", "Error adding the comment", 1));
-              } else {
-                showDialog(
-                    context: context,
-                    builder: (context) =>
-                        MyPopUp(context, "Message", "Comment added", 1));
-                firstTime = true;
-              }
-              setState(() {});
-            },
-            style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.all<Color>(CustomColors.n1)),
-            child: Icon(
-              Icons.comment,
-              color: Colors.white,
-              size: widget.constraints.maxHeight * 0.04,
-            ),
-          ),
-          SizedBox(
-            width: widget.constraints.maxWidth * 0.015,
-          ),
-          ElevatedButton(
-            onPressed: () {
+      Center(
+        child: ElevatedButton(
+          onPressed: () async {
+            var data = await widget.connection.rateProduct(
+                widget.email, widget.p_id, rate, _controller2.text);
+            Response response = Response.fromJson(data);
+            if (response.error || !response.content["success"]) {
+              showDialog(
+                  context: context,
+                  builder: (context) =>
+                      MyPopUp(context, "Error", "Error adding the comment", 1));
+            } else {
+              showDialog(
+                  context: context,
+                  builder: (context) =>
+                      MyPopUp(context, "Message", "Comment added", 1));
               firstTime = true;
-              setState(() {});
-            },
-            style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.all<Color>(CustomColors.n1)),
-            child: Icon(
-              Icons.refresh,
-              color: Colors.white,
-              size: widget.constraints.maxHeight * 0.04,
-            ),
+            }
+            setState(() {});
+          },
+          style: ButtonStyle(
+              backgroundColor:
+                  MaterialStateProperty.all<Color>(CustomColors.n1)),
+          child: Icon(
+            Icons.comment,
+            color: Colors.white,
+            size: widget.constraints.maxHeight * 0.04,
           ),
-        ],
+        ),
       ),
       SizedBox(
         height: widget.constraints.maxHeight * 0.025,
