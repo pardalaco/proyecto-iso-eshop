@@ -3,6 +3,7 @@ import 'package:eshop/models/KeyboardController.dart';
 import 'package:eshop/models/Response.dart';
 import 'package:eshop/models/Tag.dart';
 import 'package:eshop/utils/MyWidgets.dart';
+import 'package:eshop/views/createProduct.dart';
 import 'package:eshop/views/editProfile.dart';
 import 'package:eshop/views/productDetails.dart';
 import 'package:flutter/material.dart';
@@ -79,7 +80,24 @@ class _MyPage extends State<Home> {
           ),
           floatingActionButton: adminMode
               ? FloatingActionButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    var data = await connection.getTags();
+                    Response response = Response.fromJson(data);
+                    if (response.error) {
+                      showDialog(
+                          context: context,
+                          builder: (context) => MyPopUp(
+                              context, "Error", "Something went wrong", 1));
+                    } else {
+                      Tags allTags = Tags.fromJson(response.content, false);
+                      var route = MaterialPageRoute(
+                          builder: (context) => createProduct(
+                              connection: connection,
+                              tags: allTags,
+                              email: widget.profile.email));
+                      Navigator.of(context).push(route);
+                    }
+                  },
                   backgroundColor: CustomColors.n1,
                   child: const Icon(Icons.add, color: Colors.white),
                 )

@@ -130,10 +130,10 @@ class Connection {
       "content": {
         "email": email,
         "name": product.name,
-        "description": product.name,
+        "description": product.description,
         "image": product.image,
         "price": product.price,
-        "tags": product.tags.toString(),
+        "tags": product.tags.onlyTrues(),
       }
     });
     return getData();
