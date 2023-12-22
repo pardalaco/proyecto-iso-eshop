@@ -134,40 +134,42 @@ class _EditProfile extends State<EditProfile> {
 
   Widget _buildTextFieldWithIcon(String labelText, IconData icon,
       TextEditingController controller, bool isRequired) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: labelText,
-          labelStyle: TextStyle(color: CustomColors.n1),
-          prefixIcon: Icon(
-            icon,
-            color: CustomColors.n1,
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        child: TextFormField(
+          controller: controller,
+          decoration: InputDecoration(
+            labelText: labelText,
+            labelStyle: TextStyle(color: CustomColors.n1),
+            prefixIcon: Icon(
+              icon,
+              color: CustomColors.n1,
+            ),
+            border: const OutlineInputBorder(),
+            enabledBorder: OutlineInputBorder(
+              borderSide: const BorderSide(width: 3, color: CustomColors.n1),
+              borderRadius: BorderRadius.circular(15),
+            ),
+            focusedBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(color: CustomColors.n1),
+            ),
+            filled: true,
+            fillColor: CustomColors.n2,
           ),
-          border: const OutlineInputBorder(),
-          enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(width: 3, color: CustomColors.n1),
-            borderRadius: BorderRadius.circular(15),
-          ),
-          focusedBorder: const UnderlineInputBorder(
-            borderSide: BorderSide(color: CustomColors.n1),
-          ),
-          filled: true,
-          fillColor: CustomColors.n2,
+          cursorColor: CustomColors.n1,
+          onChanged: (value) {
+            setState(() {
+              _hasChanges = true;
+            });
+          },
+          validator: (value) {
+            if (isRequired && (value == null || value.isEmpty)) {
+              return 'This field is required';
+            }
+            return null;
+          },
         ),
-        cursorColor: CustomColors.n1,
-        onChanged: (value) {
-          setState(() {
-            _hasChanges = true;
-          });
-        },
-        validator: (value) {
-          if (isRequired && (value == null || value.isEmpty)) {
-            return 'This field is required';
-          }
-          return null;
-        },
       ),
     );
   }
@@ -210,23 +212,33 @@ class _EditProfile extends State<EditProfile> {
   Future<void> _saveChanges(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       if (_hasChanges) {
-        var content = <String, dynamic>{};
+        var content = <String, dynamic>{
+          "useremail": '\"' + profile.email.toString() + '\"',
+          "changes": "["
+        };
 
         if (_nameController.text != profile.name) {
           content["name"] = _nameController.text;
+          content["changes"] = content["changes"].toString() + "name, ";
         }
 
         if (_emailController.text != profile.email) {
           content["email"] = _emailController.text;
+          content["changes"] = content["changes"].toString() + "email, ";
         }
 
         if (_cardController.text != profile.payment) {
           content["payment"] = _cardController.text;
+          content["changes"] = content["changes"].toString() + "payment, ";
         }
 
         if (_addressController.text != profile.address) {
           content["address"] = _addressController.text;
+          content["changes"] = content["changes"].toString() + "address";
         }
+        content["changes"] = content["changes"].toString() + "]";
+
+        print(content);
 
         var data = await connection.dynamicUserInfoEdit(profile.email, content);
         Response response = Response.fromJson(data);

@@ -105,40 +105,42 @@ class _ChangePassword extends State<ChangePassword> {
     TextEditingController controller,
     bool isRequired,
   ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: labelText,
-          labelStyle: TextStyle(color: CustomColors.n1),
-          prefixIcon: Icon(
-            icon,
-            color: CustomColors.n1,
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        child: TextFormField(
+          controller: controller,
+          decoration: InputDecoration(
+            labelText: labelText,
+            labelStyle: TextStyle(color: CustomColors.n1),
+            prefixIcon: Icon(
+              icon,
+              color: CustomColors.n1,
+            ),
+            border: const OutlineInputBorder(),
+            enabledBorder: OutlineInputBorder(
+              borderSide: const BorderSide(width: 3, color: CustomColors.n1),
+              borderRadius: BorderRadius.circular(15),
+            ),
+            focusedBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(color: CustomColors.n1),
+            ),
+            filled: true,
+            fillColor: CustomColors.n2,
           ),
-          border: const OutlineInputBorder(),
-          enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(width: 3, color: CustomColors.n1),
-            borderRadius: BorderRadius.circular(15),
-          ),
-          focusedBorder: const UnderlineInputBorder(
-            borderSide: BorderSide(color: CustomColors.n1),
-          ),
-          filled: true,
-          fillColor: CustomColors.n2,
+          cursorColor: CustomColors.n1,
+          onChanged: (value) {
+            setState(() {
+              _hasChanges = true;
+            });
+          },
+          validator: (value) {
+            if (isRequired && (value == null || value.isEmpty)) {
+              return 'This field is required';
+            }
+            return null;
+          },
         ),
-        cursorColor: CustomColors.n1,
-        onChanged: (value) {
-          setState(() {
-            _hasChanges = true;
-          });
-        },
-        validator: (value) {
-          if (isRequired && (value == null || value.isEmpty)) {
-            return 'This field is required';
-          }
-          return null;
-        },
       ),
     );
   }
