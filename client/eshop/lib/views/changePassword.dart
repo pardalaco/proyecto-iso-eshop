@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:eshop/style/ColorsUsed.dart';
 import 'package:eshop/sockets/connection.dart';
 import 'package:eshop/models/Profile.dart';
+import 'package:eshop/models/Response.dart';
 
 class ChangePassword extends StatefulWidget {
   Connection connection;
@@ -200,18 +201,31 @@ class _ChangePassword extends State<ChangePassword> {
         );
       } else {
         // If all validations pass, update the password in the profile
-        profile.password = _newPasswordController.text;
+
+        var data = await connection.editPassword(
+            profile.email, _newPasswordController.text);
+        Response response = Response.fromJson(data);
 
         // You can perform additional logic to save the password to your backend or wherever necessary.
 
-        Navigator.of(context).pop();
+        if (response.error) {
+          // Show a success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Error.'),
+            ),
+          );
+        } else {
+          profile.password = _newPasswordController.text;
 
-        // Show a success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Password changed successfully.'),
-          ),
-        );
+          Navigator.of(context).pop();
+          // Show a success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Password changed successfully.'),
+            ),
+          );
+        }
       }
     } else {
       // The form is not valid, meaning there are invalid fields
