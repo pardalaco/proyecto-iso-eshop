@@ -1,3 +1,4 @@
+import 'package:eshop/models/Response.dart';
 import 'package:flutter/material.dart';
 import 'package:eshop/style/ColorsUsed.dart';
 import 'package:eshop/sockets/connection.dart';
@@ -208,36 +209,65 @@ class _EditProfile extends State<EditProfile> {
 
   Future<void> _saveChanges(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      if (_nameController.text != profile.name ||
-          _emailController.text != profile.email ||
-          _cardController.text != profile.payment ||
-          _addressController.text != profile.address) {
-        profile.name = _nameController.text;
-        profile.email = _emailController.text;
-        profile.payment = _cardController.text;
-        profile.address = _addressController.text;
+      if (_hasChanges) {
+        var content = <String, dynamic>{};
 
-        await showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Changes Saved'),
-              content: const Text('The changes have been saved successfully.'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
+        if (_nameController.text != profile.name) {
+          content["name"] = _nameController.text;
+        }
 
-        setState(() {
-          _hasChanges = false;
-        });
+        if (_emailController.text != profile.email) {
+          content["email"] = _emailController.text;
+        }
+
+        if (_cardController.text != profile.payment) {
+          content["payment"] = _cardController.text;
+        }
+
+        if (_addressController.text != profile.address) {
+          content["address"] = _addressController.text;
+        }
+
+        var data = await connection.dynamicUserInfoEdit(profile.email, content);
+        Response response = Response.fromJson(data);
+
+        if (response.error) {
+          // Show a success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Error.'),
+            ),
+          );
+        } else {
+          profile.name = _nameController.text;
+          profile.email = _emailController.text;
+          profile.payment = _cardController.text;
+          profile.address = _addressController.text;
+
+          await showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Changes Saved'),
+                content:
+                    const Text('The changes have been saved successfully.'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+
+          setState(() {
+            _hasChanges = false;
+          });
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
