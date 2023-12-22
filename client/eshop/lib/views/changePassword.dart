@@ -202,8 +202,7 @@ class _ChangePassword extends State<ChangePassword> {
       } else {
         // If all validations pass, update the password in the profile
 
-        var data = await connection.editPassword(
-            profile.email, _newPasswordController.text);
+        var data = "";
         Response response = Response.fromJson(data);
 
         // You can perform additional logic to save the password to your backend or wherever necessary.
