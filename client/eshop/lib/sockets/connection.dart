@@ -271,38 +271,12 @@ class Connection {
 
   // 5.USER INFO
 
-  Future<String> editName(String email, String name) async {
+  Future<String> dynamicUserInfoEdit(
+      String email, Map<String, dynamic> content) async {
     await query({
       "type": 5,
       "code": 1,
-      "content": {
-        "email": email,
-        "name": name,
-      }
-    });
-    return getData();
-  }
-
-  Future<String> editEmail(String email, String newEmail) async {
-    await query({
-      "type": 5,
-      "code": 2,
-      "content": {
-        "email": email,
-        "newemail": newEmail,
-      }
-    });
-    return getData();
-  }
-
-  Future<String> editPassword(String email, String password) async {
-    await query({
-      "type": 5,
-      "code": 3,
-      "content": {
-        "email": email,
-        "password": password,
-      }
+      "content": content,
     });
     return getData();
   }
@@ -310,7 +284,7 @@ class Connection {
   Future<String> editPayment(String email, String payment) async {
     await query({
       "type": 5,
-      "code": 4,
+      "code": 2,
       "content": {
         "email": email,
         "payment": payment,
@@ -322,7 +296,7 @@ class Connection {
   Future<String> editAddress(String email, String address) async {
     await query({
       "type": 5,
-      "code": 5,
+      "code": 3,
       "content": {
         "email": email,
         "address": address,
@@ -334,7 +308,7 @@ class Connection {
   Future<String> requestUserInfo(String email) async {
     await query({
       "type": 5,
-      "code": 6,
+      "code": 4,
       "content": {"email": email}
     });
     return getData();
@@ -472,16 +446,6 @@ class Connection {
         "productid": p_id,
         "tags": tagList,
       }
-    });
-    return getData();
-  }
-
-  Future<String> dynamicUserInfoEdit(
-      String email, Map<String, dynamic> content) async {
-    await query({
-      "type": 9,
-      "code": 2,
-      "content": content,
     });
     return getData();
   }
