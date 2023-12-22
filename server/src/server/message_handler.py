@@ -42,9 +42,10 @@ class MessageHandler:
 			(4, 7): self.handle_request_cart_products,
 			(4, 8): self.handle_request_user_carts,
 			(4, 9): self.handle_purchase,
-			(5, 4): self.handle_edit_payment,
-			(5, 5): self.handle_edit_address,
-			(5, 6): self.handle_user_info,
+			(5, 1): self.handle_edit_user_info,
+			(5, 2): self.handle_edit_payment,
+			(5, 3): self.handle_edit_address,
+			(5, 4): self.handle_user_info,
 			(6, 1): self.handle_list_orders,
 			(6, 2): self.handle_order_details,
 			(6, 3): self.handle_cancel_order,
@@ -141,7 +142,11 @@ class MessageHandler:
 			description = content["description"]
 			image = content["image"]
 			price = content["price"]
-			return {"success": Database.new_product(name, description, image, price)}
+			tags = content["tags"].split(",")
+			success = Database.new_product(name, description, image, price)
+			product_id = Database.get_product_id(name)
+			success = Database.add_product_tags(product_id, tags)
+			return {"success": success}
 
 
 #***************************************************************************************************
@@ -286,6 +291,11 @@ class MessageHandler:
 			return {"success": False}
 
 		return {"success": True, "orderid": orderid}
+
+
+#***************************************************************************************************
+	def handle_edit_user_info(self, content: dict) -> dict:
+		pass #@todo edit user info
 
 
 #***************************************************************************************************

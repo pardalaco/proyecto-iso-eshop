@@ -74,7 +74,7 @@ def handle_edit_payment(isresponse: bool, current_user: dict, args: list[str]) -
 			else:
 				return (False, "There was an error while editing the payment")
 		else:
-			return (True, {"type": 5, "code": 4, "content": {"email": current_user["email"],
+			return (True, {"type": 5, "code": 2, "content": {"email": current_user["email"],
 																												"payment": " ".join(args)}})
 
 
@@ -89,7 +89,7 @@ def handle_edit_address(isresponse: bool, current_user: dict, args: list[str]) -
 			else:
 				return (False, "There was an error while editing the address")
 		else:
-			return (True, {"type": 5, "code": 5, "content": {"email": current_user["email"],
+			return (True, {"type": 5, "code": 3, "content": {"email": current_user["email"],
 																												"address": " ".join(args)}})
 
 
@@ -104,7 +104,7 @@ def handle_user_info(isresponse: bool, current_user: dict, args: list[str]) -> t
 											f"\nName: {user_info['name']}"
 											f"\nPayment: {user_info['payment']}\nAddress: {user_info['address']}")
 		else:
-			return (True, {"type": 5, "code": 6, "content": {"email": current_user["email"]}})
+			return (True, {"type": 5, "code": 4, "content": {"email": current_user["email"]}})
 
 
 #***************************************************************************************************

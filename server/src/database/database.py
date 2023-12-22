@@ -217,6 +217,19 @@ class Database:
 
 #***************************************************************************************************
 	@classmethod
+	def get_product_id(cls, product_name) -> int:
+		query = """
+		SELECT	p.ROWID
+		FROM Product p
+		WHERE p.name = ?;
+		"""
+		cls.cursor.execute(query, (product_name,))
+		results = cls.cursor.fetchall()
+		return results[0][0]
+
+
+#***************************************************************************************************
+	@classmethod
 	def fetch_product_by_id(cls, email: str, product_id: int) -> dict:
 		query = """
 		SELECT 	p.ROWID,

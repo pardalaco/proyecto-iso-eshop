@@ -46,8 +46,10 @@ def handle_new_product(isresponse: bool, current_user: dict, args: list[str]) ->
 			else:
 				return (False, "There was a problem adding a new product")
 		else:
+			print(args)
 			return (True, {"type": 3, "code": 1, "content": {"email": current_user["email"], 
-							"name": args[0], "description": args[1], "image": args[2], "price": args[3]}})
+							"name": args[0], "description": args[1], "image": args[2], "price": args[3], 
+							"tags": args[4]}})
 
 
 #***************************************************************************************************

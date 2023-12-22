@@ -28,12 +28,10 @@
 			- [**4.8. Request all Carts**](#48-request-all-carts)
 			- [**4.9. Purchase**](#49-purchase)
 		- [**5. User Info**](#5-user-info)
-			- [**5.1. Edit name**](#51-edit-name)
-			- [**5.2. Edit email**](#52-edit-email)
-			- [**5.3. Edit password**](#53-edit-password)
-			- [**5.4. Edit Payment**](#54-edit-payment)
-			- [**5.5. Edit Address**](#55-edit-address)
-			- [**5.6. Request User Info**](#56-request-user-info)
+			- [**5.1. User Info Edit**](#51-user-info-edit)
+			- [**5.2. Edit Payment**](#52-edit-payment)
+			- [**5.3. Edit Address**](#53-edit-address)
+			- [**5.4. Request User Info**](#54-request-user-info)
 		- [**6. Orders**](#6-orders)
 			- [**6.1. Request Orders**](#61-request-orders)
 			- [**6.2. Request Order Details**](#62-request-order-details)
@@ -49,7 +47,6 @@
 			- [**8.4. Request User Marketing Profile**](#84-request-user-marketing-profile)
 		- [**9. Optimized and Additional Funcitonality**](#9-optimized-and-additional-funcitonality)
 			- [**9.1. Change Product Tag Set (ADMIN)**](#91-change-product-tag-set-admin)
-			- [**9.2. Dynamic User Info Edit**](#92-dynamic-user-info-edit)
 # **JSON Message Structure**
 ## **Main format**
 ```js
@@ -548,71 +545,36 @@ server = {
 ---
 &nbsp;
 ### **5. User Info**
-#### **5.1. Edit name**
+#### **5.1. User Info Edit**
+> *To change one or mutliple user data in one message, all the atributes to change (name, email, address, etc) should be provided on the <changes> list with the exact attribute name as it is on the database*
+> *For each attribute provided in the <changes> list, a dictionary key of the same name will be provided with the value of the entry being the new value of the attribute*
 ```js
 client = {
-	type: 5,
-	code: 1,
+	type: 9,
+	code: 2,
 	content: {
 		email: "str",
-		name: "str"
+		changes: "list"["str"]
+		"str"(field): "str"(value),
+		"str"(field): "str"(value),
+		...
 	}
 }
 ```
 ```js
 server = {
-	type: 5,
+	type: 9,
 	code: 1,
 	content: {
 		success: "bool"
 	}
 }
 ```
-#### **5.2. Edit email**
+#### **5.2. Edit Payment**
 ```js
 client = {
 	type: 5,
 	code: 2,
-	content: {
-		email: "str",
-		newemail: "str"
-	}
-}
-```
-```js
-server = {
-	type: 5,
-	code: 2,
-	content: {
-		success: "bool"
-	}
-}
-```
-#### **5.3. Edit password**
-```js
-client = {
-	type: 5,
-	code: 3,
-	content: {
-		email: "str",
-		password: "str"
-	}
-}
-```
-```js
-server = {
-	type: 5,
-	code: 3,
-	content: {
-		success: "bool"
-	}
-}
-```
-#### **5.4. Edit Payment**
-```js
-client = {
-	type: 5,
-	code: 4,
 	content: {
 		email: "str",
 		payment: "str",
@@ -622,17 +584,17 @@ client = {
 ```js
 server = {
 	type: 5,
-	code: 4,
+	code: 2,
 	content: {
 		success: "bool"
 	}
 }
 ```
-#### **5.5. Edit Address**
+#### **5.3. Edit Address**
 ```js
 client = {
 	type: 5,
-	code: 5,
+	code: 3,
 	content: {
 		email: "str",
 		address: "str",
@@ -642,24 +604,24 @@ client = {
 ```js
 server = {
 	type: 5,
-	code: 5,
+	code: 3,
 	content: {
 		success: "bool"
 	}
 }
 ```
-#### **5.6. Request User Info**
+#### **5.4. Request User Info**
 ```js
 client = {
 	type: 5,
-	code: 6,
+	code: 4,
 	content: {}
 }
 ```
 ```js
 server = {
 	type: 5,
-	code: 6,
+	code: 4,
 	content: {
 		email: "str",
 		password: "str",
@@ -962,31 +924,6 @@ client = {
 server = {
 	type: 9,
 	code: 1,
-	content: {
-		success: "bool"
-	}
-}
-```
-#### **9.2. Dynamic User Info Edit**
-> *To change one or mutliple user data in one message, all the atributes to change (name, email, address, etc) should be provided on the <changes> list with the exact attribute name as it is on the database*
-> *For each attribute provided in the <changes> list, a dictionary key of the same name will be provided with the value of the entry being the new value of the attribute*
-```js
-client = {
-	type: 9,
-	code: 2,
-	content: {
-		email: "str",
-		changes: "list"["str"]
-		"str"(field): "str"(value),
-		"str"(field): "str"(value),
-		...
-	}
-}
-```
-```js
-server = {
-	type: 9,
-	code: 2,
 	content: {
 		success: "bool"
 	}
