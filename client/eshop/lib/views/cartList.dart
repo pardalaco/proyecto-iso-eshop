@@ -1,7 +1,8 @@
 // ignore_for_file: non_constant_identifier_names, prefer_interpolation_to_compose_strings, prefer_const_constructors, no_leading_underscores_for_local_identifiers, no_logic_in_create_state, must_be_immutable, unused_element, sized_box_for_whitespace, use_build_context_synchronously, camel_case_types
 import 'package:eshop/models/Cart.dart';
 import 'package:eshop/models/Response.dart';
-import 'package:eshop/views/productDetails.dart';
+import 'package:eshop/utils/MyWidgets.dart';
+import 'package:eshop/views/cartView.dart';
 import 'package:flutter/material.dart';
 import 'package:eshop/sockets/connection.dart';
 import 'package:eshop/models/Profile.dart';
@@ -23,6 +24,10 @@ class cartList extends StatefulWidget {
 }
 
 class _cartListState extends State<cartList> {
+  void reloadCartList() {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
@@ -80,8 +85,28 @@ class _cartListState extends State<cartList> {
                           c.total.toStringAsFixed(2) + " €",
                           style: const TextStyle(fontSize: 20),
                         ),
-                        onTap: () {
-                          dev.log("Ir a la nueva vista");
+                        onTap: () async {
+                          dev.log("Ir a la vista del carrito");
+                          var data = await widget.connection
+                              .requestCartProducts(
+                                  widget.profile.email, c.cartid);
+                          Response response = Response.fromJson(data);
+                          if (response.error || !response.content["success"]) {
+                            showDialog(
+                                context: context,
+                                builder: (context) => MyPopUp(context, "Error",
+                                    "Something went wrong", 1));
+                          } else {
+                            Cart cart = Cart.fromJson(response.content, true);
+                            var route = MaterialPageRoute(
+                              builder: (context) => cartView(
+                                  profile: widget.profile,
+                                  cart: cart,
+                                  connection: widget.connection,
+                                  reloadCartList: reloadCartList),
+                            );
+                            Navigator.of(context).push(route);
+                          }
                         },
                         trailing: ElevatedButton(
                           onPressed: () {
