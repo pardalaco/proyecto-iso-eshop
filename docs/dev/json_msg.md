@@ -550,10 +550,10 @@ server = {
 > *For each attribute provided in the <changes> list, a dictionary key of the same name will be provided with the value of the entry being the new value of the attribute*
 ```js
 client = {
-	type: 9,
-	code: 2,
+	type: 5,
+	code: 1,
 	content: {
-		email: "str",
+		useremail: "str",
 		changes: "list"["str"]
 		"str"(field): "str"(value),
 		"str"(field): "str"(value),
@@ -563,7 +563,7 @@ client = {
 ```
 ```js
 server = {
-	type: 9,
+	type: 5,
 	code: 1,
 	content: {
 		success: "bool"
