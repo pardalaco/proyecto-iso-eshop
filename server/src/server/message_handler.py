@@ -295,7 +295,18 @@ class MessageHandler:
 
 #***************************************************************************************************
 	def handle_edit_user_info(self, content: dict) -> dict:
-		pass #@todo edit user info
+		useremail = content["useremail"]
+		changes = content["changes"]
+		for change in changes:
+			try:
+				newval = content[change]
+				if not Database.update_user_info(useremail, change, newval):
+					return {"success": False}
+				if change == "email":
+					useremail = content["email"]
+			except Exception as e:
+				print(f"(!) Error while updating user info: \n{e}")
+		return {"success": True}
 
 
 #***************************************************************************************************

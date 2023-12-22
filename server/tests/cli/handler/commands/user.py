@@ -62,6 +62,27 @@ def handle_logout(isresponse: bool, current_user: dict, args: list[str]) -> tupl
 		current_user["email"] = None
 		return (False, "Successfully logged out")
 
+#***************************************************************************************************
+def handle_edit_user_info(isresponse: bool, current_user: dict, 
+	args: list[str]) -> tuple[bool, dict]:
+	if current_user["privilege"] == PRIVILEGE_NONE:
+		return (False, "You need to Log in to use this command")
+	else:
+		if isresponse:
+			if args[0]["content"]["success"] == True:
+				return (False, "User info edited successfully")
+			else:
+				return (False, "There was an error while editing user info")
+		else:
+			content = {"useremail": current_user["email"], "changes": []}
+			try:
+				for i in range(0, len(args), 2):
+					content["changes"].append(args[i])
+					content[args[i]] = args[i + 1]
+			except Exception as e:
+				print(e)
+			return (True, {"type": 5, "code": 1, "content": content})
+
 
 #***************************************************************************************************
 def handle_edit_payment(isresponse: bool, current_user: dict, args: list[str]) -> tuple[bool, dict]:
@@ -112,6 +133,9 @@ user_command_handlers = {
     "login": handle_login,
     "signup": handle_signup,
     "logout": handle_logout,
+
+		"edit-user-info": handle_edit_user_info,
+		"eui": handle_edit_user_info,
 
 		"edit-payment": handle_edit_payment,
 		"epy": handle_edit_payment,
