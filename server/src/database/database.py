@@ -394,6 +394,9 @@ class Database:
 			for tag in tags:
 				if cls.tag_exists(tag):
 					cls.cursor.execute(query, (productid, tag))
+					if len(cls.fetch_product_tags(productid)) == 0:
+						cls.connection.rollback()
+						return False
 				else:
 					cls.connection.commit()
 					print(f"(!) Tried to remove a non existent Tag: {tag}")
