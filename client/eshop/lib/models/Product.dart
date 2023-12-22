@@ -37,16 +37,20 @@ class Product {
       required this.tags});
 
   Product.fromJson(Map<String, dynamic> json, bool inCart) {
-    id = json['id'];
-    name = json['name'];
-    price = json['price'].toDouble();
-    description = json['description'];
-    image = json['image'];
     tags = Tags.fromJson(json, true);
-
     if (inCart) {
+      id = json['product_id'];
+      name = json['product_name'];
+      price = json['product_price'].toDouble();
+      description = json['product_description'];
+      image = json['product_image'];
       quantity = json['quantity'];
     } else {
+      id = json['id'];
+      name = json['name'];
+      price = json['price'].toDouble();
+      description = json['description'];
+      image = json['image'];
       rating = json['rating'].toDouble();
       count = json['count'];
     }

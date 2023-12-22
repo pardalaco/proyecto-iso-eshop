@@ -98,6 +98,8 @@ class _cartListState extends State<cartList> {
                                     "Something went wrong", 1));
                           } else {
                             Cart cart = Cart.fromJson(response.content, true);
+                            cart.cartid = c.cartid;
+                            cart.cartname = c.cartname;
                             var route = MaterialPageRoute(
                               builder: (context) => cartView(
                                   profile: widget.profile,

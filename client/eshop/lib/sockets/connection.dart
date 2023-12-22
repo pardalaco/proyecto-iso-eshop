@@ -111,7 +111,7 @@ class Connection {
     await query({
       "type": 2,
       "code": 3,
-      "content": {"email": email, "password": tags.onlyTrues()}
+      "content": {"email": email, "tags": tags.onlyTrues()}
     });
     return getData();
   }

@@ -72,147 +72,159 @@ class _cartViewState extends State<cartView> {
                 ),
               )
             ] else ...[
-              ListView.separated(
-                itemCount: widget.cart.listProducts.amount,
-                separatorBuilder: (context, index) => const Divider(
-                  thickness: 1,
-                  color: Colors.white,
-                ),
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(
-                      widget.cart.listProducts.products[index].name,
-                      style: const TextStyle(fontSize: 25),
-                    ),
-                    textColor: Colors.white,
-                    subtitle: Text(
-                      widget.cart.listProducts.products[index].price
-                              .toStringAsFixed(2) +
-                          " €",
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                    trailing: Row(
-                      children: [
-                        IconButton(
-                            onPressed: () async {
-                              dev.log(
-                                  "Eliminar un item de ${widget.cart.listProducts.products[index].name}");
-                              widget.cart.listProducts.products[index]
-                                  .quantity -= 1;
-                              setState(() {});
-                            },
-                            icon: const Icon(
-                              Icons.remove,
-                              color: Colors.white,
-                            )),
-                        Text(
-                          widget.cart.listProducts.products[index].quantity
-                              .toString(),
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                        IconButton(
-                            onPressed: () async {
-                              dev.log(
-                                  "Añadir un item de ${widget.cart.listProducts.products[index].name}");
-                              widget.cart.listProducts.products[index]
-                                  .quantity += 1;
-                              setState(() {});
-                            },
-                            icon: const Icon(
-                              Icons.add,
-                              color: Colors.white,
-                            )),
-                        SizedBox(
-                          width: constraints.maxWidth * 0.1,
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                        title: Text(
-                                          "Message",
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        content: Text("Are you sure?",
-                                            style: const TextStyle(
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 15),
-                                            textAlign: TextAlign.center),
-                                        actions: [
-                                          TextButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: const Text(
-                                                "NO",
-                                                style: TextStyle(
-                                                    color: CustomColors.n1,
+              SizedBox(
+                height: constraints.maxHeight * 0.5,
+                width: double.infinity,
+                child: ListView.separated(
+                  itemCount: widget.cart.listProducts.amount,
+                  separatorBuilder: (context, index) => const Divider(
+                    thickness: 1,
+                    color: Colors.white,
+                  ),
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(
+                        widget.cart.listProducts.products[index].name,
+                        style: const TextStyle(fontSize: 25),
+                      ),
+                      textColor: Colors.white,
+                      subtitle: Text(
+                        widget.cart.listProducts.products[index].price
+                                .toStringAsFixed(2) +
+                            " €",
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                      trailing: FittedBox(
+                        child: Row(
+                          children: [
+                            IconButton(
+                                onPressed: () async {
+                                  dev.log(
+                                      "Eliminar un item de ${widget.cart.listProducts.products[index].name}");
+                                  widget.cart.listProducts.products[index]
+                                      .quantity -= 1;
+                                  setState(() {});
+                                },
+                                icon: const Icon(
+                                  Icons.remove,
+                                  color: Colors.white,
+                                )),
+                            Text(
+                              widget.cart.listProducts.products[index].quantity
+                                  .toString(),
+                              style: const TextStyle(fontSize: 20),
+                            ),
+                            IconButton(
+                                onPressed: () async {
+                                  dev.log(
+                                      "Añadir un item de ${widget.cart.listProducts.products[index].name}");
+                                  widget.cart.listProducts.products[index]
+                                      .quantity += 1;
+                                  setState(() {});
+                                },
+                                icon: const Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                )),
+                            SizedBox(
+                              width: constraints.maxWidth * 0.1,
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                            title: Text(
+                                              "Message",
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            content: Text("Are you sure?",
+                                                style: const TextStyle(
+                                                    color: Colors.black,
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 15),
-                                              )),
-                                          TextButton(
-                                              onPressed: () async {
-                                                dev.log("Eliminar producto");
-                                                var data = await widget
-                                                    .connection
-                                                    .removeProductFromCart(
-                                                        widget.profile.email,
-                                                        widget.cart.cartid,
-                                                        widget
-                                                            .cart
-                                                            .listProducts
-                                                            .products[index]
-                                                            .id);
-                                                Response response =
-                                                    Response.fromJson(data);
-                                                if (response.error ||
-                                                    !response
-                                                        .content["success"]) {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                    SnackBar(
-                                                      content: SizedBox(
-                                                        height: constraints
-                                                                .maxHeight *
-                                                            0.05,
-                                                        child: const Text(
-                                                          'ERROR REMOVING PRODUCT',
-                                                          style: TextStyle(
-                                                              fontSize: 25),
+                                                textAlign: TextAlign.center),
+                                            actions: [
+                                              TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: const Text(
+                                                    "NO",
+                                                    style: TextStyle(
+                                                        color: CustomColors.n1,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 15),
+                                                  )),
+                                              TextButton(
+                                                  onPressed: () async {
+                                                    dev.log(
+                                                        "Eliminar producto");
+                                                    var data = await widget
+                                                        .connection
+                                                        .removeProductFromCart(
+                                                            widget
+                                                                .profile.email,
+                                                            widget.cart.cartid,
+                                                            widget
+                                                                .cart
+                                                                .listProducts
+                                                                .products[index]
+                                                                .id);
+                                                    Response response =
+                                                        Response.fromJson(data);
+                                                    if (response.error ||
+                                                        !response.content[
+                                                            "success"]) {
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                        SnackBar(
+                                                          content: SizedBox(
+                                                            height: constraints
+                                                                    .maxHeight *
+                                                                0.05,
+                                                            child: const Text(
+                                                              'ERROR REMOVING PRODUCT',
+                                                              style: TextStyle(
+                                                                  fontSize: 25),
+                                                            ),
+                                                          ),
+                                                          backgroundColor:
+                                                              CustomColors.n1,
                                                         ),
-                                                      ),
-                                                      backgroundColor:
-                                                          CustomColors.n1,
-                                                    ),
-                                                  );
-                                                }
-                                                Navigator.of(context).pop();
-                                                setState(() {});
-                                              },
-                                              child: const Text(
-                                                "YES",
-                                                style: TextStyle(
-                                                    color: CustomColors.n1,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 15),
-                                              )),
-                                        ]));
-                          },
-                          style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  CustomColors.n1)),
-                          child: Icon(
-                            Icons.delete,
-                            color: Colors.white,
-                            size: constraints.maxHeight * 0.04,
-                          ),
+                                                      );
+                                                    }
+                                                    Navigator.of(context).pop();
+                                                    setState(() {});
+                                                  },
+                                                  child: const Text(
+                                                    "YES",
+                                                    style: TextStyle(
+                                                        color: CustomColors.n1,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 15),
+                                                  )),
+                                            ]));
+                              },
+                              style: ButtonStyle(
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          CustomColors.n1)),
+                              child: Icon(
+                                Icons.delete,
+                                color: Colors.white,
+                                size: constraints.maxHeight * 0.04,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  );
-                },
+                      ),
+                    );
+                  },
+                ),
               )
             ]
           ],
