@@ -755,6 +755,29 @@ class Database:
 			total += product[0] * product[1]
 		return total
 
+
+#***************************************************************************************************
+	@classmethod
+	def update_user_info(cls, email: str, change: str, newval: str) -> bool:
+		allowed_columns = ["email", "password", "name", "payment", "address"]
+		if change not in allowed_columns:
+			return False
+		print(f"Update User Info: email = {email}, change = {change}, newval = {newval}")
+		query = f"""
+		UPDATE User
+		SET {change} = ?
+		WHERE email = ?
+		"""
+		try:
+			cls.cursor.execute(query, (newval, email))
+			cls.connection.commit()
+			return True
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error occurred while editing user info: \n{e}")
+			return False
+
+
 #***************************************************************************************************
 	@classmethod
 	def edit_payment(cls, email: str, payment: str) -> bool:
