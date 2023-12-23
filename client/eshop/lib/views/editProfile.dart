@@ -187,6 +187,7 @@ class _EditProfile extends State<EditProfile> {
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(true);
+                  Navigator.of(context).pop(true);
                 },
                 child: const Text(
                   'Discard',
