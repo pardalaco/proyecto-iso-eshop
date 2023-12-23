@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names, prefer_interpolation_to_compose_strings, prefer_const_constructors, no_leading_underscores_for_local_identifiers, no_logic_in_create_state, must_be_immutable, unused_element, sized_box_for_whitespace, use_build_context_synchronously, camel_case_types
 import 'package:eshop/models/Cart.dart';
+import 'package:eshop/models/Product.dart';
 import 'package:eshop/models/Response.dart';
 import 'package:flutter/material.dart';
 import 'package:eshop/sockets/connection.dart';
@@ -313,13 +314,10 @@ class _cartViewState extends State<cartView> {
                                   if (widget.cart.listProducts.products[index]
                                           .quantity !=
                                       0) {
-                                    widget.cart.listProducts.products[index]
-                                        .quantity -= 1;
-                                    widget.cart.total -= widget.cart
-                                        .listProducts.products[index].price;
-                                    if (widget.cart.listProducts.products[index]
-                                            .quantity ==
-                                        0) {
+                                    int q = widget.cart.listProducts
+                                            .products[index].quantity -
+                                        1;
+                                    if (q == 0) {
                                       var data = await widget.connection
                                           .removeProductFromCart(
                                               widget.profile.email,
@@ -345,9 +343,44 @@ class _cartViewState extends State<cartView> {
                                           ),
                                         );
                                       } else {
-                                        dev.log(index.toString());
+                                        widget.cart.total -= widget.cart
+                                            .listProducts.products[index].price;
                                         widget.cart.listProducts.products
                                             .removeAt(index);
+                                        widget.reloadCartList();
+                                      }
+                                    } else {
+                                      var data = await widget.connection
+                                          .editQuantity(
+                                              widget.profile.email,
+                                              widget.cart.cartid,
+                                              widget.cart.listProducts
+                                                  .products[index].id,
+                                              q);
+                                      Response response =
+                                          Response.fromJson(data);
+                                      if (response.error ||
+                                          !response.content["success"]) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: SizedBox(
+                                              height:
+                                                  constraints.maxHeight * 0.05,
+                                              child: const Text(
+                                                'ERROR EDITING QUANTITY',
+                                                style: TextStyle(fontSize: 25),
+                                              ),
+                                            ),
+                                            backgroundColor: CustomColors.n1,
+                                          ),
+                                        );
+                                      } else {
+                                        widget.cart.listProducts.products[index]
+                                            .quantity -= 1;
+                                        widget.cart.total -= widget.cart
+                                            .listProducts.products[index].price;
+                                        widget.reloadCartList();
                                       }
                                     }
                                     setState(() {});
@@ -367,10 +400,38 @@ class _cartViewState extends State<cartView> {
                                 onPressed: () async {
                                   dev.log(
                                       "Añadir un item de ${widget.cart.listProducts.products[index].name}");
-                                  widget.cart.listProducts.products[index]
-                                      .quantity += 1;
-                                  widget.cart.total += widget
-                                      .cart.listProducts.products[index].price;
+                                  int q = widget.cart.listProducts
+                                          .products[index].quantity +
+                                      1;
+                                  var data = await widget.connection
+                                      .editQuantity(
+                                          widget.profile.email,
+                                          widget.cart.cartid,
+                                          widget.cart.listProducts
+                                              .products[index].id,
+                                          q);
+                                  Response response = Response.fromJson(data);
+                                  if (response.error ||
+                                      !response.content["success"]) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: SizedBox(
+                                          height: constraints.maxHeight * 0.05,
+                                          child: const Text(
+                                            'ERROR EDITING QUANTITY',
+                                            style: TextStyle(fontSize: 25),
+                                          ),
+                                        ),
+                                        backgroundColor: CustomColors.n1,
+                                      ),
+                                    );
+                                  } else {
+                                    widget.cart.listProducts.products[index]
+                                        .quantity += 1;
+                                    widget.cart.total += widget.cart
+                                        .listProducts.products[index].price;
+                                    widget.reloadCartList();
+                                  }
                                   setState(() {});
                                 },
                                 icon: const Icon(
@@ -462,6 +523,7 @@ class _cartViewState extends State<cartView> {
                                                       widget.cart.listProducts
                                                           .products
                                                           .removeAt(index);
+                                                      widget.reloadCartList();
                                                       setState(() {});
                                                     }
                                                     Navigator.of(context).pop();
@@ -494,42 +556,46 @@ class _cartViewState extends State<cartView> {
                 ),
               ),
               const Expanded(child: SizedBox()),
-              Row(
-                children: [
-                  ElevatedButton(
-                    onPressed: () async {
-                      dev.log(("Pagar"));
-                    },
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(CustomColors.n1),
-                      fixedSize: MaterialStateProperty.all<Size>(Size(
-                          constraints.maxWidth * 0.5,
-                          constraints.maxHeight * 0.07)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () async {
+                        dev.log(("Pagar"));
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(CustomColors.n1),
+                        fixedSize: MaterialStateProperty.all<Size>(Size(
+                            constraints.maxWidth * 0.45,
+                            constraints.maxHeight * 0.07)),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
                         ),
                       ),
+                      child: const Text(
+                        'Pay',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
                     ),
-                    child: const Text(
-                      'Pay',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    SizedBox(
+                      width: constraints.maxWidth * 0.1,
                     ),
-                  ),
-                  SizedBox(
-                    width: constraints.maxWidth * 0.1,
-                  ),
-                  Text(
-                    "${widget.cart.total} €",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ],
+                    Text(
+                      "${widget.cart.total.toStringAsFixed(2)} €",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
               )
             ]
           ],
