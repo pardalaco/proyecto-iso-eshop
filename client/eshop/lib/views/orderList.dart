@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:eshop/models/Cart.dart';
+import 'package:eshop/models/Order.dart';
 import 'package:eshop/models/Response.dart';
 import 'package:eshop/sockets/connection.dart';
 import 'package:eshop/models/Profile.dart';
@@ -52,18 +52,18 @@ class _OrderListState extends State<OrderList> {
 
   Widget buildOrderListBody() {
     return FutureBuilder(
-      future: widget.connection.getAllCarts(widget.profile.email),
+      future: widget.connection.requestOrders(widget.profile.email),
       builder: (context, AsyncSnapshot<String> snapshot) {
         if (snapshot.hasData) {
           Response response = Response.fromJson(snapshot.data!);
           if (response.error) {
             return buildErrorWidget("Something went wrong");
           } else {
-            Carts carts = Carts.fromJson(response.content);
-            if (carts.carts.isEmpty) {
+            Orders orders = Orders.fromJson(response.content);
+            if (orders.orders.isEmpty) {
               return buildErrorWidget("There aren't any orders");
             } else {
-              return buildOrderListView(carts);
+              return buildOrderListView(orders);
             }
           }
         } else {
@@ -73,21 +73,21 @@ class _OrderListState extends State<OrderList> {
     );
   }
 
-  Widget buildOrderListView(Carts carts) {
+  Widget buildOrderListView(Orders orders) {
     return ListView.builder(
-      itemCount: carts.carts.length,
+      itemCount: orders.orders.length,
       itemBuilder: (context, index) {
-        Cart cart = carts.carts[index];
+        Order order = orders.orders[index];
         return ListTile(
           title: Text(
-            cart.cartname,
+            order.orderid.toString(),
             style: const TextStyle(
               fontSize: 25,
               color: Colors.white, // Agregar el color aquí
             ),
           ),
           subtitle: Text(
-            cart.total.toStringAsFixed(2) + " €",
+            order.total.toStringAsFixed(2) + " €",
             style: const TextStyle(
               fontSize: 20,
               color: Colors.white, // Agregar el color aquí
