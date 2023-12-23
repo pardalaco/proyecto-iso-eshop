@@ -4,12 +4,18 @@ import 'package:eshop/models/Response.dart';
 import 'package:eshop/sockets/connection.dart';
 import 'package:eshop/models/Profile.dart';
 import 'package:eshop/style/ColorsUsed.dart';
+import 'package:eshop/utils/MyWidgets.dart';
 
 class OrderList extends StatefulWidget {
   final Connection connection;
   final Profile profile;
+  final bool admin;
 
-  const OrderList({Key? key, required this.connection, required this.profile})
+  const OrderList(
+      {Key? key,
+      required this.connection,
+      required this.profile,
+      required this.admin})
       : super(key: key);
 
   @override
@@ -40,7 +46,7 @@ class _OrderListState extends State<OrderList> {
             if (snapshot.hasData) {
               Response response = Response.fromJson(snapshot.data!);
               if (response.error) {
-                return Center(
+                return const Center(
                   child: Text(
                     "Something went wrong",
                     style: TextStyle(
@@ -53,7 +59,7 @@ class _OrderListState extends State<OrderList> {
               } else {
                 Carts carts = Carts.fromJson(response.content);
                 if (carts.carts.isEmpty) {
-                  return Center(
+                  return const Center(
                     child: Text(
                       "There aren't any orders",
                       style: TextStyle(
@@ -71,14 +77,20 @@ class _OrderListState extends State<OrderList> {
                       return ListTile(
                         title: Text(
                           cart.cartname,
-                          style: TextStyle(fontSize: 25),
+                          style: const TextStyle(
+                            fontSize: 25,
+                            color: Colors.white, // Agregar el color aquí
+                          ),
                         ),
                         subtitle: Text(
                           cart.total.toStringAsFixed(2) + " €",
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.white, // Agregar el color aquí
+                          ),
                         ),
                         onTap: () async {
-                          // Implement your logic to navigate to the order details view
+                          // Implementa tu lógica para navegar a la vista de detalles de la orden
                         },
                       );
                     },
@@ -86,7 +98,7 @@ class _OrderListState extends State<OrderList> {
                 }
               }
             } else {
-              return Center(
+              return const Center(
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation(CustomColors.n1),
                 ),
@@ -94,6 +106,15 @@ class _OrderListState extends State<OrderList> {
             }
           },
         ),
+        floatingActionButton: widget.admin
+            ? FloatingActionButton(
+                onPressed: () async {
+                  // Aquí implementa la lógica para el botón
+                },
+                backgroundColor: CustomColors.n1,
+                child: const Icon(Icons.search, color: Colors.white),
+              )
+            : null,
       );
     });
   }
