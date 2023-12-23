@@ -6,6 +6,7 @@ import 'package:eshop/utils/MyWidgets.dart';
 import 'package:eshop/views/cartList.dart';
 import 'package:eshop/views/createProduct.dart';
 import 'package:eshop/views/editProfile.dart';
+import 'package:eshop/views/orderList.dart';
 import 'package:eshop/views/productDetails.dart';
 import 'package:flutter/material.dart';
 import 'package:eshop/sockets/connection.dart';
@@ -323,7 +324,13 @@ Widget _MyDrawer(context, Profile perfil, bool admin, VoidCallback updateState,
             color: Colors.white,
           ),
           onTap: () {
-            //_goToEditProfile(context, perfil);
+            var route = MaterialPageRoute(
+                builder: (context) => OrderList(
+                      connection: connection,
+                      profile: perfil,
+                      admin: adminMode,
+                    ));
+            Navigator.of(context).push(route);
           },
         ),
         SizedBox(
