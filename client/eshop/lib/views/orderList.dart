@@ -74,13 +74,14 @@ class _OrderListState extends State<OrderList> {
   }
 
   Widget buildOrderListView(Orders orders) {
-    return ListView.builder(
+    return ListView.separated(
+      padding: const EdgeInsets.all(5.0),
       itemCount: orders.orders.length,
       itemBuilder: (context, index) {
         Order order = orders.orders[index];
         return ListTile(
           title: Text(
-            order.orderid.toString(),
+            "ID order: ${order.orderid}",
             style: const TextStyle(
               fontSize: 25,
               color: Colors.white, // Agregar el color aquí
@@ -98,6 +99,10 @@ class _OrderListState extends State<OrderList> {
           },
         );
       },
+      separatorBuilder: (context, index) => const Divider(
+        thickness: 2,
+        color: Colors.white,
+      ),
     );
   }
 
