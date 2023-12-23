@@ -14,13 +14,13 @@ class Orders {
 
 class Order {
   late int orderid;
-  late DateTime date;
+  late String date;
   late double total;
   late String status;
 
   Order.fromJson(Map<String, dynamic> json) {
     orderid = json['orderid'];
-    date = DateTime.parse(json['date']);
+    date = json['date'];
     total = json['total'].toDouble();
     status = json['status'];
   }
