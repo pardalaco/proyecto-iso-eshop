@@ -30,3 +30,39 @@ Widget MyPopUp(context, String title, String msg, int numberPops) =>
                 )),
           )
         ]);
+
+AppBar SimpleAppBar(BoxConstraints constraints, String text) {
+  return AppBar(
+    toolbarHeight: constraints.maxHeight * 0.1,
+    backgroundColor: CustomColors.n1,
+    centerTitle: true,
+    title: Text(
+      text,
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: constraints.maxHeight * 0.05,
+      ),
+    ),
+  );
+}
+
+Widget MyErrorWidget(String errorMessage) {
+  return Center(
+    child: Text(
+      errorMessage,
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  );
+}
+
+Widget MyLoadingWidget() {
+  return const Center(
+    child: CircularProgressIndicator(
+      valueColor: AlwaysStoppedAnimation(CustomColors.n1),
+    ),
+  );
+}

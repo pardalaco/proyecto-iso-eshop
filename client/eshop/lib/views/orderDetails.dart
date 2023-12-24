@@ -1,10 +1,14 @@
 import 'package:eshop/sockets/connection.dart';
 import 'package:flutter/material.dart';
+
 import 'package:eshop/models/Order.dart';
 import 'package:eshop/models/DetailsOrder.dart';
 import 'package:eshop/models/Response.dart';
 import 'package:eshop/models/Profile.dart';
+
 import 'package:eshop/style/ColorsUsed.dart';
+
+import 'package:eshop/utils/MyWidgets.dart';
 
 class OrderDetails extends StatefulWidget {
   final Connection connection;
@@ -25,11 +29,13 @@ class OrderDetails extends StatefulWidget {
 class _OrderDetailsState extends State<OrderDetails> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Order Details'),
-      ),
-      body: buildOrderDetails(),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Scaffold(
+          appBar: SimpleAppBar(constraints, "Order Details"),
+          body: buildOrderDetails(),
+        );
+      },
     );
   }
 
@@ -41,10 +47,10 @@ class _OrderDetailsState extends State<OrderDetails> {
         if (snapshot.hasData) {
           Response response = Response.fromJson(snapshot.data!);
           if (response.error) {
-            return buildErrorWidget("Something went wrong");
+            return MyErrorWidget("Something went wrong");
           } else {
             DetailsOrder order = DetailsOrder.fromJson(response.content);
-            Padding(
+            return Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,30 +68,9 @@ class _OrderDetailsState extends State<OrderDetails> {
             );
           }
         } else {
-          return buildLoadingWidget();
+          return MyLoadingWidget();
         }
       },
-    );
-  }
-
-  Widget buildLoadingWidget() {
-    return const Center(
-      child: CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation(CustomColors.n1),
-      ),
-    );
-  }
-
-  Widget buildErrorWidget(String errorMessage) {
-    return Center(
-      child: Text(
-        errorMessage,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
     );
   }
 }
