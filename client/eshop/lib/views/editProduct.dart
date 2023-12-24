@@ -163,6 +163,7 @@ class _MyFormState extends State<MyForm> {
                                       onPressed: () async {
                                         showDialog(
                                             context: context,
+                                            barrierDismissible: false,
                                             builder: (context) => AlertDialog(
                                                     title: const Text(
                                                       "Successfully",
@@ -543,6 +544,7 @@ class _MyFormState extends State<MyForm> {
                       dev.log("Todo OK");
                       showDialog(
                           context: context,
+                          barrierDismissible: false,
                           builder: (context) => AlertDialog(
                                   title: const Text(
                                     "Successfully",
