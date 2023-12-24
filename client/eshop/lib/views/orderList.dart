@@ -104,10 +104,135 @@ class _OrderListState extends State<OrderList> {
   FloatingActionButton buildSearchButton() {
     return FloatingActionButton(
       onPressed: () async {
-        // Aquí implementa la lógica para el botón
+        //await showSearchOrder();
+        //-------------
+        showChangeOrderState(1);
       },
       backgroundColor: CustomColors.n1,
       child: const Icon(Icons.search, color: Colors.white),
+    );
+  }
+
+  Future<void> showSearchOrder() async {
+    TextEditingController searchController = TextEditingController();
+
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Search Order"),
+          content: TextField(
+            controller: searchController,
+            decoration: const InputDecoration(labelText: "Enter the order ID"),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+
+                showChangeOrderState(1);
+              },
+              child: const Text("Search"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> showChangeOrderState(int orderId) async {
+    String selectedOption = '';
+    int sendOption;
+
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: Text("Cambiar estado del pedido $orderId"),
+          children: [
+            ListTile(
+              title: const Text('Invoiced'),
+              onTap: () {
+                setState(() {
+                  selectedOption = 'Invoiced';
+                  sendOption = 0;
+                });
+                Navigator.of(context).pop();
+                showSnackBar(orderId, selectedOption);
+              },
+            ),
+            ListTile(
+              title: const Text('Prepared'),
+              onTap: () {
+                setState(() {
+                  selectedOption = 'Prepared';
+                  sendOption = 1;
+                });
+                Navigator.of(context).pop();
+                showSnackBar(orderId, selectedOption);
+              },
+            ),
+            ListTile(
+              title: const Text('Shipped'),
+              onTap: () {
+                setState(() {
+                  selectedOption = 'Shipped';
+                  sendOption = 2;
+                });
+                Navigator.of(context).pop();
+                showSnackBar(orderId, selectedOption);
+              },
+            ),
+            ListTile(
+              title: const Text('Out for Delivery'),
+              onTap: () {
+                setState(() {
+                  selectedOption = 'Out for Delivery';
+                  sendOption = 3;
+                });
+                Navigator.of(context).pop();
+                showSnackBar(orderId, selectedOption);
+              },
+            ),
+            ListTile(
+              title: const Text('Delivered'),
+              onTap: () {
+                setState(() {
+                  selectedOption = 'Delivered';
+                  sendOption = 4;
+                });
+                Navigator.of(context).pop();
+                showSnackBar(orderId, selectedOption);
+              },
+            ),
+            ListTile(
+              title: const Text('Cancelled'),
+              onTap: () {
+                setState(() {
+                  selectedOption = 'Cancelled';
+                  sendOption = 5;
+                });
+                Navigator.of(context).pop();
+                showSnackBar(orderId, selectedOption);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showSnackBar(int orderId, String selectedOption) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('El pedido $orderId ha cambiado a $selectedOption'),
+      ),
     );
   }
 }

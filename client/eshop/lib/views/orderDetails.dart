@@ -146,6 +146,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                   ),
                 );
                 // Reiniciar la vista (navegar a la misma pantalla)
+                widget.order.status = "Cancelled";
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                     builder: (context) => OrderDetails(
