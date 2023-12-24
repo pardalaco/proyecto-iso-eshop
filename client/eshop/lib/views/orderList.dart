@@ -5,6 +5,7 @@ import 'package:eshop/sockets/connection.dart';
 import 'package:eshop/models/Profile.dart';
 import 'package:eshop/style/ColorsUsed.dart';
 import 'package:eshop/utils/MyWidgets.dart';
+import 'package:eshop/views/orderDetails.dart';
 
 class OrderList extends StatefulWidget {
   final Connection connection;
@@ -84,18 +85,27 @@ class _OrderListState extends State<OrderList> {
             "ID order: ${order.orderid}",
             style: const TextStyle(
               fontSize: 25,
-              color: Colors.white, // Agregar el color aquí
+              color: Colors.white,
             ),
           ),
           subtitle: Text(
             order.total.toStringAsFixed(2) + " €",
             style: const TextStyle(
               fontSize: 20,
-              color: Colors.white, // Agregar el color aquí
+              color: Colors.white,
             ),
           ),
           onTap: () async {
             // Implementa tu lógica para navegar a la vista de detalles de la orden
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OrderDetails(
+                    connection: widget.connection,
+                    profile: widget.profile,
+                    order: order),
+              ),
+            );
           },
         );
       },

@@ -1,5 +1,3 @@
-import 'package:eshop/models/Product.dart';
-
 class Orders {
   late List<Order> orders;
 
