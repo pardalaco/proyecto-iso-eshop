@@ -8,7 +8,12 @@ import 'package:eshop/views/changePassword.dart';
 class EditProfile extends StatefulWidget {
   Connection connection;
   Profile profile;
-  EditProfile({Key? key, required this.connection, required this.profile})
+  final VoidCallback updateHome;
+  EditProfile(
+      {Key? key,
+      required this.connection,
+      required this.profile,
+      required this.updateHome})
       : super(key: key);
 
   @override
@@ -269,6 +274,7 @@ class _EditProfile extends State<EditProfile> {
                     onPressed: () {
                       Navigator.of(context).pop();
                       Navigator.of(context).pop();
+                      widget.updateHome();
                     },
                     child: const Text('OK'),
                   ),

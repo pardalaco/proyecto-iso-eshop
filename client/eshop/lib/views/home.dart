@@ -302,8 +302,11 @@ Widget _MyDrawer(context, Profile perfil, bool admin, VoidCallback updateState,
           ),
           onTap: () {
             var route = MaterialPageRoute(
-                builder: (context) =>
-                    EditProfile(connection: connection, profile: perfil));
+                builder: (context) => EditProfile(
+                      connection: connection,
+                      profile: perfil,
+                      updateHome: updateState,
+                    ));
             Navigator.of(context).push(route);
           },
         ),
