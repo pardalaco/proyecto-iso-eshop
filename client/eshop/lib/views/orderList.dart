@@ -1,8 +1,14 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
+
+import 'package:eshop/sockets/connection.dart';
+
 import 'package:eshop/models/Order.dart';
 import 'package:eshop/models/Response.dart';
-import 'package:eshop/sockets/connection.dart';
 import 'package:eshop/models/Profile.dart';
+import 'package:eshop/models/OrderCancelation.dart';
+
 import 'package:eshop/style/ColorsUsed.dart';
 import 'package:eshop/utils/MyWidgets.dart';
 import 'package:eshop/views/orderDetails.dart';
@@ -148,18 +154,42 @@ class _OrderListState extends State<OrderList> {
 
   Future<void> showChangeOrderState(int orderId) async {
     String selectedOption = '';
-    int? sendOption;
+    int state = 0;
 
     ListTile _buildListTile(String title, int option) {
       return ListTile(
         title: Text(title),
-        onTap: () {
+        onTap: () async {
           setState(() {
             selectedOption = title;
-            sendOption = option;
+            state = option;
           });
           Navigator.of(context).pop();
-          showSnackBar(orderId, selectedOption);
+
+          //var dataOrderState = await widget.connection
+          //  .changeOrderStatus(widget.profile.email, orderId, state);
+          //Response responseOrderState = Response.fromJson(dataOrderState);
+          // if (responseOrderState.error) {
+          //   ScaffoldMessenger.of(context).showSnackBar(
+          //     const SnackBar(
+          //       content: Text('Error'),
+          //     ),
+          //   );
+          // } else {
+          //   OrderCancelation orderCancelation =
+          //       OrderCancelation.fromJson(responseOrderState.content);
+
+          //   if (orderCancelation.success) {
+          //     //Order.state = newState;
+          //     showSnackBar(orderId, selectedOption);
+          //   } else {
+          //     ScaffoldMessenger.of(context).showSnackBar(
+          //       const SnackBar(
+          //         content: Text('Error'),
+          //       ),
+          //     );
+          //   }
+          // }
         },
       );
     }
@@ -179,7 +209,7 @@ class _OrderListState extends State<OrderList> {
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
-          title: Text("Cambiar estado del pedido $orderId"),
+          title: Text("Change status to $orderId id"),
           children: buildDialogOptions(),
         );
       },
@@ -189,7 +219,8 @@ class _OrderListState extends State<OrderList> {
   void showSnackBar(int orderId, String selectedOption) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('El pedido $orderId ha cambiado a $selectedOption'),
+        content:
+            Text('The order $orderId id has changed status to $selectedOption'),
       ),
     );
   }
