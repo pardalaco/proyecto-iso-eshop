@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:eshop/sockets/connection.dart';
 import 'package:flutter/material.dart';
 
@@ -5,6 +7,7 @@ import 'package:eshop/models/Order.dart';
 import 'package:eshop/models/DetailsOrder.dart';
 import 'package:eshop/models/Response.dart';
 import 'package:eshop/models/Profile.dart';
+import 'package:eshop/models/OrderCancelation.dart';
 
 import 'package:eshop/style/ColorsUsed.dart';
 
@@ -122,9 +125,45 @@ class _OrderDetailsState extends State<OrderDetails> {
       return Padding(
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
-          onPressed: () {
-            // Aquí puedes agregar la lógica para cancelar la orden
-            // Puedes mostrar un diálogo de confirmación, realizar la cancelación, etc.
+          onPressed: () async {
+            var data = await widget.connection
+                .cancelOrder(widget.profile.email, widget.order.orderid);
+            Response response = Response.fromJson(data);
+            if (response.error) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Cancelation error.'),
+                ),
+              );
+            } else {
+              OrderCancelation orderCancelation =
+                  OrderCancelation.fromJson(response.content);
+
+              if (orderCancelation.success) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Order canceled.'),
+                  ),
+                );
+                // Reiniciar la vista (navegar a la misma pantalla)
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => OrderDetails(
+                      connection: widget.connection,
+                      profile: widget.profile,
+                      order: widget.order,
+                    ),
+                  ),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                        'Sorry, the order has not been able to be canceled.'),
+                  ),
+                );
+              }
+            }
           },
           style: ElevatedButton.styleFrom(
             primary: Colors.red,
