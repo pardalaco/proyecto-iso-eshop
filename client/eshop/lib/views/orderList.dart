@@ -148,81 +148,39 @@ class _OrderListState extends State<OrderList> {
 
   Future<void> showChangeOrderState(int orderId) async {
     String selectedOption = '';
-    int sendOption;
+    int? sendOption;
+
+    ListTile _buildListTile(String title, int option) {
+      return ListTile(
+        title: Text(title),
+        onTap: () {
+          setState(() {
+            selectedOption = title;
+            sendOption = option;
+          });
+          Navigator.of(context).pop();
+          showSnackBar(orderId, selectedOption);
+        },
+      );
+    }
+
+    List<ListTile> buildDialogOptions() {
+      return [
+        _buildListTile('Invoiced', 0),
+        _buildListTile('Prepared', 1),
+        _buildListTile('Shipped', 2),
+        _buildListTile('Out for Delivery', 3),
+        _buildListTile('Delivered', 4),
+        _buildListTile('Cancelled', 5),
+      ];
+    }
 
     return showDialog(
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
           title: Text("Cambiar estado del pedido $orderId"),
-          children: [
-            ListTile(
-              title: const Text('Invoiced'),
-              onTap: () {
-                setState(() {
-                  selectedOption = 'Invoiced';
-                  sendOption = 0;
-                });
-                Navigator.of(context).pop();
-                showSnackBar(orderId, selectedOption);
-              },
-            ),
-            ListTile(
-              title: const Text('Prepared'),
-              onTap: () {
-                setState(() {
-                  selectedOption = 'Prepared';
-                  sendOption = 1;
-                });
-                Navigator.of(context).pop();
-                showSnackBar(orderId, selectedOption);
-              },
-            ),
-            ListTile(
-              title: const Text('Shipped'),
-              onTap: () {
-                setState(() {
-                  selectedOption = 'Shipped';
-                  sendOption = 2;
-                });
-                Navigator.of(context).pop();
-                showSnackBar(orderId, selectedOption);
-              },
-            ),
-            ListTile(
-              title: const Text('Out for Delivery'),
-              onTap: () {
-                setState(() {
-                  selectedOption = 'Out for Delivery';
-                  sendOption = 3;
-                });
-                Navigator.of(context).pop();
-                showSnackBar(orderId, selectedOption);
-              },
-            ),
-            ListTile(
-              title: const Text('Delivered'),
-              onTap: () {
-                setState(() {
-                  selectedOption = 'Delivered';
-                  sendOption = 4;
-                });
-                Navigator.of(context).pop();
-                showSnackBar(orderId, selectedOption);
-              },
-            ),
-            ListTile(
-              title: const Text('Cancelled'),
-              onTap: () {
-                setState(() {
-                  selectedOption = 'Cancelled';
-                  sendOption = 5;
-                });
-                Navigator.of(context).pop();
-                showSnackBar(orderId, selectedOption);
-              },
-            ),
-          ],
+          children: buildDialogOptions(),
         );
       },
     );
