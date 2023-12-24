@@ -35,6 +35,7 @@ class _OrderDetailsState extends State<OrderDetails> {
           backgroundColor: CustomColors.background,
           appBar: SimpleAppBar(constraints, "Order Details"),
           body: buildOrderDetails(),
+          bottomNavigationBar: _buildCancelButton(),
         );
       },
     );
@@ -113,6 +114,32 @@ class _OrderDetailsState extends State<OrderDetails> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCancelButton() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: ElevatedButton(
+        onPressed: () {
+          // Aquí puedes agregar la lógica para cancelar la orden
+          // Puedes mostrar un diálogo de confirmación, realizar la cancelación, etc.
+        },
+        style: ElevatedButton.styleFrom(
+          primary: Colors.red,
+          padding: EdgeInsets.symmetric(vertical: 15.0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        child: Text(
+          'Cancel Order',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
