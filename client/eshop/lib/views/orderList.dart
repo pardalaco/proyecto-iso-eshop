@@ -104,10 +104,43 @@ class _OrderListState extends State<OrderList> {
   FloatingActionButton buildSearchButton() {
     return FloatingActionButton(
       onPressed: () async {
-        // Aquí implementa la lógica para el botón
+        await showSearchOrder();
       },
       backgroundColor: CustomColors.n1,
       child: const Icon(Icons.search, color: Colors.white),
+    );
+  }
+
+  Future<void> showSearchOrder() async {
+    TextEditingController searchController = TextEditingController();
+
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Buscar Pedido"),
+          content: TextField(
+            controller: searchController,
+            decoration:
+                const InputDecoration(labelText: "Ingrese el ID del pedido"),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Cancelar"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                //showSearchOrder();
+              },
+              child: const Text("Buscar"),
+            ),
+          ],
+        );
+      },
     );
   }
 }
