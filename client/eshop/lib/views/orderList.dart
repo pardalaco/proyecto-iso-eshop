@@ -29,26 +29,11 @@ class _OrderListState extends State<OrderList> {
     return LayoutBuilder(builder: (context, constraints) {
       return Scaffold(
         backgroundColor: CustomColors.background,
-        appBar: buildAppBar(constraints),
+        appBar: SimpleAppBar(constraints, "Order List"),
         body: buildOrderListBody(),
         floatingActionButton: widget.admin ? buildSearchButton() : null,
       );
     });
-  }
-
-  AppBar buildAppBar(BoxConstraints constraints) {
-    return AppBar(
-      toolbarHeight: constraints.maxHeight * 0.1,
-      backgroundColor: CustomColors.n1,
-      centerTitle: true,
-      title: Text(
-        "Order List",
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: constraints.maxHeight * 0.05,
-        ),
-      ),
-    );
   }
 
   Widget buildOrderListBody() {
@@ -58,17 +43,17 @@ class _OrderListState extends State<OrderList> {
         if (snapshot.hasData) {
           Response response = Response.fromJson(snapshot.data!);
           if (response.error) {
-            return buildErrorWidget("Something went wrong");
+            return MyErrorWidget("Something went wrong");
           } else {
             Orders orders = Orders.fromJson(response.content);
             if (orders.orders.isEmpty) {
-              return buildErrorWidget("There aren't any orders");
+              return MyErrorWidget("There aren't any orders");
             } else {
               return buildOrderListView(orders);
             }
           }
         } else {
-          return buildLoadingWidget();
+          return MyLoadingWidget();
         }
       },
     );
@@ -112,27 +97,6 @@ class _OrderListState extends State<OrderList> {
       separatorBuilder: (context, index) => const Divider(
         thickness: 2,
         color: Colors.white,
-      ),
-    );
-  }
-
-  Widget buildErrorWidget(String errorMessage) {
-    return Center(
-      child: Text(
-        errorMessage,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
-  Widget buildLoadingWidget() {
-    return const Center(
-      child: CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation(CustomColors.n1),
       ),
     );
   }
