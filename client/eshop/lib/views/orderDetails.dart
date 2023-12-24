@@ -32,6 +32,7 @@ class _OrderDetailsState extends State<OrderDetails> {
     return LayoutBuilder(
       builder: (context, constraints) {
         return Scaffold(
+          backgroundColor: CustomColors.background,
           appBar: SimpleAppBar(constraints, "Order Details"),
           body: buildOrderDetails(),
         );
@@ -52,18 +53,28 @@ class _OrderDetailsState extends State<OrderDetails> {
             DetailsOrder order = DetailsOrder.fromJson(response.content);
             return Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Order ID: ${order.orderid}'),
-                  Text('Email: ${order.email}'),
-                  Text('Address: ${order.address}'),
-                  Text('Payment: ${order.payment}'),
-                  Text('Date: ${order.date}'),
-                  Text('Total: ${order.total.toStringAsFixed(2)} €'),
-                  Text('Status: ${order.status}'),
-                  Text('Success: ${order.success}'),
-                ],
+              child: Card(
+                elevation: 3,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildDetailRow('Order ID', order.orderid.toString()),
+                      _buildDetailRow('Email', order.email),
+                      _buildDetailRow('Address', order.address),
+                      _buildDetailRow('Payment', order.payment),
+                      _buildDetailRow('Date', order.date),
+                      _buildDetailRow(
+                          'Total', '${order.total.toStringAsFixed(2)} €'),
+                      _buildDetailRow('Status', order.status),
+                      _buildDetailRow('Success', order.success.toString()),
+                    ],
+                  ),
+                ),
               ),
             );
           }
@@ -71,6 +82,30 @@ class _OrderDetailsState extends State<OrderDetails> {
           return MyLoadingWidget();
         }
       },
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 16,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
