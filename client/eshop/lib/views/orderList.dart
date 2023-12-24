@@ -147,8 +147,8 @@ class _OrderListState extends State<OrderList> {
   }
 
   Future<void> showChangeOrderState(int orderId) async {
-    String selectedOption =
-        ''; // Variable para almacenar la opción seleccionada
+    String selectedOption = '';
+    int sendOption;
 
     return showDialog(
       context: context,
@@ -157,44 +157,82 @@ class _OrderListState extends State<OrderList> {
           title: Text("Cambiar estado del pedido $orderId"),
           children: [
             ListTile(
-              title: const Text('En proceso'),
+              title: const Text('Invoiced'),
               onTap: () {
                 setState(() {
-                  selectedOption = 'En proceso';
+                  selectedOption = 'Invoiced';
+                  sendOption = 0;
                 });
                 Navigator.of(context).pop();
+                showSnackBar(orderId, selectedOption);
               },
             ),
             ListTile(
-              title: const Text('Enviado'),
+              title: const Text('Prepared'),
               onTap: () {
                 setState(() {
-                  selectedOption = 'Enviado';
+                  selectedOption = 'Prepared';
+                  sendOption = 1;
                 });
                 Navigator.of(context).pop();
+                showSnackBar(orderId, selectedOption);
               },
             ),
             ListTile(
-              title: const Text('Entregado'),
+              title: const Text('Shipped'),
               onTap: () {
                 setState(() {
-                  selectedOption = 'Entregado';
+                  selectedOption = 'Shipped';
+                  sendOption = 2;
                 });
                 Navigator.of(context).pop();
+                showSnackBar(orderId, selectedOption);
               },
             ),
             ListTile(
-              title: const Text('Cancelado'),
+              title: const Text('Out for Delivery'),
               onTap: () {
                 setState(() {
-                  selectedOption = 'Cancelado';
+                  selectedOption = 'Out for Delivery';
+                  sendOption = 3;
                 });
                 Navigator.of(context).pop();
+                showSnackBar(orderId, selectedOption);
+              },
+            ),
+            ListTile(
+              title: const Text('Delivered'),
+              onTap: () {
+                setState(() {
+                  selectedOption = 'Delivered';
+                  sendOption = 4;
+                });
+                Navigator.of(context).pop();
+                showSnackBar(orderId, selectedOption);
+              },
+            ),
+            ListTile(
+              title: const Text('Cancelled'),
+              onTap: () {
+                setState(() {
+                  selectedOption = 'Cancelled';
+                  sendOption = 5;
+                });
+                Navigator.of(context).pop();
+                showSnackBar(orderId, selectedOption);
               },
             ),
           ],
         );
       },
+    );
+  }
+
+  void showSnackBar(int orderId, String selectedOption) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('El pedido $orderId ha cambiado a $selectedOption'),
+      ),
     );
   }
 }
