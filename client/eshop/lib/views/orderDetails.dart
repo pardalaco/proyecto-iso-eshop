@@ -54,6 +54,7 @@ class _OrderDetailsState extends State<OrderDetails> {
             return Padding(
               padding: const EdgeInsets.all(16.0),
               child: Card(
+                color: CustomColors.n2,
                 elevation: 3,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -86,25 +87,33 @@ class _OrderDetailsState extends State<OrderDetails> {
   }
 
   Widget _buildDetailRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
+    return Material(
+      color:
+          CustomColors.n2, // Puedes ajustar este color según tus preferencias
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: Colors
+                    .white, // Puedes ajustar este color según tus preferencias
+              ),
             ),
-          ),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 16,
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors
+                    .white, // Puedes ajustar este color según tus preferencias
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
