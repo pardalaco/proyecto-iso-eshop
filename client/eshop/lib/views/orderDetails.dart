@@ -35,7 +35,7 @@ class _OrderDetailsState extends State<OrderDetails> {
           backgroundColor: CustomColors.background,
           appBar: SimpleAppBar(constraints, "Order Details"),
           body: buildOrderDetails(),
-          bottomNavigationBar: _buildCancelButton(),
+          bottomNavigationBar: _buildCancelButton(widget.order.status),
         );
       },
     );
@@ -101,16 +101,14 @@ class _OrderDetailsState extends State<OrderDetails> {
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
-                color: Colors
-                    .white, // Puedes ajustar este color según tus preferencias
+                color: Colors.white,
               ),
             ),
             Text(
               value,
               style: const TextStyle(
                 fontSize: 16,
-                color: Colors
-                    .white, // Puedes ajustar este color según tus preferencias
+                color: Colors.white,
               ),
             ),
           ],
@@ -119,29 +117,55 @@ class _OrderDetailsState extends State<OrderDetails> {
     );
   }
 
-  Widget _buildCancelButton() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: ElevatedButton(
-        onPressed: () {
-          // Aquí puedes agregar la lógica para cancelar la orden
-          // Puedes mostrar un diálogo de confirmación, realizar la cancelación, etc.
-        },
-        style: ElevatedButton.styleFrom(
-          primary: Colors.red,
-          padding: EdgeInsets.symmetric(vertical: 15.0),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+  Widget _buildCancelButton(String orderStatus) {
+    if (orderStatus.toLowerCase() == 'invoiced') {
+      return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ElevatedButton(
+          onPressed: () {
+            // Aquí puedes agregar la lógica para cancelar la orden
+            // Puedes mostrar un diálogo de confirmación, realizar la cancelación, etc.
+          },
+          style: ElevatedButton.styleFrom(
+            primary: Colors.red,
+            padding: const EdgeInsets.symmetric(vertical: 15.0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          child: const Text(
+            'Cancel Order',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
+      );
+    } else if (orderStatus.toLowerCase() == 'cancelled') {
+      return const Padding(
+        padding: EdgeInsets.all(16.0),
         child: Text(
-          'Cancel Order',
+          'The order has been canceled',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
+            color: Colors.blue,
           ),
         ),
-      ),
-    );
+      );
+    } else {
+      return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Text(
+          'The order cannot be canceled because it is already in $orderStatus.',
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.red,
+          ),
+        ),
+      );
+    }
   }
 }
