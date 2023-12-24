@@ -14,7 +14,7 @@ class Comments {
 
 class Comment {
   late String email;
-  late String com;
+  late String? com;
   late double rating;
   late String date;
 
