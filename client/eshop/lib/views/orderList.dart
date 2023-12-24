@@ -104,7 +104,9 @@ class _OrderListState extends State<OrderList> {
   FloatingActionButton buildSearchButton() {
     return FloatingActionButton(
       onPressed: () async {
-        await showSearchOrder();
+        //await showSearchOrder();
+        //-------------
+        showChangeOrderState(1);
       },
       backgroundColor: CustomColors.n1,
       child: const Icon(Icons.search, color: Colors.white),
@@ -118,25 +120,77 @@ class _OrderListState extends State<OrderList> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Buscar Pedido"),
+          title: const Text("Search Order"),
           content: TextField(
             controller: searchController,
-            decoration:
-                const InputDecoration(labelText: "Ingrese el ID del pedido"),
+            decoration: const InputDecoration(labelText: "Enter the order ID"),
           ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text("Cancelar"),
+              child: const Text("Cancel"),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                //showSearchOrder();
+
+                showChangeOrderState(1);
               },
-              child: const Text("Buscar"),
+              child: const Text("Search"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> showChangeOrderState(int orderId) async {
+    String selectedOption =
+        ''; // Variable para almacenar la opción seleccionada
+
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: Text("Cambiar estado del pedido $orderId"),
+          children: [
+            ListTile(
+              title: const Text('En proceso'),
+              onTap: () {
+                setState(() {
+                  selectedOption = 'En proceso';
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+            ListTile(
+              title: const Text('Enviado'),
+              onTap: () {
+                setState(() {
+                  selectedOption = 'Enviado';
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+            ListTile(
+              title: const Text('Entregado'),
+              onTap: () {
+                setState(() {
+                  selectedOption = 'Entregado';
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+            ListTile(
+              title: const Text('Cancelado'),
+              onTap: () {
+                setState(() {
+                  selectedOption = 'Cancelado';
+                });
+                Navigator.of(context).pop();
+              },
             ),
           ],
         );
