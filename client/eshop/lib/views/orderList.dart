@@ -110,9 +110,9 @@ class _OrderListState extends State<OrderList> {
   FloatingActionButton buildSearchButton() {
     return FloatingActionButton(
       onPressed: () async {
-        //await showSearchOrder();
+        await showSearchOrder();
         //-------------
-        showChangeOrderState(1);
+        //showChangeOrderState(1);
       },
       backgroundColor: CustomColors.n1,
       child: const Icon(Icons.search, color: Colors.white),
@@ -141,7 +141,7 @@ class _OrderListState extends State<OrderList> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-
+                //Implementar función servidor
                 showChangeOrderState(1);
               },
               child: const Text("Search"),
