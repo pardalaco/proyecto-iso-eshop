@@ -36,13 +36,36 @@ class _OrderListState extends State<OrderList> {
       return Scaffold(
         backgroundColor: CustomColors.background,
         appBar: SimpleAppBar(constraints, "Order List"),
-        body: buildOrderListBody(),
+        body: widget.admin ? buildOrderListBody() : buildOrderListAdmin(),
         floatingActionButton: widget.admin ? buildSearchButton() : null,
       );
     });
   }
 
   Widget buildOrderListBody() {
+    return FutureBuilder(
+      future: widget.connection.requestOrders(widget.profile.email),
+      builder: (context, AsyncSnapshot<String> snapshot) {
+        if (snapshot.hasData) {
+          Response response = Response.fromJson(snapshot.data!);
+          if (response.error) {
+            return MyErrorWidget("Something went wrong");
+          } else {
+            Orders orders = Orders.fromJson(response.content);
+            if (orders.orders.isEmpty) {
+              return MyErrorWidget("There aren't any orders");
+            } else {
+              return buildOrderListView(orders);
+            }
+          }
+        } else {
+          return MyLoadingWidget();
+        }
+      },
+    );
+  }
+
+  Widget buildOrderListAdmin() {
     return FutureBuilder(
       future: widget.connection.requestOrders(widget.profile.email),
       builder: (context, AsyncSnapshot<String> snapshot) {
