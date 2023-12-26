@@ -73,18 +73,59 @@ class _OrderListState extends State<OrderList> {
         Order order = orders.orders[index];
         return ListTile(
           title: Text(
-            "ID order: ${order.orderid}",
+            "Pedido #${order.orderid}",
             style: const TextStyle(
               fontSize: 25,
               color: Colors.white,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          subtitle: Text(
-            order.total.toStringAsFixed(2) + " €",
-            style: const TextStyle(
-              fontSize: 20,
-              color: Colors.white,
-            ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Total:",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    "${order.total.toStringAsFixed(2)} €",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 5),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Estado:",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    order.status,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
           onTap: () async {
             // Implementa tu lógica para navegar a la vista de detalles de la orden
@@ -92,9 +133,10 @@ class _OrderListState extends State<OrderList> {
               context,
               MaterialPageRoute(
                 builder: (context) => OrderDetails(
-                    connection: widget.connection,
-                    profile: widget.profile,
-                    order: order),
+                  connection: widget.connection,
+                  profile: widget.profile,
+                  order: order,
+                ),
               ),
             );
           },
