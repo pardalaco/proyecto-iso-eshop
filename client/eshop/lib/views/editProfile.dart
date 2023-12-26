@@ -1,3 +1,5 @@
+// ignore_for_file: dead_code
+
 import 'package:eshop/models/Response.dart';
 import 'package:flutter/material.dart';
 import 'package:eshop/style/ColorsUsed.dart';
@@ -219,26 +221,39 @@ class _EditProfile extends State<EditProfile> {
     if (_formKey.currentState!.validate()) {
       if (_hasChanges) {
         var content = <String, dynamic>{
-          "useremail": '\"' + profile.email.toString() + '\"',
+          "useremail": profile.email.toString(),
           "changes": "["
         };
+        bool before = false;
 
         if (_nameController.text != profile.name) {
           content["name"] = _nameController.text;
-          content["changes"] = content["changes"].toString() + "name, ";
+          content["changes"] = content["changes"].toString() + "name";
+          before = true;
         }
 
         if (_emailController.text != profile.email) {
+          if (before) {
+            content["changes"] = "${content["changes"]}, ";
+          }
           content["email"] = _emailController.text;
-          content["changes"] = content["changes"].toString() + "email, ";
+          content["changes"] = content["changes"].toString() + "email";
+          before = true;
         }
 
         if (_cardController.text != profile.payment) {
+          if (before) {
+            content["changes"] = "${content["changes"]}, ";
+          }
           content["payment"] = _cardController.text;
-          content["changes"] = content["changes"].toString() + "payment, ";
+          content["changes"] = content["changes"].toString() + "payment";
+          before = true;
         }
 
         if (_addressController.text != profile.address) {
+          if (before) {
+            content["changes"] = "${content["changes"]}, ";
+          }
           content["address"] = _addressController.text;
           content["changes"] = content["changes"].toString() + "address";
         }
