@@ -160,36 +160,44 @@ class _OrderListState extends State<OrderList> {
       return ListTile(
         title: Text(title),
         onTap: () async {
-          setState(() {
-            selectedOption = title;
-            state = option;
-          });
+          selectedOption = title;
+          state = option;
+
+          // print("-----------------------------");
+          // print("State: " + state.toString() + "\nOption: " + selectedOption);
+          // print("-----------------------------");
+
+          // var dataOrderState = await widget.connection
+          //     .changeOrderStatus(widget.profile.email, orderId, state);
+          // Response responseOrderState = Response.fromJson(dataOrderState);
+
           Navigator.of(context).pop();
 
-          //var dataOrderState = await widget.connection
-          //  .changeOrderStatus(widget.profile.email, orderId, state);
-          //Response responseOrderState = Response.fromJson(dataOrderState);
-          // if (responseOrderState.error) {
-          //   ScaffoldMessenger.of(context).showSnackBar(
-          //     const SnackBar(
-          //       content: Text('Error'),
-          //     ),
-          //   );
-          // } else {
-          //   OrderCancelation orderCancelation =
-          //       OrderCancelation.fromJson(responseOrderState.content);
+          var dataOrderState = await widget.connection
+              .changeOrderStatus(widget.profile.email, orderId, state);
+          Response responseOrderState = Response.fromJson(dataOrderState);
 
-          //   if (orderCancelation.success) {
-          //     //Order.state = newState;
-          //     showSnackBar(orderId, selectedOption);
-          //   } else {
-          //     ScaffoldMessenger.of(context).showSnackBar(
-          //       const SnackBar(
-          //         content: Text('Error'),
-          //       ),
-          //     );
-          //   }
-          // }
+          if (responseOrderState.error) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Error'),
+              ),
+            );
+          } else {
+            OrderCancelation orderCancelation =
+                OrderCancelation.fromJson(responseOrderState.content);
+
+            if (orderCancelation.success) {
+              //Order.state = newState; Importante
+              showSnackBar(orderId, selectedOption);
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Error'),
+                ),
+              );
+            }
+          }
         },
       );
     }
