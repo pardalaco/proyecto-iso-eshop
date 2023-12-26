@@ -1,4 +1,4 @@
-// ignore_for_file: non_constant_identifier_names, no_leading_underscores_for_local_identifiers, must_be_immutable, duplicate_ignore, unused_element, use_build_context_synchronously, prefer_final_fields
+// ignore_for_file: non_constant_identifier_names, no_leading_underscores_for_local_identifiers, must_be_immutable, duplicate_ignore, unused_element, use_build_context_synchronously, prefer_final_fields, no_logic_in_create_state
 import 'package:eshop/models/Cart.dart';
 import 'package:eshop/models/KeyboardController.dart';
 import 'package:eshop/models/Profile.dart';
@@ -26,7 +26,7 @@ bool show = true;
 bool pass = false;
 //////////////////////////////////////////
 
-class DetailPage extends StatelessWidget {
+class DetailPage extends StatefulWidget {
   Product product;
   Connection connection;
   Profile profile;
@@ -34,17 +34,44 @@ class DetailPage extends StatelessWidget {
   bool adminMode;
 
   DetailPage(
+      {super.key,
+      required this.product,
+      required this.connection,
+      required this.profile,
+      required this.kb,
+      required this.adminMode});
+
+  @override
+  State<DetailPage> createState() => _DetailPageState(
+      product: product,
+      connection: connection,
+      profile: profile,
+      kb: kb,
+      adminMode: adminMode);
+}
+
+class _DetailPageState extends State<DetailPage> {
+  Product product;
+  Connection connection;
+  Profile profile;
+  KeyboardController kb;
+  bool adminMode;
+
+  _DetailPageState(
       {Key? key,
       required this.product,
       required this.connection,
       required this.profile,
       required this.kb,
-      required this.adminMode})
-      : super(key: key);
+      required this.adminMode});
 
   @override
   Widget build(BuildContext context) {
     kbcontroller = kb;
+    void updateView() {
+      setState(() {});
+    }
+
     return WillPopScope(
       onWillPop: () async {
         firstTime = true;
@@ -76,8 +103,8 @@ class DetailPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   myImage(context, product, constraints),
-                  myDescription(
-                      context, product, connection, profile.email, constraints),
+                  myDescription(context, product, connection, profile.email,
+                      constraints, updateView),
                   Container(
                     padding: EdgeInsetsDirectional.symmetric(
                         horizontal: constraints.maxWidth * 0.05,
@@ -156,8 +183,8 @@ Widget myImage(context, Product producto, BoxConstraints constraints) {
   );
 }
 
-Widget myDescription(context, Product producto, Connection connection,
-    String email, BoxConstraints constraints) {
+Widget myDescription(context, Product product, Connection connection,
+    String email, BoxConstraints constraints, VoidCallback updateView) {
   return Expanded(
       child: Container(
           width: double.infinity,
@@ -179,7 +206,7 @@ Widget myDescription(context, Product producto, Connection connection,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      producto.name,
+                      product.name,
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 25,
@@ -190,7 +217,7 @@ Widget myDescription(context, Product producto, Connection connection,
                       children: [
                         RatingBar.builder(
                           itemSize: 20,
-                          initialRating: producto.rating,
+                          initialRating: product.rating,
                           minRating: 1,
                           direction: Axis.horizontal,
                           allowHalfRating: true,
@@ -205,7 +232,7 @@ Widget myDescription(context, Product producto, Connection connection,
                           onRatingUpdate: (_rating) {},
                         ),
                         Text(
-                          "(${producto.count})",
+                          "(${product.count})",
                           style: const TextStyle(
                             color: Colors.black,
                             fontSize: 20,
@@ -217,7 +244,7 @@ Widget myDescription(context, Product producto, Connection connection,
                       height: constraints.maxHeight * 0.025,
                     ),
                     Text(
-                      "${producto.price.toStringAsFixed(2)} €",
+                      "${product.price.toStringAsFixed(2)} €",
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 20,
@@ -227,7 +254,7 @@ Widget myDescription(context, Product producto, Connection connection,
                       height: constraints.maxHeight * 0.025,
                     ),
                     Text(
-                      producto.description,
+                      product.description,
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 15,
@@ -237,7 +264,7 @@ Widget myDescription(context, Product producto, Connection connection,
                       height: constraints.maxHeight * 0.025,
                     ),
                     Text(
-                      producto.tags.toString(),
+                      product.tags.toString(),
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 20,
@@ -249,8 +276,10 @@ Widget myDescription(context, Product producto, Connection connection,
                     ComAndRat(
                       connection: connection,
                       email: email,
-                      p_id: producto.id,
+                      p_id: product.id,
                       constraints: constraints,
+                      product: product,
+                      updateView: updateView,
                     )
                   ]),
             ),
@@ -496,13 +525,17 @@ class ComAndRat extends StatefulWidget {
   Connection connection;
   String email;
   int p_id;
+  Product product;
   BoxConstraints constraints;
+  VoidCallback updateView;
   ComAndRat(
       {super.key,
       required this.connection,
       required this.email,
       required this.p_id,
-      required this.constraints});
+      required this.constraints,
+      required this.product,
+      required this.updateView});
 
   @override
   State<ComAndRat> createState() => _ComAndRatState();
@@ -600,11 +633,51 @@ class _ComAndRatState extends State<ComAndRat> {
             } else {
               showDialog(
                   context: context,
-                  builder: (context) =>
-                      MyPopUp(context, "Message", "Comment added", 1));
-              firstTime = true;
+                  barrierDismissible: false,
+                  builder: (context) => AlertDialog(
+                          title: const Text(
+                            "Message",
+                            textAlign: TextAlign.center,
+                          ),
+                          content: const Text("Comment added",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15),
+                              textAlign: TextAlign.center),
+                          actions: [
+                            Center(
+                              child: TextButton(
+                                  onPressed: () async {
+                                    firstTime = true;
+                                    data = await widget.connection
+                                        .getProductByID(
+                                            widget.email, widget.product.id);
+                                    response = Response.fromJson(data);
+                                    if (!response.error) {
+                                      widget.product = Product.fromJson(
+                                          response.content, false);
+                                      dev.log(widget.product.count.toString());
+                                      firstTime = true;
+                                      rate = 1;
+                                      show = true;
+                                      pass = false;
+                                      _controller = TextEditingController();
+                                      _controller2 = TextEditingController();
+                                      Navigator.of(context).pop();
+                                      widget.updateView();
+                                    }
+                                  },
+                                  child: const Text(
+                                    "OK",
+                                    style: TextStyle(
+                                        color: CustomColors.n1,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15),
+                                  )),
+                            )
+                          ]));
             }
-            setState(() {});
           },
           style: ButtonStyle(
               backgroundColor:
@@ -679,13 +752,15 @@ class _ComAndRatState extends State<ComAndRat> {
                     SizedBox(
                       height: widget.constraints.maxHeight * 0.01,
                     ),
-                    Text(
-                      c.com,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 15,
+                    if (c.com != null) ...[
+                      Text(
+                        c.com!,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 15,
+                        ),
                       ),
-                    ),
+                    ]
                   ],
                 ),
               );

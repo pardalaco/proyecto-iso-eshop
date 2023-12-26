@@ -1,7 +1,8 @@
 // ignore_for_file: non_constant_identifier_names, prefer_interpolation_to_compose_strings, prefer_const_constructors, no_leading_underscores_for_local_identifiers, no_logic_in_create_state, must_be_immutable, unused_element, sized_box_for_whitespace, use_build_context_synchronously, camel_case_types
 import 'package:eshop/models/Cart.dart';
-import 'package:eshop/models/Product.dart';
 import 'package:eshop/models/Response.dart';
+import 'package:eshop/utils/MyWidgets.dart';
+import 'package:eshop/views/makeOrder.dart';
 import 'package:flutter/material.dart';
 import 'package:eshop/sockets/connection.dart';
 import 'package:eshop/models/Profile.dart';
@@ -17,13 +18,15 @@ class cartView extends StatefulWidget {
   final Profile profile;
   final Connection connection;
   final VoidCallback reloadCartList;
+  final VoidCallback updateHome;
 
   const cartView(
       {super.key,
       required this.profile,
       required this.cart,
       required this.connection,
-      required this.reloadCartList});
+      required this.reloadCartList,
+      required this.updateHome});
 
   @override
   State<cartView> createState() => _cartViewState();
@@ -559,10 +562,25 @@ class _cartViewState extends State<cartView> {
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
                       onPressed: () async {
-                        dev.log(("Pagar"));
+                        dev.log(("Ir a pagar"));
+                        if (widget.cart.listProducts.products.isEmpty) {
+                          showDialog(
+                              context: context,
+                              builder: (context) => MyPopUp(context, "Error",
+                                  "You don't have any product", 1));
+                        } else {
+                          var route = MaterialPageRoute(
+                              builder: (context) => makeOrder(
+                                  profile: widget.profile,
+                                  cart: widget.cart,
+                                  connection: widget.connection,
+                                  updateHome: widget.updateHome));
+                          Navigator.of(context).push(route);
+                        }
                       },
                       style: ButtonStyle(
                         backgroundColor:

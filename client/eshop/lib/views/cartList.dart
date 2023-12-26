@@ -16,8 +16,13 @@ TextEditingController _controller = TextEditingController();
 class cartList extends StatefulWidget {
   final Connection connection;
   final Profile profile;
+  final VoidCallback updateHome;
 
-  const cartList({super.key, required this.connection, required this.profile});
+  const cartList(
+      {super.key,
+      required this.connection,
+      required this.profile,
+      required this.updateHome});
 
   @override
   State<cartList> createState() => _cartListState();
@@ -102,10 +107,12 @@ class _cartListState extends State<cartList> {
                             cart.cartname = c.cartname;
                             var route = MaterialPageRoute(
                               builder: (context) => cartView(
-                                  profile: widget.profile,
-                                  cart: cart,
-                                  connection: widget.connection,
-                                  reloadCartList: reloadCartList),
+                                profile: widget.profile,
+                                cart: cart,
+                                connection: widget.connection,
+                                reloadCartList: reloadCartList,
+                                updateHome: widget.updateHome,
+                              ),
                             );
                             Navigator.of(context).push(route);
                           }
