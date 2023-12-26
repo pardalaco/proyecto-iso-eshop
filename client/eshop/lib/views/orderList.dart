@@ -163,14 +163,6 @@ class _OrderListState extends State<OrderList> {
           selectedOption = title;
           state = option;
 
-          // print("-----------------------------");
-          // print("State: " + state.toString() + "\nOption: " + selectedOption);
-          // print("-----------------------------");
-
-          // var dataOrderState = await widget.connection
-          //     .changeOrderStatus(widget.profile.email, orderId, state);
-          // Response responseOrderState = Response.fromJson(dataOrderState);
-
           Navigator.of(context).pop();
 
           var dataOrderState = await widget.connection
