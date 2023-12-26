@@ -222,42 +222,34 @@ class _EditProfile extends State<EditProfile> {
       if (_hasChanges) {
         var content = <String, dynamic>{
           "useremail": profile.email.toString(),
-          "changes": "["
+          "changes": [],
         };
         bool before = false;
 
-        if (_nameController.text != profile.name) {
-          content["name"] = _nameController.text;
-          content["changes"] = content["changes"].toString() + "name";
+        void addChange(String field, String value) {
+          if (before) {
+            content["changes"].add(", ");
+          }
+          content[field] = value;
+          content["changes"].add(field);
           before = true;
+        }
+
+        if (_nameController.text != profile.name) {
+          addChange("name", _nameController.text);
         }
 
         if (_emailController.text != profile.email) {
-          if (before) {
-            content["changes"] = "${content["changes"]}, ";
-          }
-          content["email"] = _emailController.text;
-          content["changes"] = content["changes"].toString() + "email";
-          before = true;
+          addChange("email", _emailController.text);
         }
 
         if (_cardController.text != profile.payment) {
-          if (before) {
-            content["changes"] = "${content["changes"]}, ";
-          }
-          content["payment"] = _cardController.text;
-          content["changes"] = content["changes"].toString() + "payment";
-          before = true;
+          addChange("payment", _cardController.text);
         }
 
         if (_addressController.text != profile.address) {
-          if (before) {
-            content["changes"] = "${content["changes"]}, ";
-          }
-          content["address"] = _addressController.text;
-          content["changes"] = content["changes"].toString() + "address";
+          addChange("address", _addressController.text);
         }
-        content["changes"] = content["changes"].toString() + "]";
 
         print(content);
 
