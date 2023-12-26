@@ -1,3 +1,6 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:eshop/models/UserInfoEdit.dart';
 import 'package:flutter/material.dart';
 import 'package:eshop/style/ColorsUsed.dart';
 import 'package:eshop/sockets/connection.dart';
@@ -45,7 +48,7 @@ class _ChangePassword extends State<ChangePassword> {
         "Change Password",
         style: TextStyle(
           color: Colors.white,
-          fontSize: MediaQuery.of(context).size.height * 0.05,
+          fontSize: MediaQuery.of(context).size.height * 0.04,
         ),
       ),
       leading: IconButton(
@@ -204,28 +207,40 @@ class _ChangePassword extends State<ChangePassword> {
       } else {
         // If all validations pass, update the password in the profile
 
-        var data = "";
+        var content = {
+          "useremail": profile.email,
+          "changes": ["password"],
+          "password": _newPasswordController.text
+        };
+
+        var data = await connection.dynamicUserInfoEdit(profile.email, content);
         Response response = Response.fromJson(data);
 
-        // You can perform additional logic to save the password to your backend or wherever necessary.
-
         if (response.error) {
-          // Show a success message
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Error.'),
             ),
           );
         } else {
-          profile.password = _newPasswordController.text;
+          UserInfoEdit userInfoEdit = UserInfoEdit.fromJson(response.content);
 
-          Navigator.of(context).pop();
-          // Show a success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Password changed successfully.'),
-            ),
-          );
+          if (userInfoEdit.success) {
+            profile.password = _newPasswordController.text;
+
+            Navigator.of(context).pop();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Password changed successfully.'),
+              ),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Error.'),
+              ),
+            );
+          }
         }
       }
     } else {
