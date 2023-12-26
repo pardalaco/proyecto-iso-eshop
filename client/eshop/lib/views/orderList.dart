@@ -87,9 +87,9 @@ class _OrderListState extends State<OrderList> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     "Total:",
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       color: Colors.white,
                     ),
