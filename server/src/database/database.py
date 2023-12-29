@@ -894,6 +894,33 @@ class Database:
 			print(f"(!) An error occurred while deleting order: \n{e}")
 			return False
 
+#***************************************************************************************************
+	@classmethod
+	def fetch_order_products(cls, orderid: int) -> dict:
+		query = """
+		SELECT	Product.ROWID,
+        		Product.name,
+						Product.description,
+						Product.image,
+						Product.price, 
+						ShopOrderLine.quantity, 
+						GROUP_CONCAT(Classification.tag) AS tags
+		FROM Product, ShopOrderLine
+		LEFT JOIN Classification ON Product.ROWID = Classification.product_id
+		WHERE ShopOrderLine.product_id = Product.ROWID 
+				AND ShopOrderLine.order_id = ?
+		GROUP BY Product.ROWID, Product.name, Product.description, Product.image, 
+						Product.price, ShopOrderLine.quantity;
+		"""
+		cls.cursor.execute(query, (orderid,))
+		results = cls.cursor.fetchall()
+		products = []
+		for row in results:
+			products.append({"product_id": row[0], "product_name": row[1], "product_description": row[2], 
+											 "product_image": row[3], "product_price": row[4], "tags": row[6], 
+											 "quantity": row[5]})
+		return {"success": True, "amount": len(products), "products": products}
+
 
 #***************************************************************************************************
 	@classmethod

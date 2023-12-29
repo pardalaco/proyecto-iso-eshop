@@ -49,6 +49,7 @@ class MessageHandler:
 			(6, 1): self.handle_list_orders,
 			(6, 2): self.handle_order_details,
 			(6, 3): self.handle_cancel_order,
+			(6, 4): self.handle_request_order_products,
 			(7, 1): self.handle_list_all_orders,
 			(7, 2): self.handle_change_order_status,
 			(8, 1): self.handle_rate_product,
@@ -358,6 +359,14 @@ class MessageHandler:
 			if Database.fetch_order_status(orderid) == "Invoiced":
 				return {"success": Database.cancel_order(orderid)}
 		return {"success": False}
+
+
+#***************************************************************************************************
+	def handle_request_order_products(self, content: dict) -> dict:
+		email = content["email"]
+		orderid = content["orderid"]
+		if Database.is_user_order(email, orderid):
+			return Database.fetch_order_products(orderid)
 
 
 #***************************************************************************************************
