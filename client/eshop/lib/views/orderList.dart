@@ -36,7 +36,7 @@ class _OrderListState extends State<OrderList> {
       return Scaffold(
         backgroundColor: CustomColors.background,
         appBar: SimpleAppBar(constraints, "Order List"),
-        body: widget.admin ? buildOrderListBody() : buildOrderListAdmin(),
+        body: widget.admin ? buildOrderListAdmin() : buildOrderListBody(),
         floatingActionButton: widget.admin ? buildSearchButton() : null,
       );
     });
@@ -67,7 +67,7 @@ class _OrderListState extends State<OrderList> {
 
   Widget buildOrderListAdmin() {
     return FutureBuilder(
-      future: widget.connection.requestOrders(widget.profile.email),
+      future: widget.connection.listAllOrders(widget.profile.email),
       builder: (context, AsyncSnapshot<String> snapshot) {
         if (snapshot.hasData) {
           Response response = Response.fromJson(snapshot.data!);
