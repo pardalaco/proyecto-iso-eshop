@@ -344,6 +344,8 @@ class MessageHandler:
 		orderid = content["orderid"]
 		if Database.is_user_order(email, orderid):
 			return Database.fetch_order_details(orderid)
+		elif Database.is_admin(email):
+			return Database.fetch_order_details(orderid)
 		else:
 			return {"success": False}
 		
