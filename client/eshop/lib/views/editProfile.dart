@@ -77,62 +77,64 @@ class _EditProfile extends State<EditProfile> {
       child: Scaffold(
         appBar: _MyAppBar,
         backgroundColor: CustomColors.background,
-        body: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 16.0),
-                child: Container(
-                  alignment: Alignment.center,
-                  child: ClipOval(
-                    child: Image.asset(
-                      'assets/img/User.jpg',
-                      width: 120.0,
-                      height: 120.0,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              _buildTextFieldWithIcon(
-                  "Name", Icons.person, _nameController, true),
-              _buildTextFieldWithIcon(
-                  "Email", Icons.email, _emailController, true),
-              _buildTextFieldWithIcon(
-                  "Card", Icons.credit_card, _cardController, false),
-              _buildTextFieldWithIcon(
-                  "Address", Icons.location_on, _addressController, false),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ChangePassword(
-                          connection: connection,
-                          profile: profile,
-                        ),
+        body: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/img/User.jpg',
+                        width: 120.0,
+                        height: 120.0,
+                        fit: BoxFit.cover,
                       ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: CustomColors.n1,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                  ),
-                  child: const Padding(
-                    padding: EdgeInsets.all(12.0),
-                    child: Text(
-                      "Change Password",
-                      style: TextStyle(fontSize: 16.0),
                     ),
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 16.0),
+                _buildTextFieldWithIcon(
+                    "Name", Icons.person, _nameController, true),
+                _buildTextFieldWithIcon(
+                    "Email", Icons.email, _emailController, true),
+                _buildTextFieldWithIcon(
+                    "Card", Icons.credit_card, _cardController, false),
+                _buildTextFieldWithIcon(
+                    "Address", Icons.location_on, _addressController, false),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ChangePassword(
+                            connection: connection,
+                            profile: profile,
+                          ),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: CustomColors.n1,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(12.0),
+                      child: Text(
+                        "Change Password",
+                        style: TextStyle(fontSize: 16.0),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -141,42 +143,40 @@ class _EditProfile extends State<EditProfile> {
 
   Widget _buildTextFieldWithIcon(String labelText, IconData icon,
       TextEditingController controller, bool isRequired) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        child: TextFormField(
-          controller: controller,
-          decoration: InputDecoration(
-            labelText: labelText,
-            labelStyle: TextStyle(color: CustomColors.n1),
-            prefixIcon: Icon(
-              icon,
-              color: CustomColors.n1,
-            ),
-            border: const OutlineInputBorder(),
-            enabledBorder: OutlineInputBorder(
-              borderSide: const BorderSide(width: 3, color: CustomColors.n1),
-              borderRadius: BorderRadius.circular(15),
-            ),
-            focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: CustomColors.n1),
-            ),
-            filled: true,
-            fillColor: CustomColors.n2,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: labelText,
+          labelStyle: const TextStyle(color: CustomColors.n1),
+          prefixIcon: Icon(
+            icon,
+            color: CustomColors.n1,
           ),
-          cursorColor: CustomColors.n1,
-          onChanged: (value) {
-            setState(() {
-              _hasChanges = true;
-            });
-          },
-          validator: (value) {
-            if (isRequired && (value == null || value.isEmpty)) {
-              return 'This field is required';
-            }
-            return null;
-          },
+          border: const OutlineInputBorder(),
+          enabledBorder: OutlineInputBorder(
+            borderSide: const BorderSide(width: 3, color: CustomColors.n1),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          focusedBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: CustomColors.n1),
+          ),
+          filled: true,
+          fillColor: CustomColors.n2,
         ),
+        cursorColor: CustomColors.n1,
+        onChanged: (value) {
+          setState(() {
+            _hasChanges = true;
+          });
+        },
+        validator: (value) {
+          if (isRequired && (value == null || value.isEmpty)) {
+            return 'This field is required';
+          }
+          return null;
+        },
       ),
     );
   }
@@ -224,15 +224,10 @@ class _EditProfile extends State<EditProfile> {
           "useremail": profile.email.toString(),
           "changes": [],
         };
-        bool before = false;
 
         void addChange(String field, String value) {
-          if (before) {
-            content["changes"].add(", ");
-          }
           content[field] = value;
           content["changes"].add(field);
-          before = true;
         }
 
         if (_nameController.text != profile.name) {
