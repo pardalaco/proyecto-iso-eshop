@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:eshop/models/DetailsOrder.dart';
 import 'package:flutter/material.dart';
 
 import 'package:eshop/sockets/connection.dart';
@@ -157,7 +158,7 @@ class _OrderListState extends State<OrderList> {
               MaterialPageRoute(
                 builder: (context) => OrderDetails(
                   connection: widget.connection,
-                  profile: widget.profile,
+                  email: widget.profile.email,
                   order: order,
                 ),
               ),
@@ -176,8 +177,6 @@ class _OrderListState extends State<OrderList> {
     return FloatingActionButton(
       onPressed: () async {
         await showSearchOrder();
-        //-------------
-        //showChangeOrderState(1);
       },
       backgroundColor: CustomColors.n1,
       child: const Icon(Icons.search, color: Colors.white),
@@ -195,6 +194,8 @@ class _OrderListState extends State<OrderList> {
           content: TextField(
             controller: searchController,
             decoration: const InputDecoration(labelText: "Enter the order ID"),
+            keyboardType: TextInputType
+                .number, // Configura el teclado para aceptar solo números
           ),
           actions: <Widget>[
             TextButton(
@@ -204,10 +205,27 @@ class _OrderListState extends State<OrderList> {
               child: const Text("Cancel"),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.of(context).pop();
-                //Implementar función servidor
-                showChangeOrderState(1);
+                // Implementar función del servidor
+                var dataQuery = await widget.connection.requestOrderDetails(
+                    widget.profile.email, int.parse(searchController.text));
+
+                Response response = Response.fromJson(dataQuery);
+                if (response.error) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Error'),
+                    ),
+                  );
+                } else {
+                  DetailsOrder order = DetailsOrder.fromJson(response.content);
+                  if (order.success) {
+                    showChangeOrderState(order);
+                  } else {
+                    showOrderNotSuccess(int.parse(searchController.text));
+                  }
+                }
               },
               child: const Text("Search"),
             ),
@@ -217,7 +235,27 @@ class _OrderListState extends State<OrderList> {
     );
   }
 
-  Future<void> showChangeOrderState(int orderId) async {
+  Future<void> showOrderNotSuccess(int orderID) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Order Not Found"),
+          content: Text("The order with ID ${orderID} was not found."),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> showChangeOrderState(DetailsOrder order) async {
     String selectedOption = '';
     int state = 0;
 
@@ -231,7 +269,7 @@ class _OrderListState extends State<OrderList> {
           Navigator.of(context).pop();
 
           var dataOrderState = await widget.connection
-              .changeOrderStatus(widget.profile.email, orderId, state);
+              .changeOrderStatus(widget.profile.email, order.orderid, state);
           Response responseOrderState = Response.fromJson(dataOrderState);
 
           if (responseOrderState.error) {
@@ -245,8 +283,17 @@ class _OrderListState extends State<OrderList> {
                 OrderCancelation.fromJson(responseOrderState.content);
 
             if (orderCancelation.success) {
-              //Order.state = newState; Importante
-              showSnackBar(orderId, selectedOption);
+              order.status = selectedOption;
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => OrderList(
+                      connection: widget.connection,
+                      profile: widget.profile,
+                      admin: widget.admin),
+                ),
+              );
+
+              showSnackBar(order.orderid, selectedOption);
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -274,18 +321,18 @@ class _OrderListState extends State<OrderList> {
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
-          title: Text("Change status to $orderId id"),
+          title: Text("Change status to ${order.orderid} id"),
           children: buildDialogOptions(),
         );
       },
     );
   }
 
-  void showSnackBar(int orderId, String selectedOption) {
+  void showSnackBar(int order, String selectedOption) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content:
-            Text('The order $orderId id has changed status to $selectedOption'),
+            Text('The order $order id has changed status to $selectedOption'),
       ),
     );
   }

@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:eshop/models/Order.dart';
 import 'package:eshop/models/DetailsOrder.dart';
 import 'package:eshop/models/Response.dart';
-import 'package:eshop/models/Profile.dart';
 import 'package:eshop/models/OrderCancelation.dart';
 
 import 'package:eshop/style/ColorsUsed.dart';
@@ -15,13 +14,13 @@ import 'package:eshop/utils/MyWidgets.dart';
 
 class OrderDetails extends StatefulWidget {
   final Connection connection;
-  final Profile profile;
+  final String email;
   final Order order;
 
   const OrderDetails(
       {Key? key,
       required this.connection,
-      required this.profile,
+      required this.email,
       required this.order})
       : super(key: key);
 
@@ -47,7 +46,7 @@ class _OrderDetailsState extends State<OrderDetails> {
   Widget buildOrderDetails() {
     return FutureBuilder(
       future: widget.connection
-          .requestOrderDetails(widget.profile.email, widget.order.orderid),
+          .requestOrderDetails(widget.email, widget.order.orderid),
       builder: (context, AsyncSnapshot<String> snapshot) {
         if (snapshot.hasData) {
           Response response = Response.fromJson(snapshot.data!);
@@ -127,7 +126,7 @@ class _OrderDetailsState extends State<OrderDetails> {
         child: ElevatedButton(
           onPressed: () async {
             var data = await widget.connection
-                .cancelOrder(widget.profile.email, widget.order.orderid);
+                .cancelOrder(widget.email, widget.order.orderid);
             Response response = Response.fromJson(data);
             if (response.error) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -151,7 +150,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                   MaterialPageRoute(
                     builder: (context) => OrderDetails(
                       connection: widget.connection,
-                      profile: widget.profile,
+                      email: widget.email,
                       order: widget.order,
                     ),
                   ),
