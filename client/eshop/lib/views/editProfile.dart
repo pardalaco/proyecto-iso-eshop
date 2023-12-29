@@ -239,11 +239,21 @@ class _EditProfile extends State<EditProfile> {
         }
 
         if (_cardController.text != profile.payment) {
-          addChange("payment", _cardController.text);
+          if (_cardController.text == "") {
+            content["payment"] = null;
+            content["changes"].add("payment");
+          } else {
+            addChange("payment", _cardController.text);
+          }
         }
 
         if (_addressController.text != profile.address) {
-          addChange("address", _addressController.text);
+          if (_addressController.text == "") {
+            content["address"] = null;
+            content["changes"].add("address");
+          } else {
+            addChange("address", _addressController.text);
+          }
         }
 
         print(content);
