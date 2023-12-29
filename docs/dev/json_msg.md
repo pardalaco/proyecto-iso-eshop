@@ -36,6 +36,7 @@
 			- [**6.1. Request Orders**](#61-request-orders)
 			- [**6.2. Request Order Details**](#62-request-order-details)
 			- [**6.3. Cancel Order**](#63-cancel-order)
+			- [**6.4. Request Order Products**](#64-request-order-products)
 		- [**7. Orders (ADMIN)**](#7-orders-admin)
 			- [**7.1. List All Orders**](#71-list-all-orders)
 			- [**7.2. Change Order Status**](#72-change-order-status)
@@ -704,6 +705,39 @@ server = {
 	code: 3,
 	content: {
 		success: "bool"
+	}
+}
+```
+#### **6.4. Request Order Products**
+```js
+client = {
+	type: 6,
+	code: 4,
+	content: {
+		email: "str",
+		orderid: "int"
+	}
+}
+```
+```js
+server = {
+	type: 6,
+	code: 4,
+	content: {
+		success: "bool",
+		amount: "int",
+		total: "float",
+		products: "list"[
+			"dict"{
+				id: "int", 
+				name: "str", 
+				description: "str", 
+				image: "image",
+				price: "float",
+				tags: "str,str,..",
+				quantity: "int"
+			}
+		]
 	}
 }
 ```
