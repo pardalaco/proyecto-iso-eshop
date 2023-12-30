@@ -351,6 +351,17 @@ class Connection {
     return getData();
   }
 
+  Future<String> requestOrderProducts(String email, int o_id) async {
+    await query({
+      "type": 6,
+      "code": 4,
+      "content": {
+        "email": email,
+        "orderid": o_id,
+      }
+    });
+    return getData();
+  }
   // 7.ORDERS ADMIN
 
   Future<String> listAllOrders(String email) async {

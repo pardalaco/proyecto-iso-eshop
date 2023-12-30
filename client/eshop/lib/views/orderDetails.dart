@@ -8,6 +8,8 @@ import 'package:eshop/models/DetailsOrder.dart';
 import 'package:eshop/models/Response.dart';
 import 'package:eshop/models/OrderCancelation.dart';
 
+import 'package:eshop/views/orderListProducts.dart';
+
 import 'package:eshop/style/ColorsUsed.dart';
 
 import 'package:eshop/utils/MyWidgets.dart';
@@ -75,7 +77,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                       _buildDetailRow(
                           'Total', '${order.total.toStringAsFixed(2)} €'),
                       _buildDetailRow('Status', order.status),
-                      _buildDetailRow('Success', order.success.toString()),
+                      _buildListProductsButton(), // Nuevo botón añadido
                     ],
                   ),
                 ),
@@ -86,6 +88,49 @@ class _OrderDetailsState extends State<OrderDetails> {
           return MyLoadingWidget();
         }
       },
+    );
+  }
+
+  Widget _buildListProductsButton() {
+    return ElevatedButton(
+      onPressed: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => OrderListProductsView(
+              connection: widget.connection,
+              email: widget.email,
+              idOrder: widget.order.orderid,
+            ),
+          ),
+        );
+      },
+      style: ElevatedButton.styleFrom(
+        primary: CustomColors.n1,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        shadowColor: Colors.grey,
+        elevation: 5,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.list,
+            size: 30,
+            color: Colors.white,
+          ),
+          const Spacer(),
+          const Text(
+            'List Products',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

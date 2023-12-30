@@ -10,12 +10,14 @@ class DetailsOrder {
 
   DetailsOrder.fromJson(Map<String, dynamic> json) {
     success = json['success'];
-    orderid = json['orderid'];
-    email = json['email'];
-    address = json['address'];
-    payment = json['payment'];
-    date = json['date'];
-    total = json['total'].toDouble();
-    status = json['status'];
+    if (success == true) {
+      orderid = json['orderid'];
+      email = json['email'];
+      address = json['address'];
+      payment = json['payment'];
+      date = json['date'];
+      total = json['total'].toDouble();
+      status = json['status'];
+    }
   }
 }
