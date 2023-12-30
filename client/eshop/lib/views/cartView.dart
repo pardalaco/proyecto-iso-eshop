@@ -286,7 +286,7 @@ class _cartViewState extends State<cartView> {
               )
             ] else ...[
               SizedBox(
-                height: constraints.maxHeight * 0.5,
+                height: constraints.maxHeight * 0.7,
                 width: double.infinity,
                 child: ListView.separated(
                   itemCount: widget.cart.listProducts.products.length,

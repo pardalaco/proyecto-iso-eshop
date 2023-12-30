@@ -247,173 +247,174 @@ class _HomeBody extends State<_MyHomeBody> {
 Widget _MyDrawer(context, Profile perfil, bool admin, VoidCallback updateState,
     Connection connection) {
   return Drawer(
+      width: MediaQuery.of(context).size.height * 0.3,
       child: Container(
-    color: CustomColors.background,
-    child: Column(
-      children: [
-        Container(
-          width: double.infinity,
-          height: MediaQuery.of(context).size.height * 0.3,
-          color: CustomColors.n1,
-          child: Column(
-            children: [
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.02,
+        color: CustomColors.background,
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              height: MediaQuery.of(context).size.height * 0.3,
+              color: CustomColors.n1,
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.02,
+                  ),
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.15,
+                    decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                            image: AssetImage("assets/img/User.jpg"))),
+                  ),
+                  Text(
+                    perfil.name,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: MediaQuery.of(context).size.height * 0.04,
+                    ),
+                  ),
+                  Text(
+                    perfil.email,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: MediaQuery.of(context).size.height * 0.03,
+                    ),
+                  ),
+                ],
               ),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.15,
-                decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                        image: AssetImage("assets/img/User.jpg"))),
-              ),
-              Text(
-                perfil.name,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: MediaQuery.of(context).size.height * 0.04,
-                ),
-              ),
-              Text(
-                perfil.email,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: MediaQuery.of(context).size.height * 0.03,
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.02,
-        ),
-        ListTile(
-          title: Text(
-            "Edit profile",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 25,
             ),
-          ),
-          leading: Icon(
-            Icons.edit,
-            size: MediaQuery.of(context).size.height * 0.04,
-            color: Colors.white,
-          ),
-          onTap: () {
-            var route = MaterialPageRoute(
-                builder: (context) => EditProfile(
-                      connection: connection,
-                      profile: perfil,
-                      updateHome: updateState,
-                    ));
-            Navigator.of(context).push(route);
-          },
-        ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.02,
-        ),
-        ListTile(
-          title: Text(
-            "My orders",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 25,
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.02,
             ),
-          ),
-          leading: Icon(
-            Icons.shopping_basket,
-            size: MediaQuery.of(context).size.height * 0.04,
-            color: Colors.white,
-          ),
-          onTap: () {
-            var route = MaterialPageRoute(
-                builder: (context) => OrderList(
-                      connection: connection,
-                      profile: perfil,
-                      admin: adminMode,
-                    ));
-            Navigator.of(context).push(route);
-          },
-        ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.02,
-        ),
-        ListTile(
-          title: Text(
-            "My carts",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 25,
-            ),
-          ),
-          leading: Icon(
-            Icons.shopping_cart,
-            size: MediaQuery.of(context).size.height * 0.04,
-            color: Colors.white,
-          ),
-          onTap: () {
-            var route = MaterialPageRoute(
-                builder: (context) => cartList(
-                      connection: connection,
-                      profile: perfil,
-                      updateHome: updateState,
-                    ));
-            Navigator.of(context).push(route);
-          },
-        ),
-        Expanded(child: Container()),
-        if (admin) ...[
-          Row(
-            children: [
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.05,
-              ),
-              Text(
-                "Admin",
+            ListTile(
+              title: Text(
+                "Edit profile",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 25,
                 ),
               ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.03,
+              leading: Icon(
+                Icons.edit,
+                size: MediaQuery.of(context).size.height * 0.04,
+                color: Colors.white,
               ),
-              MySwitch(
-                updateState: updateState,
-              )
-            ],
-          ),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.02,
-          ),
-        ],
-        ListTile(
-          title: Text(
-            "Log out",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 25,
+              onTap: () {
+                var route = MaterialPageRoute(
+                    builder: (context) => EditProfile(
+                          connection: connection,
+                          profile: perfil,
+                          updateHome: updateState,
+                        ));
+                Navigator.of(context).push(route);
+              },
             ),
-          ),
-          leading: Icon(
-            Icons.logout_outlined,
-            size: MediaQuery.of(context).size.height * 0.04,
-            color: Colors.white,
-          ),
-          onTap: () {
-            doSearch = true;
-            adminMode = false;
-            Navigator.of(context).pop();
-            Navigator.of(context).pop();
-          },
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.02,
+            ),
+            ListTile(
+              title: Text(
+                "My orders",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 25,
+                ),
+              ),
+              leading: Icon(
+                Icons.shopping_basket,
+                size: MediaQuery.of(context).size.height * 0.04,
+                color: Colors.white,
+              ),
+              onTap: () {
+                var route = MaterialPageRoute(
+                    builder: (context) => OrderList(
+                          connection: connection,
+                          profile: perfil,
+                          admin: adminMode,
+                        ));
+                Navigator.of(context).push(route);
+              },
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.02,
+            ),
+            ListTile(
+              title: Text(
+                "My carts",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 25,
+                ),
+              ),
+              leading: Icon(
+                Icons.shopping_cart,
+                size: MediaQuery.of(context).size.height * 0.04,
+                color: Colors.white,
+              ),
+              onTap: () {
+                var route = MaterialPageRoute(
+                    builder: (context) => cartList(
+                          connection: connection,
+                          profile: perfil,
+                          updateHome: updateState,
+                        ));
+                Navigator.of(context).push(route);
+              },
+            ),
+            Expanded(child: Container()),
+            if (admin) ...[
+              Row(
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.05,
+                  ),
+                  Text(
+                    "Admin",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 25,
+                    ),
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.03,
+                  ),
+                  MySwitch(
+                    updateState: updateState,
+                  )
+                ],
+              ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.02,
+              ),
+            ],
+            ListTile(
+              title: Text(
+                "Log out",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 25,
+                ),
+              ),
+              leading: Icon(
+                Icons.logout_outlined,
+                size: MediaQuery.of(context).size.height * 0.04,
+                color: Colors.white,
+              ),
+              onTap: () {
+                doSearch = true;
+                adminMode = false;
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.02,
+            ),
+          ],
         ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.02,
-        ),
-      ],
-    ),
-  ));
+      ));
 }
 
 class MySwitch extends StatefulWidget {

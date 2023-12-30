@@ -120,7 +120,8 @@ class _makeOrderState extends State<makeOrder> {
               SizedBox(
                 height: constraints.maxHeight * 0.01,
               ),
-              if (widget.profile.payment != null) ...[
+              if (widget.profile.payment != null &&
+                  widget.profile.payment != "") ...[
                 Text(
                   "${widget.profile.payment}",
                   textAlign: TextAlign.center,
@@ -178,7 +179,8 @@ class _makeOrderState extends State<makeOrder> {
               SizedBox(
                 height: constraints.maxHeight * 0.01,
               ),
-              if (widget.profile.address != null) ...[
+              if (widget.profile.address != null &&
+                  widget.profile.address != "") ...[
                 Text(
                   "${widget.profile.address}",
                   textAlign: TextAlign.center,
@@ -227,7 +229,9 @@ class _makeOrderState extends State<makeOrder> {
               ElevatedButton(
                 onPressed: () async {
                   if (widget.profile.address == null ||
-                      widget.profile.payment == null) {
+                      widget.profile.payment == null ||
+                      widget.profile.payment == "" ||
+                      widget.profile.address == "") {
                     showDialog(
                         context: context,
                         builder: (context) => MyPopUp(context, "Error",
