@@ -1,14 +1,12 @@
 class OrderListProducts {
   late bool success;
   late int amount;
-  late double total;
   late List<Product> products;
 
   OrderListProducts.fromJson(Map<String, dynamic> json) {
     success = json['success'];
-    if (success) {
+    if (success == true) {
       amount = json['amount'];
-      total = json['total'].toDouble();
 
       var productList = json['products'] as List;
       products = productList
@@ -28,11 +26,11 @@ class Product {
   late int quantity;
 
   Product.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    description = json['description'];
-    image = json['image'];
-    price = json['price'].toDouble();
+    id = json['product_id'];
+    name = json['product_name'];
+    description = json['product_description'];
+    image = json['product_image'];
+    price = json['product_price'].toDouble();
     tags = (json['tags'] as String).split(',');
     quantity = json['quantity'];
   }

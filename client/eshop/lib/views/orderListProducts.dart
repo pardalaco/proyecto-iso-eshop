@@ -47,7 +47,7 @@ class _OrderListProductsViewState extends State<OrderListProductsView> {
           widget.connection.requestOrderProducts(widget.email, widget.idOrder),
       builder: (context, AsyncSnapshot<String> snapshot) {
         if (snapshot.hasData) {
-          Response response = Response.fromJson(snapshot.data!);
+          Response response =  Response.fromJson(snapshot.data!);
           if (response.error) {
             return MyErrorWidget("Something went wrong");
           } else {
