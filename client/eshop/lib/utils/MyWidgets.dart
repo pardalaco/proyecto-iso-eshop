@@ -40,7 +40,7 @@ AppBar SimpleAppBar(BoxConstraints constraints, String text) {
       text,
       style: TextStyle(
         color: Colors.white,
-        fontSize: constraints.maxHeight * 0.05,
+        fontSize: constraints.maxHeight * 0.035,
       ),
     ),
   );
