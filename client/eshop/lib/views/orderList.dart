@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:eshop/models/DetailsOrder.dart';
+import 'package:eshop/views/home.dart';
 import 'package:flutter/material.dart';
 
 import 'package:eshop/sockets/connection.dart';
@@ -153,16 +154,18 @@ class _OrderListState extends State<OrderList> {
           ),
           onTap: () async {
             // Implementa tu lógica para navegar a la vista de detalles de la orden
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => OrderDetails(
-                  connection: widget.connection,
-                  email: widget.profile.email,
-                  order: order,
+            if (!adminMode) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => OrderDetails(
+                    connection: widget.connection,
+                    email: widget.profile.email,
+                    order: order,
+                  ),
                 ),
-              ),
-            );
+              );
+            }
           },
         );
       },
