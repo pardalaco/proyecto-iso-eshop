@@ -32,5 +32,5 @@ Revisión de avances en Interfaz Gráfica
 - Controlar conjunto vacío en campos: Hecho
 - Resolución de errores encontrados: Hecho
 
-—
+---
 
