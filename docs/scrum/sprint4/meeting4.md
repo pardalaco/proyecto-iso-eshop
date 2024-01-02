@@ -19,16 +19,18 @@ Revisión de avances en Interfaz Gráfica
 ---
 
 ## 3. Objetivos observados
-- Listar pedidos
-Listado de pedidos: hecho.
-Modificación de pedido como usuario: hecho
-Búsqueda de pedido por id como admin: pendiente
-Modificación de pedido como admin: hecho
-Mostrar productos de un pedido en detalles pedido: pendiente
-Mostrar todos los productos del sistema si eres admin: pendiente
+### Listar pedidos
 
-- Editar perfil
-Controlar conjunto vacío en campos: pendiente
+- Listado de pedidos: hecho.
+- Modificación de pedido como usuario: hecho
+- Búsqueda de pedido por id como admin: pendiente
+- Modificación de pedido como admin: hecho
+- Mostrar productos de un pedido en detalles pedido: pendiente
+- Mostrar todos los productos del sistema si eres admin: pendiente
+
+### Editar perfil
+
+- Controlar conjunto vacío en campos: pendiente
 
 ---
 
