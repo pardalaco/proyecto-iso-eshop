@@ -44,6 +44,7 @@ class _OrderListState extends State<OrderList> {
     });
   }
 
+  // Lista de ordenes del usuario / consulta de ordenes de usuario
   Widget buildOrderListBody() {
     return FutureBuilder(
       future: widget.connection.requestOrders(widget.profile.email),
@@ -67,6 +68,7 @@ class _OrderListState extends State<OrderList> {
     );
   }
 
+  // Lista de ordenes del Administrador / consulta de ordenes de administrador
   Widget buildOrderListAdmin() {
     return FutureBuilder(
       future: widget.connection.listAllOrders(widget.profile.email),
@@ -90,6 +92,7 @@ class _OrderListState extends State<OrderList> {
     );
   }
 
+  // Pinta todas las ordenes en pantalla
   Widget buildOrderListView(Orders orders) {
     return ListView.separated(
       padding: const EdgeInsets.all(5.0),
@@ -153,7 +156,7 @@ class _OrderListState extends State<OrderList> {
             ],
           ),
           onTap: () async {
-            // Implementa tu lógica para navegar a la vista de detalles de la orden
+            // Implementa tu lógica para navegar según el modo (admin / no admin)
             if (!adminMode) {
               Navigator.push(
                 context,
@@ -165,6 +168,26 @@ class _OrderListState extends State<OrderList> {
                   ),
                 ),
               );
+            } else {
+              var dataQuery = await widget.connection
+                  .requestOrderDetails(widget.profile.email, order.orderid);
+
+              Response response = Response.fromJson(dataQuery);
+              if (response.error) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Error'),
+                  ),
+                );
+              } else {
+                DetailsOrder orderState =
+                    DetailsOrder.fromJson(response.content);
+                if (orderState.success) {
+                  showChangeOrderState(orderState);
+                } else {
+                  showOrderNotSuccess(orderState.orderid);
+                }
+              }
             }
           },
         );
@@ -176,6 +199,7 @@ class _OrderListState extends State<OrderList> {
     );
   }
 
+  // Bóton de busqueda del administrador
   FloatingActionButton buildSearchButton() {
     return FloatingActionButton(
       onPressed: () async {
@@ -186,6 +210,7 @@ class _OrderListState extends State<OrderList> {
     );
   }
 
+  // Pop up de busqueda de la order
   Future<void> showSearchOrder() async {
     TextEditingController searchController = TextEditingController();
 
@@ -238,6 +263,7 @@ class _OrderListState extends State<OrderList> {
     );
   }
 
+  // Aviso de order not found
   Future<void> showOrderNotSuccess(int orderID) async {
     return showDialog(
       context: context,
@@ -258,6 +284,7 @@ class _OrderListState extends State<OrderList> {
     );
   }
 
+  // Pop up de cambiar estado de la orden
   Future<void> showChangeOrderState(DetailsOrder order) async {
     String selectedOption = '';
     int state = 0;
@@ -331,6 +358,7 @@ class _OrderListState extends State<OrderList> {
     );
   }
 
+  // Mensaje de avido de que la orden ya ha sido cambiada
   void showSnackBar(int order, String selectedOption) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
