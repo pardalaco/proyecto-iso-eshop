@@ -139,10 +139,8 @@ class MessageHandler:
 		email = content["email"]
 		query = content["query"]
 		query = query.split(" ")
-		for keyword in query:
-			if len(keyword) <= 2:
-				query.pop(keyword)
-		return Database.fetch_products_by_query(email, query) 
+		filtered_query = [keyword for keyword in query if len(keyword) > 2]
+		return Database.fetch_products_by_query(email, filtered_query) 
 
 
 #***************************************************************************************************
