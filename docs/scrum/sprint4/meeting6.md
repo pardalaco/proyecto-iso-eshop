@@ -22,6 +22,6 @@ Test de Integración
 - Se ha comprobado el funcionamiento de la totalidad de la aplicación.
 - Se han corregido errores de integración.
 - Se ha implementado fuincionalidad adicional propuesta.
-- Se ha dado por finalizada la parte de desarrollo e implementación
+- Se ha dado por finalizada la parte de desarrollo e implementación.
 
 ---
