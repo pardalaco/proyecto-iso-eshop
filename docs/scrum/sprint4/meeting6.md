@@ -24,4 +24,4 @@ Test de Integración
 - Se ha implementado fuincionalidad adicional propuesta.
 - Se ha dado por finalizada la parte de desarrollo e implementación
 
-—
+---
