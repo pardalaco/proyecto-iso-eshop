@@ -400,6 +400,9 @@ Widget _MyDrawer(context, Profile perfil, bool admin, VoidCallback updateState,
               onTap: () {
                 doSearch = true;
                 adminMode = false;
+                searchByTag = false;
+                searchByName = false;
+                notPass = true;
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
               },
