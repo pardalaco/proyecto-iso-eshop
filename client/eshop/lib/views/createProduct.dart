@@ -326,7 +326,8 @@ class _MyFormState extends State<MyForm> {
               ElevatedButton(
                 onPressed: () async {
                   final formState = _formKey.currentState;
-                  if ((formState?.validate() ?? false)) {
+                  if (widget.tags.onlyTrues() != "" &&
+                      (formState?.validate() ?? false)) {
                     formState!.save();
                     dev.log(
                         "Name = $name, description = $description, price = $price");
