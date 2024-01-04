@@ -206,18 +206,13 @@ class _HomeBody extends State<_MyHomeBody> {
           if (doSearch) ...[
             if (searchByName) ...[
               if (textoIngresado?.isEmpty ?? true) ...[
-                const Text(
-                  "Please enter a search term",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold),
-                )
-              ] else ...[
                 Expanded(
                     child: FuturaLista(
-                        context, widget.connection, widget.profile, 1))
+                        context, widget.connection, widget.profile, 2, ""))
+              ] else ...[
+                Expanded(
+                    child: FuturaLista(context, widget.connection,
+                        widget.profile, 1, textoIngresado!))
               ]
             ] else if (searchByTag) ...[
               Text(
@@ -229,13 +224,13 @@ class _HomeBody extends State<_MyHomeBody> {
                     fontWeight: FontWeight.bold),
               ),
               Expanded(
-                child:
-                    FuturaLista(context, widget.connection, widget.profile, 4),
+                child: FuturaLista(
+                    context, widget.connection, widget.profile, 3, ""),
               )
             ] else ...[
               Expanded(
                   child: FuturaLista(
-                      context, widget.connection, widget.profile, 2))
+                      context, widget.connection, widget.profile, 2, ""))
             ]
           ]
         ],
@@ -442,10 +437,11 @@ class _MySwitchState extends State<MySwitch> {
   }
 }
 
-Future<String> getData(Connection connection, int n, String email) async {
+Future<String> getData(
+    Connection connection, int n, String email, String q) async {
   switch (n) {
     case 1:
-      return await connection.getAllProducts(); //Simula al de nombre
+      return await connection.searchByQuery(email, q);
     case 2:
       return await connection.requestRecommendedProducts(email);
     default:
@@ -453,10 +449,10 @@ Future<String> getData(Connection connection, int n, String email) async {
   }
 }
 
-Widget FuturaLista(
-    BuildContext context, Connection connection, Profile profile, int n) {
+Widget FuturaLista(BuildContext context, Connection connection, Profile profile,
+    int n, String q) {
   return FutureBuilder(
-    future: getData(connection, n, profile.email),
+    future: getData(connection, n, profile.email, q),
     builder: (context, snapshot) {
       dev.log("Estoy aqui");
       if (snapshot.hasData && notPass) {
