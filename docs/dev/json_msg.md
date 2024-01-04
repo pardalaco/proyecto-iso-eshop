@@ -244,7 +244,6 @@ server = {
 }
 ```
 #### **2.5. Search Product/s by query**
-> *The query is the list of words after spliting the original query  by whitespaces*
 ```js
 client = {
 	type: 2,
