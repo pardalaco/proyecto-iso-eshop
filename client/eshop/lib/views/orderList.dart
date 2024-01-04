@@ -7,13 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:eshop/sockets/connection.dart';
 
 import 'package:eshop/models/Order.dart';
-import 'package:eshop/models/Response.dart';
+import 'package:eshop/models/Response2.dart';
 import 'package:eshop/models/Profile.dart';
 import 'package:eshop/models/OrderCancelation.dart';
 
 import 'package:eshop/style/ColorsUsed.dart';
 import 'package:eshop/utils/MyWidgets.dart';
 import 'package:eshop/views/orderDetails.dart';
+
+import 'dart:convert';
 
 class OrderList extends StatefulWidget {
   final Connection connection;
@@ -238,7 +240,6 @@ class _OrderListState extends State<OrderList> {
                 // Implementar función del servidor
                 var dataQuery = await widget.connection.requestOrderDetails(
                     widget.profile.email, int.parse(searchController.text));
-
                 Response response = Response.fromJson(dataQuery);
                 if (response.error) {
                   ScaffoldMessenger.of(context).showSnackBar(
