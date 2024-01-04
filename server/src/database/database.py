@@ -250,7 +250,10 @@ class Database:
 		"""
 		cls.cursor.execute(query, (product_id,))
 		results = cls.cursor.fetchall()
-		item = results[0]
+		try:
+			item = results[0]
+		except IndexError:
+			return
 		product = {"id": item[0], "name": item[1], "description": item[2], "image": item[3], 
 								"price": item[4], "rating": item[5], "count": item[6], "tags": item[7]}
 
@@ -285,7 +288,6 @@ class Database:
 		products = []
 		for row in results:
 			tags = cls.fetch_product_tags(row[0])
-
 			products.append({"id": row[0], "name": row[1], "description": row[2], "image": row[3], 
 											"price": row[4], "rating": row[5], "count": row[6], "tags": ", ".join(tags)})
 		cls.increase_marketing_tag_counters(email)
@@ -931,7 +933,10 @@ class Database:
 		WHERE ROWID = ?;
 		"""
 		cls.cursor.execute(query, (orderid,))
-		results = cls.cursor.fetchall()[0]
+		try:
+			results = cls.cursor.fetchall()[0]
+		except IndexError:
+			return
 		return {"success": True, "orderid": results[0], "email": results[1], "address": results[2],
 						"payment": results[3], "date": results[4], "total": results[5], "status": results[6]}
 
