@@ -121,6 +121,15 @@ class Connection {
     return getData();
   }
 
+  Future<String> searchByQuery(String email, String q) async {
+    await query({
+      "type": 2,
+      "code": 5,
+      "content": {"email": email, "query": q}
+    });
+    return getData();
+  }
+
   // 3.MANAGE PRODUCT ADMIN
 
   Future<String> addNewProduct(Product product, String email) async {

@@ -196,11 +196,11 @@ class _MyFormR extends State<_MyBodyR> {
                       Connection connection = Connection();
                       var data = await connection.signUp(email!, password!);
                       Response response = Response.fromJson(data);
-                      if (response.error) {
+                      if (response.error || !response.content["success"]) {
                         showDialog(
                           context: context,
                           builder: (context) => MyPopUp(
-                              context, "Error", response.content["details"], 1),
+                              context, "Error", "Error in registration", 1),
                         );
                       } else {
                         showDialog(
