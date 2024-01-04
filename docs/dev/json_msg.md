@@ -12,6 +12,7 @@
 			- [**2.2. Request product by ID**](#22-request-product-by-id)
 			- [**2.3. Request product(s) by TAG(s)**](#23-request-products-by-tags)
 			- [**2.4. Request all Tags**](#24-request-all-tags)
+			- [**2.5. Search Product/s by query**](#25-search-products-by-query)
 		- [**3. Manage Products (Admin)**](#3-manage-products-admin)
 			- [**3.1. Add new product**](#31-add-new-product)
 			- [**3.2. Edit product**](#32-edit-product)
@@ -239,6 +240,39 @@ server = {
 	code: 4,
 	content: {
 		tags: "list"["str"]
+	}
+}
+```
+#### **2.5. Search Product/s by query**
+> *The query is the list of words after spliting the original query  by whitespaces*
+```js
+client = {
+	type: 2,
+	code: 5,
+	content: {
+		email: "str",
+		query: "str"
+	}
+}
+```
+```js
+server = {
+	type: 2,
+	code: 5,
+	content: {
+		amount: "int",
+		products: "list"[
+			"dict"{
+				id: "int", 
+				name: "str", 
+				description: "str", 
+				image: "image",
+				price: "float",
+				rating: "float",
+				count: "int",
+				tags: "str,str,.."
+			}
+		]
 	}
 }
 ```

@@ -29,6 +29,7 @@ class MessageHandler:
 			(2, 2): self.handle_request_product_by_id,
 			(2, 3): self.handle_request_products_by_tags,
 			(2, 4): self.handle_request_all_tags,
+			(2, 5): self.handle_request_products_by_query,
 			(3, 1): self.handle_new_product,
 			(3, 2): self.handle_edit_product,
 			(3, 3): self.handle_delete_product,
@@ -131,6 +132,18 @@ class MessageHandler:
 #***************************************************************************************************
 	def handle_request_all_tags(self, content: dict) -> dict:
 		return Database.fetch_tags()
+
+
+#***************************************************************************************************
+	def handle_request_products_by_query(self, content: dict) -> dict:
+		#@todo handle request by query
+		email = content["email"]
+		query = content["query"]
+		query = " ".split(query)
+		for keyword in query:
+			if len(keyword) <= 2:
+				query.pop(keyword)
+		return Database.fetch_products_by_query(email, query) 
 
 
 #***************************************************************************************************

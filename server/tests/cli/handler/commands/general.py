@@ -49,6 +49,7 @@ def shop_help() -> str:
 		user-info (ui)
 
 	Shop Commands:
+		search (s) <query>
 		list-products (lp) [-tags <tag> <tag> ...]
 		product (p) <product_id>
 		list-recommended (lr) [-tags <tag> <tag> ...]
@@ -70,6 +71,7 @@ def shop_help() -> str:
 	Order Commands:
 		list-orders (lo)
 		order-details (od) <order_id>
+		order-products (op) <order_id>
 		cancel-order (co) <order_id>
 	"""
 

@@ -310,6 +310,66 @@ class Database:
 
 #***************************************************************************************************
 	@classmethod
+	def fetch_products_by_query(cls, email: str, search_query: list[str]) -> dict:
+		# @todo fetch by query
+		query = f"""
+		SELECT 	p.ROWID,
+			p.name,
+			p.description,
+			p.image,
+			p.price,
+			p.rating,
+			p.rating_count
+		FROM Product p
+		LEFT JOIN Classification c ON p.ROWID = c.product_id
+		LEFT JOIN Marketing m ON m.tag = c.tag
+		WHERE m.email = "?" 
+			AND (p.name LIKE {'%@todo stringMatching%'} OR  p.description LIKE {'%@todo stringMatching%'})
+		GROUP BY p.ROWID, p.name, p.description, p.image, p.price, p.rating, p.rating_count
+		ORDER BY COALESCE(SUM(m.weight), 0) / (SELECT COUNT(*) 
+				FROM Classification c2 
+				WHERE c2.product_id = p.ROWID) DESC, 
+			p.rating DESC, 
+			p.rating_count DESC;
+		"""
+		query2 = f"""
+		SELECT	p.ROWID,
+			p.name,
+			p.description,
+			p.image,
+			p.price,
+			p.rating,
+			p.rating_count
+		FROM Product p
+		LEFT JOIN Classification c ON p.ROWID = c.product_id
+		WHERE (p.name LIKE {'%@todo stringMatching%'} OR  p.description LIKE {'%@todo stringMatching%'})
+			AND p.ROWID NOT IN (SELECT p.ROWID
+				FROM Product p
+				LEFT JOIN Classification c ON p.ROWID = c.product_id
+				LEFT JOIN Marketing m ON m.tag = c.tag
+				WHERE m.email = "?"
+				GROUP BY p.ROWID, p.name, p.description, p.image, p.price, p.rating, p.rating_count
+				ORDER BY COALESCE(SUM(m.weight), 0) / (	SELECT COUNT(*) 
+						FROM Classification c2 
+						WHERE c2.product_id = p.ROWID) DESC, 
+					p.rating DESC, 
+					p.rating_count DESC)
+		GROUP BY p.ROWID, p.name, p.description, p.image, p.price, p.rating, p.rating_count
+		ORDER BY p.rating DESC, p.rating_count DESC;
+		"""
+		cls.cursor.execute(query, (email,))
+		results = cls.cursor.fetchall()
+		cls.cursor.execute(query2, (email,))
+		results.extend(cls.cursor.fetchall())
+		products = []
+		for row in results:
+			products.append({"id": row[0], "name": row[1], "description": row[2], "image": row[3], 
+											"price": row[4], "rating": row[5], "count": row[6], "tags": row[7]})
+		return {"amount": len(products), "products": products}
+
+
+#***************************************************************************************************
+	@classmethod
 	def fetch_product_tags(cls, productid: int) -> list[str]:
 		query = """
 		SELECT tag
