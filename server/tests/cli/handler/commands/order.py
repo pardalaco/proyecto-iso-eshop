@@ -67,6 +67,29 @@ def handle_cancel_order(isresponse: bool, current_user: dict, args: list[str]) -
 
 
 #***************************************************************************************************
+def handle_request_order_products(isresponse: bool, current_user: dict, 
+																	args: list[str]) -> tuple[bool, dict]:
+	if current_user["privilege"] == PRIVILEGE_NONE:
+		return (False, "You need to Log in to use this command")
+	else:
+		if isresponse:
+			if args[0]["content"]["success"]:
+				products = args[0]["content"]["products"]
+				productlist = f"Order Products:"
+				for product in products:
+					productlist += (f"\n{product['product_id']}: {product['product_name']} - "
+													f"{product['product_price']}€, {product['quantity']} uds "
+													f"({product['product_price'] * product['quantity']}€)"
+													f"\n\t{product['product_description']}\n")
+				return (False, productlist)
+			else:
+				return (False, "There was an error fetching the order")
+		else:
+			return (True, {"type": 6, "code": 4, "content": {"email": current_user["email"], 
+																											"orderid": args[0]}})												
+
+
+#***************************************************************************************************
 order_command_handlers = {
     "list-orders": handle_list_orders,
 		"lo": handle_list_orders,
@@ -75,5 +98,8 @@ order_command_handlers = {
 		"od": handle_order_details,
 
 		"cancel-order": handle_cancel_order,
-		"co": handle_cancel_order
+		"co": handle_cancel_order,
+
+		"order-products": handle_request_order_products,
+		"op": handle_request_order_products,
 }

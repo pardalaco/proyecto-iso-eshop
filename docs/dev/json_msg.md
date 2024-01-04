@@ -12,6 +12,7 @@
 			- [**2.2. Request product by ID**](#22-request-product-by-id)
 			- [**2.3. Request product(s) by TAG(s)**](#23-request-products-by-tags)
 			- [**2.4. Request all Tags**](#24-request-all-tags)
+			- [**2.5. Search Product/s by query**](#25-search-products-by-query)
 		- [**3. Manage Products (Admin)**](#3-manage-products-admin)
 			- [**3.1. Add new product**](#31-add-new-product)
 			- [**3.2. Edit product**](#32-edit-product)
@@ -28,16 +29,15 @@
 			- [**4.8. Request all Carts**](#48-request-all-carts)
 			- [**4.9. Purchase**](#49-purchase)
 		- [**5. User Info**](#5-user-info)
-			- [**5.1. Edit name**](#51-edit-name)
-			- [**5.2. Edit email**](#52-edit-email)
-			- [**5.3. Edit password**](#53-edit-password)
-			- [**5.4. Edit Payment**](#54-edit-payment)
-			- [**5.5. Edit Address**](#55-edit-address)
-			- [**5.6. Request User Info**](#56-request-user-info)
+			- [**5.1. User Info Edit**](#51-user-info-edit)
+			- [**5.2. Edit Payment**](#52-edit-payment)
+			- [**5.3. Edit Address**](#53-edit-address)
+			- [**5.4. Request User Info**](#54-request-user-info)
 		- [**6. Orders**](#6-orders)
 			- [**6.1. Request Orders**](#61-request-orders)
 			- [**6.2. Request Order Details**](#62-request-order-details)
 			- [**6.3. Cancel Order**](#63-cancel-order)
+			- [**6.4. Request Order Products**](#64-request-order-products)
 		- [**7. Orders (ADMIN)**](#7-orders-admin)
 			- [**7.1. List All Orders**](#71-list-all-orders)
 			- [**7.2. Change Order Status**](#72-change-order-status)
@@ -46,7 +46,9 @@
 			- [**8.2. View Product Ratings**](#82-view-product-ratings)
 			- [**8.3. Request Recommended Products**](#83-request-recommended-products)
 			- [**8.4. Request Recommended Products by Tag**](#84-request-recommended-products-by-tag)
-			- [\*\*8.4. Request User Marketing Profile \*\*](#84-request-user-marketing-profile-)
+			- [**8.4. Request User Marketing Profile**](#84-request-user-marketing-profile)
+		- [**9. Optimized and Additional Funcitonality**](#9-optimized-and-additional-funcitonality)
+			- [**9.1. Change Product Tag Set (ADMIN)**](#91-change-product-tag-set-admin)
 # **JSON Message Structure**
 ## **Main format**
 ```js
@@ -241,6 +243,38 @@ server = {
 	}
 }
 ```
+#### **2.5. Search Product/s by query**
+```js
+client = {
+	type: 2,
+	code: 5,
+	content: {
+		email: "str",
+		query: "str"
+	}
+}
+```
+```js
+server = {
+	type: 2,
+	code: 5,
+	content: {
+		amount: "int",
+		products: "list"[
+			"dict"{
+				id: "int", 
+				name: "str", 
+				description: "str", 
+				image: "image",
+				price: "float",
+				rating: "float",
+				count: "int",
+				tags: "str,str,.."
+			}
+		]
+	}
+}
+```
 ---
 &nbsp;
 ### **3. Manage Products (Admin)**
@@ -269,6 +303,9 @@ server = {
 }
 ```
 #### **3.2. Edit product**
+> *Content is a dictionary where the key is the field to edit, and the value is the value of what the new field value should be*
+> *Field must be an attribute of **Product***
+> *If field == "tags", value = "str,str,str,..."*
 ```js
 client = {
 	type: 3,
@@ -283,9 +320,6 @@ client = {
 	}
 }
 ```
-> *Content is a dictionary where the key is the field to edit, and the value is the value of what the new field value should be*
-> *Field must be an attribute of **Product***
-> *If field == "tags", value = "str,str,str,..."*
 ```js
 server = {
 	type: 3,
@@ -545,14 +579,19 @@ server = {
 ---
 &nbsp;
 ### **5. User Info**
-#### **5.1. Edit name**
+#### **5.1. User Info Edit**
+> *To change one or mutliple user data in one message, all the atributes to change (name, email, address, etc) should be provided on the <changes> list with the exact attribute name as it is on the database*
+> *For each attribute provided in the <changes> list, a dictionary key of the same name will be provided with the value of the entry being the new value of the attribute*
 ```js
 client = {
 	type: 5,
 	code: 1,
 	content: {
-		email: "str",
-		name: "str"
+		useremail: "str",
+		changes: "list"["str"]
+		"str"(field): "str"(value),
+		"str"(field): "str"(value),
+		...
 	}
 }
 ```
@@ -565,51 +604,11 @@ server = {
 	}
 }
 ```
-#### **5.2. Edit email**
+#### **5.2. Edit Payment**
 ```js
 client = {
 	type: 5,
 	code: 2,
-	content: {
-		email: "str",
-		newemail: "str"
-	}
-}
-```
-```js
-server = {
-	type: 5,
-	code: 2,
-	content: {
-		success: "bool"
-	}
-}
-```
-#### **5.3. Edit password**
-```js
-client = {
-	type: 5,
-	code: 3,
-	content: {
-		email: "str",
-		password: "str"
-	}
-}
-```
-```js
-server = {
-	type: 5,
-	code: 3,
-	content: {
-		success: "bool"
-	}
-}
-```
-#### **5.4. Edit Payment**
-```js
-client = {
-	type: 5,
-	code: 4,
 	content: {
 		email: "str",
 		payment: "str",
@@ -619,17 +618,17 @@ client = {
 ```js
 server = {
 	type: 5,
-	code: 4,
+	code: 2,
 	content: {
 		success: "bool"
 	}
 }
 ```
-#### **5.5. Edit Address**
+#### **5.3. Edit Address**
 ```js
 client = {
 	type: 5,
-	code: 5,
+	code: 3,
 	content: {
 		email: "str",
 		address: "str",
@@ -639,24 +638,24 @@ client = {
 ```js
 server = {
 	type: 5,
-	code: 5,
+	code: 3,
 	content: {
 		success: "bool"
 	}
 }
 ```
-#### **5.6. Request User Info**
+#### **5.4. Request User Info**
 ```js
 client = {
 	type: 5,
-	code: 6,
+	code: 4,
 	content: {}
 }
 ```
 ```js
 server = {
 	type: 5,
-	code: 6,
+	code: 4,
 	content: {
 		email: "str",
 		password: "str",
@@ -739,6 +738,39 @@ server = {
 	code: 3,
 	content: {
 		success: "bool"
+	}
+}
+```
+#### **6.4. Request Order Products**
+```js
+client = {
+	type: 6,
+	code: 4,
+	content: {
+		email: "str",
+		orderid: "int"
+	}
+}
+```
+```js
+server = {
+	type: 6,
+	code: 4,
+	content: {
+		success: "bool",
+		amount: "int",
+		total: "float",
+		products: "list"[
+			"dict"{
+				id: "int", 
+				name: "str", 
+				description: "str", 
+				image: "image",
+				price: "float",
+				tags: "str,str,..",
+				quantity: "int"
+			}
+		]
 	}
 }
 ```
@@ -912,7 +944,7 @@ server = {
 	}
 }
 ```
-#### **8.4. Request User Marketing Profile **
+#### **8.4. Request User Marketing Profile**
 ```js
 client = {
 	type: 8,
@@ -935,6 +967,32 @@ server = {
 				count: "int"
 			}
 		]
+	}
+}
+```
+---
+&nbsp;
+### **9. Optimized and Additional Funcitonality**
+#### **9.1. Change Product Tag Set (ADMIN)**
+> *This function will overwrite the set of tags for a product with the new set, as long as all the provided tags exist.*
+> *It will remove all previous tags that are not in the new set, and add the new ones*
+```js
+client = {
+	type: 9,
+	code: 1,
+	content: {
+		email: "str",
+		productid: "int",
+		tags: "list"["str"]
+	}
+}
+```
+```js
+server = {
+	type: 9,
+	code: 1,
+	content: {
+		success: "bool"
 	}
 }
 ```

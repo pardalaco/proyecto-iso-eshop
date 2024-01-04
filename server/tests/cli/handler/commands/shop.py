@@ -66,6 +66,22 @@ def handle_list_tags(isresponse: bool, current_user: dict, args: list[str]) -> t
 
 
 #***************************************************************************************************
+def handle_search(isresponse: bool, current_user: dict, args: list[str]) -> tuple[bool, dict]:
+	if current_user["privilege"] == PRIVILEGE_NONE:
+		return (False, "You need to Log in to use this command")
+	else:
+		if isresponse:
+			response = ""
+			for item in args[0]["content"]["products"]:
+				response += (f"*{item['rating']:.2f}({item['count']})* {item['id']}: {item['name']} - "
+											f"{item['price']}€\n")
+			return (False, response)
+		else:
+			return (True, {"type": 2, "code": 5, "content": {"email": current_user["email"],
+																												"query": " ".join(args[0:])}})
+
+
+#***************************************************************************************************
 shop_command_handlers = {
 	"list-products": handle_list_products,
 	"lp": handle_list_products,
@@ -74,5 +90,8 @@ shop_command_handlers = {
 	"p": handle_product,
 
 	"tags": handle_list_tags,
-	"t": handle_list_tags
+	"t": handle_list_tags,
+
+	"search": handle_search,
+	"s": handle_search,
 }

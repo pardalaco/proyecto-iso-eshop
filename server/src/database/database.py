@@ -217,6 +217,19 @@ class Database:
 
 #***************************************************************************************************
 	@classmethod
+	def get_product_id(cls, product_name) -> int:
+		query = """
+		SELECT	p.ROWID
+		FROM Product p
+		WHERE p.name = ?;
+		"""
+		cls.cursor.execute(query, (product_name,))
+		results = cls.cursor.fetchall()
+		return results[0][0]
+
+
+#***************************************************************************************************
+	@classmethod
 	def fetch_product_by_id(cls, email: str, product_id: int) -> dict:
 		query = """
 		SELECT 	p.ROWID,
@@ -237,7 +250,10 @@ class Database:
 		"""
 		cls.cursor.execute(query, (product_id,))
 		results = cls.cursor.fetchall()
-		item = results[0]
+		try:
+			item = results[0]
+		except IndexError:
+			return
 		product = {"id": item[0], "name": item[1], "description": item[2], "image": item[3], 
 								"price": item[4], "rating": item[5], "count": item[6], "tags": item[7]}
 
@@ -272,7 +288,6 @@ class Database:
 		products = []
 		for row in results:
 			tags = cls.fetch_product_tags(row[0])
-
 			products.append({"id": row[0], "name": row[1], "description": row[2], "image": row[3], 
 											"price": row[4], "rating": row[5], "count": row[6], "tags": ", ".join(tags)})
 		cls.increase_marketing_tag_counters(email)
@@ -293,6 +308,74 @@ class Database:
 		results = cls.cursor.fetchall()
 		results = [tag[0].capitalize() for tag in results]
 		return {"tags": results}
+
+
+#***************************************************************************************************
+	@classmethod
+	def fetch_products_by_query(cls, email: str, search_query: list[str]) -> dict:
+		new_query = []
+		for keyword in search_query:
+			new_query.append(keyword)
+			new_query.append(keyword.lower())
+			new_query.append(keyword.lower().capitalize())
+		parsed_query = [f"p.name LIKE '%{word}%' OR p.description LIKE '%{word}%'" 
+											for word in new_query]
+		end_query = " OR ".join(parsed_query)
+		query1 = f"""
+		SELECT 	p.ROWID,
+			p.name,
+			p.description,
+			p.image,
+			p.price,
+			p.rating,
+			p.rating_count
+		FROM Product p
+		LEFT JOIN Classification c ON p.ROWID = c.product_id
+		LEFT JOIN Marketing m ON m.tag = c.tag
+		WHERE m.email = ?
+			AND ({end_query})
+		GROUP BY p.ROWID, p.name, p.description, p.image, p.price, p.rating, p.rating_count
+		ORDER BY COALESCE(SUM(m.weight), 0) / (SELECT COUNT(*) 
+				FROM Classification c2 
+				WHERE c2.product_id = p.ROWID) DESC, 
+			p.rating DESC, 
+			p.rating_count DESC;
+		"""
+		query2 = f"""
+		SELECT	p.ROWID,
+			p.name,
+			p.description,
+			p.image,
+			p.price,
+			p.rating,
+			p.rating_count
+		FROM Product p
+		LEFT JOIN Classification c ON p.ROWID = c.product_id
+		WHERE ({end_query})
+			AND p.ROWID NOT IN (SELECT p.ROWID
+				FROM Product p
+				LEFT JOIN Classification c ON p.ROWID = c.product_id
+				LEFT JOIN Marketing m ON m.tag = c.tag
+				WHERE m.email = ?
+				GROUP BY p.ROWID, p.name, p.description, p.image, p.price, p.rating, p.rating_count
+				ORDER BY COALESCE(SUM(m.weight), 0) / (	SELECT COUNT(*) 
+						FROM Classification c2 
+						WHERE c2.product_id = p.ROWID) DESC, 
+					p.rating DESC, 
+					p.rating_count DESC)
+		GROUP BY p.ROWID, p.name, p.description, p.image, p.price, p.rating, p.rating_count
+		ORDER BY p.rating DESC, p.rating_count DESC;
+		"""
+		cls.cursor.execute(query1, (email,))
+		results = cls.cursor.fetchall()
+		cls.cursor.execute(query2, (email,))
+		results.extend(cls.cursor.fetchall())
+		products = []
+		for row in results:
+			tags = cls.fetch_product_tags(row[0])
+			products.append({"id": row[0], "name": row[1], "description": row[2], "image": row[3], 
+											"price": row[4], "rating": row[5], "count": row[6], "tags": ", ".join(tags)})
+		return {"amount": len(products), "products": products}
 
 
 #***************************************************************************************************
@@ -349,14 +432,13 @@ class Database:
 
 #***************************************************************************************************
 	@classmethod
-	def add_product_tags(cls, productid: int, tags: str) -> bool:
-		taglist = tags.split(",")
+	def add_product_tags(cls, productid: int, tags: list[str]) -> bool:
 		query = """
 		INSERT INTO Classification 
     	VALUES(?, ?);
 		"""
 		try:
-			for tag in taglist:
+			for tag in tags:
 				if cls.tag_exists(tag):
 					cls.cursor.execute(query, (productid, tag))
 				else:
@@ -373,16 +455,18 @@ class Database:
 
 #***************************************************************************************************
 	@classmethod
-	def remove_product_tags(cls, productid: int, tags: str) -> bool:
-		taglist = tags.split(",")
+	def remove_product_tags(cls, productid: int, tags: list[str]) -> bool:
 		query = """
 		DELETE FROM Classification
 		WHERE product_id = ? AND tag = ?;
 		"""
 		try:
-			for tag in taglist:
+			for tag in tags:
 				if cls.tag_exists(tag):
 					cls.cursor.execute(query, (productid, tag))
+					if len(cls.fetch_product_tags(productid)) == 0:
+						cls.connection.rollback()
+						return False
 				else:
 					cls.connection.commit()
 					print(f"(!) Tried to remove a non existent Tag: {tag}")
@@ -744,6 +828,29 @@ class Database:
 			total += product[0] * product[1]
 		return total
 
+
+#***************************************************************************************************
+	@classmethod
+	def update_user_info(cls, email: str, change: str, newval: str) -> bool:
+		allowed_columns = ["email", "password", "name", "payment", "address"]
+		if change not in allowed_columns:
+			return False
+		print(f"Update User Info: email = {email}, change = {change}, newval = {newval}")
+		query = f"""
+		UPDATE User
+		SET {change} = ?
+		WHERE email = ?
+		"""
+		try:
+			cls.cursor.execute(query, (newval, email))
+			cls.connection.commit()
+			return True
+		except Exception as e:
+			cls.connection.rollback()
+			print(f"(!) An error occurred while editing user info: \n{e}")
+			return False
+
+
 #***************************************************************************************************
 	@classmethod
 	def edit_payment(cls, email: str, payment: str) -> bool:
@@ -834,7 +941,10 @@ class Database:
 		WHERE ROWID = ?;
 		"""
 		cls.cursor.execute(query, (orderid,))
-		results = cls.cursor.fetchall()[0]
+		try:
+			results = cls.cursor.fetchall()[0]
+		except IndexError:
+			return
 		return {"success": True, "orderid": results[0], "email": results[1], "address": results[2],
 						"payment": results[3], "date": results[4], "total": results[5], "status": results[6]}
 
@@ -856,6 +966,33 @@ class Database:
 			cls.connection.rollback()
 			print(f"(!) An error occurred while deleting order: \n{e}")
 			return False
+
+#***************************************************************************************************
+	@classmethod
+	def fetch_order_products(cls, orderid: int) -> dict:
+		query = """
+		SELECT	Product.ROWID,
+        		Product.name,
+						Product.description,
+						Product.image,
+						Product.price, 
+						ShopOrderLine.quantity, 
+						GROUP_CONCAT(Classification.tag) AS tags
+		FROM Product, ShopOrderLine
+		LEFT JOIN Classification ON Product.ROWID = Classification.product_id
+		WHERE ShopOrderLine.product_id = Product.ROWID 
+				AND ShopOrderLine.order_id = ?
+		GROUP BY Product.ROWID, Product.name, Product.description, Product.image, 
+						Product.price, ShopOrderLine.quantity;
+		"""
+		cls.cursor.execute(query, (orderid,))
+		results = cls.cursor.fetchall()
+		products = []
+		for row in results:
+			products.append({"product_id": row[0], "product_name": row[1], "product_description": row[2], 
+											 "product_image": row[3], "product_price": row[4], "tags": row[6], 
+											 "quantity": row[5]})
+		return {"success": True, "amount": len(products), "products": products}
 
 
 #***************************************************************************************************

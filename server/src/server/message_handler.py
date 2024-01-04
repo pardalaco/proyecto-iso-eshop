@@ -29,6 +29,7 @@ class MessageHandler:
 			(2, 2): self.handle_request_product_by_id,
 			(2, 3): self.handle_request_products_by_tags,
 			(2, 4): self.handle_request_all_tags,
+			(2, 5): self.handle_request_products_by_query,
 			(3, 1): self.handle_new_product,
 			(3, 2): self.handle_edit_product,
 			(3, 3): self.handle_delete_product,
@@ -42,12 +43,14 @@ class MessageHandler:
 			(4, 7): self.handle_request_cart_products,
 			(4, 8): self.handle_request_user_carts,
 			(4, 9): self.handle_purchase,
-			(5, 4): self.handle_edit_payment,
-			(5, 5): self.handle_edit_address,
-			(5, 6): self.handle_user_info,
+			(5, 1): self.handle_edit_user_info,
+			(5, 2): self.handle_edit_payment,
+			(5, 3): self.handle_edit_address,
+			(5, 4): self.handle_user_info,
 			(6, 1): self.handle_list_orders,
 			(6, 2): self.handle_order_details,
 			(6, 3): self.handle_cancel_order,
+			(6, 4): self.handle_request_order_products,
 			(7, 1): self.handle_list_all_orders,
 			(7, 2): self.handle_change_order_status,
 			(8, 1): self.handle_rate_product,
@@ -55,6 +58,7 @@ class MessageHandler:
 			(8, 3): self.handle_fetch_recommended_products,
 			(8, 4): self.handle_fetch_recommended_products_by_tags,
 			(8, 5): self.handle_fetch_marketing_profile,
+			(9, 1): self.handle_edit_product_tags,
 		}
 
 
@@ -131,6 +135,15 @@ class MessageHandler:
 
 
 #***************************************************************************************************
+	def handle_request_products_by_query(self, content: dict) -> dict:
+		email = content["email"]
+		query = content["query"]
+		query = query.split(" ")
+		filtered_query = [keyword for keyword in query if len(keyword) > 2]
+		return Database.fetch_products_by_query(email, filtered_query) 
+
+
+#***************************************************************************************************
 	def handle_new_product(self, content: dict) -> dict:
 		email = content["email"]
 		if not Database.is_admin(email):
@@ -140,7 +153,11 @@ class MessageHandler:
 			description = content["description"]
 			image = content["image"]
 			price = content["price"]
-			return {"success": Database.new_product(name, description, image, price)}
+			tags = content["tags"].split(",")
+			success = Database.new_product(name, description, image, price)
+			product_id = Database.get_product_id(name)
+			success = Database.add_product_tags(product_id, tags)
+			return {"success": success}
 
 
 #***************************************************************************************************
@@ -155,10 +172,10 @@ class MessageHandler:
 			for key in content:
 				if key == "tags":
 					if tagop == 0:
-						if not Database.add_product_tags(productid, content[key]):
+						if not Database.add_product_tags(productid, content[key].split(",")):
 							return {"success": False}
 					else:
-						if not Database.remove_product_tags(productid, content[key]):
+						if not Database.remove_product_tags(productid, content[key].split(",")):
 							return {"success": False}
 				else:	
 					if not Database.edit_product(productid, key, content[key]):
@@ -288,6 +305,22 @@ class MessageHandler:
 
 
 #***************************************************************************************************
+	def handle_edit_user_info(self, content: dict) -> dict:
+		useremail = content["useremail"]
+		changes = content["changes"]
+		for change in changes:
+			try:
+				newval = content[change]
+				if not Database.update_user_info(useremail, change, newval):
+					return {"success": False}
+				if change == "email":
+					useremail = content["email"]
+			except Exception as e:
+				print(f"(!) Error while updating user info: \n{e}")
+		return {"success": True}
+
+
+#***************************************************************************************************
 	def handle_edit_payment(self, content: dict) -> dict:
 		email = content["email"]
 		payment = content["payment"]
@@ -322,6 +355,8 @@ class MessageHandler:
 		orderid = content["orderid"]
 		if Database.is_user_order(email, orderid):
 			return Database.fetch_order_details(orderid)
+		elif Database.is_admin(email):
+			return Database.fetch_order_details(orderid)
 		else:
 			return {"success": False}
 		
@@ -334,6 +369,14 @@ class MessageHandler:
 			if Database.fetch_order_status(orderid) == "Invoiced":
 				return {"success": Database.cancel_order(orderid)}
 		return {"success": False}
+
+
+#***************************************************************************************************
+	def handle_request_order_products(self, content: dict) -> dict:
+		email = content["email"]
+		orderid = content["orderid"]
+		if Database.is_user_order(email, orderid):
+			return Database.fetch_order_products(orderid)
 
 
 #***************************************************************************************************
@@ -391,3 +434,21 @@ class MessageHandler:
 	def handle_fetch_marketing_profile(self, content: dict) -> dict:
 		email = content["email"]
 		return Database.fetch_marketing_profile(email)
+
+
+#***************************************************************************************************
+	def handle_edit_product_tags(self, content: dict) -> dict:
+		email = content["email"]
+		if not Database.is_admin(email):
+			return {"success": False}
+		tags = content["tags"]
+		productid = content["productid"]
+		original_tags = Database.fetch_product_tags(productid)
+		tags_to_add = [tag for tag in tags if tag not in original_tags]
+		tags_to_remove = [tag for tag in original_tags if tag not in tags]
+
+		if not Database.add_product_tags(productid, tags_to_add):
+			return {"success": False}
+		if not Database.remove_product_tags(productid, tags_to_remove):
+			return {"success": False}
+		return {"success": True}
