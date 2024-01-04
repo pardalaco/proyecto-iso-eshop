@@ -136,10 +136,9 @@ class MessageHandler:
 
 #***************************************************************************************************
 	def handle_request_products_by_query(self, content: dict) -> dict:
-		#@todo handle request by query
 		email = content["email"]
 		query = content["query"]
-		query = " ".split(query)
+		query = query.split(" ")
 		for keyword in query:
 			if len(keyword) <= 2:
 				query.pop(keyword)

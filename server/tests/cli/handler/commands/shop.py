@@ -78,7 +78,7 @@ def handle_search(isresponse: bool, current_user: dict, args: list[str]) -> tupl
 			return (False, response)
 		else:
 			return (True, {"type": 2, "code": 5, "content": {"email": current_user["email"],
-																												"query": args[0:]}})
+																												"query": " ".join(args[0:])}})
 
 
 #***************************************************************************************************

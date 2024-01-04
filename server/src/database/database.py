@@ -313,8 +313,15 @@ class Database:
 #***************************************************************************************************
 	@classmethod
 	def fetch_products_by_query(cls, email: str, search_query: list[str]) -> dict:
-		# @todo fetch by query
-		query = f"""
+		new_query = []
+		for keyword in search_query:
+			new_query.append(keyword)
+			new_query.append(keyword.lower())
+			new_query.append(keyword.lower().capitalize())
+		parsed_query = [f"p.name LIKE '%{word}%' OR p.description LIKE '%{word}%'" 
+											for word in new_query]
+		end_query = " OR ".join(parsed_query)
+		query1 = f"""
 		SELECT 	p.ROWID,
 			p.name,
 			p.description,
@@ -325,8 +332,8 @@ class Database:
 		FROM Product p
 		LEFT JOIN Classification c ON p.ROWID = c.product_id
 		LEFT JOIN Marketing m ON m.tag = c.tag
-		WHERE m.email = "?" 
-			AND (p.name LIKE {'%@todo stringMatching%'} OR  p.description LIKE {'%@todo stringMatching%'})
+		WHERE m.email = ?
+			AND ({end_query})
 		GROUP BY p.ROWID, p.name, p.description, p.image, p.price, p.rating, p.rating_count
 		ORDER BY COALESCE(SUM(m.weight), 0) / (SELECT COUNT(*) 
 				FROM Classification c2 
@@ -344,12 +351,12 @@ class Database:
 			p.rating_count
 		FROM Product p
 		LEFT JOIN Classification c ON p.ROWID = c.product_id
-		WHERE (p.name LIKE {'%@todo stringMatching%'} OR  p.description LIKE {'%@todo stringMatching%'})
+		WHERE ({end_query})
 			AND p.ROWID NOT IN (SELECT p.ROWID
 				FROM Product p
 				LEFT JOIN Classification c ON p.ROWID = c.product_id
 				LEFT JOIN Marketing m ON m.tag = c.tag
-				WHERE m.email = "?"
+				WHERE m.email = ?
 				GROUP BY p.ROWID, p.name, p.description, p.image, p.price, p.rating, p.rating_count
 				ORDER BY COALESCE(SUM(m.weight), 0) / (	SELECT COUNT(*) 
 						FROM Classification c2 
@@ -359,14 +366,15 @@ class Database:
 		GROUP BY p.ROWID, p.name, p.description, p.image, p.price, p.rating, p.rating_count
 		ORDER BY p.rating DESC, p.rating_count DESC;
 		"""
-		cls.cursor.execute(query, (email,))
+		cls.cursor.execute(query1, (email,))
 		results = cls.cursor.fetchall()
 		cls.cursor.execute(query2, (email,))
 		results.extend(cls.cursor.fetchall())
 		products = []
 		for row in results:
+			tags = cls.fetch_product_tags(row[0])
 			products.append({"id": row[0], "name": row[1], "description": row[2], "image": row[3], 
-											"price": row[4], "rating": row[5], "count": row[6], "tags": row[7]})
+											"price": row[4], "rating": row[5], "count": row[6], "tags": ", ".join(tags)})
 		return {"amount": len(products), "products": products}
 
 
