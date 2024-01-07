@@ -15,9 +15,14 @@
 
 ## 2. Tipo de Reunión:
 Propuesta de Presentación y Review
-
 ---
 
 ## 3. Puntos Destacados
 
-—
+- Se ha revisado el documento de la presentación.
+- Se ha acabado de decidir el modelo y orden de la presentación.
+- Revisión del flujo de presentación de la demo.
+- Realizada la review del sprint.
+
+---
+
