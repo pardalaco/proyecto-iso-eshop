@@ -15,8 +15,6 @@ import 'package:eshop/style/ColorsUsed.dart';
 import 'package:eshop/utils/MyWidgets.dart';
 import 'package:eshop/views/orderDetails.dart';
 
-import 'dart:convert';
-
 class OrderList extends StatefulWidget {
   final Connection connection;
   final Profile profile;
