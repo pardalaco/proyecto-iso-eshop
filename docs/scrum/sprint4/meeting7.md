@@ -14,7 +14,9 @@
 ---
 
 ## 2. Tipo de Reunión:
+
 Propuesta de Presentación y Review
+
 ---
 
 ## 3. Puntos Destacados
