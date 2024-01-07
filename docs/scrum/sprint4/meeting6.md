@@ -19,5 +19,9 @@ Test de Integración
 ---
 
 ## 3. Puntos Destacados
+- Se ha comprobado el funcionamiento de la totalidad de la aplicación.
+- Se han corregido errores de integración.
+- Se ha implementado fuincionalidad adicional propuesta.
+- Se ha dado por finalizada la parte de desarrollo e implementación.
 
-—
+---

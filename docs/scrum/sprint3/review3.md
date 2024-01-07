@@ -2,7 +2,7 @@
 
 ## Resumen
 
-Este documento detalla la revisión del segundo sprint del proyecto, abarcando lo que se planeó hacer, lo que efectivamente se realizó, y los desafíos encontrados.
+Este documento detalla la revisión del tercer sprint del proyecto, abarcando lo que se planeó hacer, lo que efectivamente se realizó, y los desafíos encontrados.
 
 ---
 
